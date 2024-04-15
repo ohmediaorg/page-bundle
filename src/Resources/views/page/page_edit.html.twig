@@ -1,0 +1,47 @@
+{% extends '@OHMediaBackend/base.html.twig' %}
+
+{% block meta_title %}{{ form_title }}{% endblock %}
+
+{% block breadcrumbs %}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('files') ~ ' Pages', 'page_index'),
+    bootstrap_breadcrumb(page.name, 'page_view', {id: page.id}),
+    bootstrap_breadcrumb('Edit'),
+  ) }}
+{% endblock %}
+
+{% block main %}
+<div class="row">
+  <div class="col-xl-8">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="card-title h3">{{ form_title }}</h1>
+
+        {% set form_path %}
+          <div class="mb-3">
+            <label class="form-label">Path</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                {{ page.parent ? page.parent.path : '' }}/
+              </span>
+              {{ form_widget(form.slug) }}
+            </div>
+            <p class="form-text mb-0 help-text">
+              Leave this blank to auto-generate a value.
+              {% if page.isHomepage %}
+              <br /><i><b>Note:</b> changing the slug of the homepage has no effect.</i>
+              {% endif %}
+            </p>
+          </div>
+        {% endset %}
+
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            {{ form_path|raw }}
+            {{ form_rest(form) }}
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% set block_body = block('body') %}
+
+<!DOCTYPE html>
+{% block html_tag_open %}
+<html>
+{% endblock %}
+  <head>
+    {% block head_open %}{% endblock %}
+
+    {{ page_meta() }}
+
+    {% block head_close %}{% endblock %}
+  </head>
+  <body>{{ block_body|raw }}</body>
+</html>

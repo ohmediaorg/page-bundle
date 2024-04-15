@@ -1,0 +1,242 @@
+{% set iframe_src = path('page_revision_view', {id: page_revision.id}) %}
+{% set form_action = path('page_revision_content', {id: page_revision.id}) %}
+
+<script>
+(function(currentScript) {
+  let fetching = false;
+
+  function fetchForm(pageContents) {
+    if (fetching) {
+      return;
+    }
+
+    fetching = true;
+
+    clickedPageContents = pageContents;
+
+    form = null;
+    modal.setBody('<p>Loading...</p>');
+    modal.show();
+
+    fetch(formAction, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+    })
+    .then(r => r.json())
+    .then((response) => {
+      fetching = false;
+
+      initForm(response);
+    });
+  }
+
+  const iframe = document.createElement('iframe');
+  iframe.src = {{ iframe_src|json_encode|raw }};
+
+  currentScript.after(iframe);
+
+  let allPageContent = []
+
+  {% for page_content in all_page_content %}
+  allPageContent.push({
+    name: {{ page_content.name|json_encode|raw }},
+    label: {{ page_content.label|humanize|json_encode|raw }},
+    type: {{ page_content.type|json_encode|raw }},
+  });
+  {% endfor %}
+
+  const btnGroup = document.createElement('div');
+  btnGroup.className = 'btn-group';
+
+  currentScript.after(btnGroup);
+
+  let modal = null;
+
+  function Modal() {
+    const el = document.createElement('div');
+    el.className = 'modal modal-lg';
+    el.tabIndex = -1;
+
+    el.innerHTML = `
+<div class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title">Edit Page Content</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+    <div class="modal-body"></div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-primary">Save changes</button>
+    </div>
+  </div>
+</div>
+    `;
+
+    const body = el.querySelector('.modal-body');
+    const submit = el.querySelector('.btn-primary');
+
+    const modal = new window.Bootstrap.Modal(el);
+
+    return {
+      show() {
+        modal.show();
+      },
+      hide() {
+        modal.hide();
+      },
+      setBody(html) {
+        body.innerHTML = html;
+      },
+      find(selector) {
+        return body.querySelector(selector);
+      },
+      onSubmit(callback) {
+        submit.onclick = callback;
+      }
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    modal = new Modal();
+
+    modal.onSubmit(() => {
+      if (!form) {
+        return;
+      }
+
+      submitForm();
+    });
+  });
+
+  let form = null;
+
+  const formAction = {{ form_action|json_encode|raw }};
+
+  let submitting = false;
+
+  function submitForm() {
+    if (submitting) {
+      return;
+    }
+
+    submitting = true;
+
+    form.dispatchEvent(new Event('submit'));
+
+    fetch(formAction, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+    })
+    .then(r => r.json())
+    .then((response) => {
+      const curr = window.location.pathname + window.location.search;
+
+      if (curr === response) {
+        // refresh the iframe
+        iframe.src = iframe.src;
+      } else {
+        // go to the new URL
+        window.location.href = response;
+      }
+
+      modal.hide();
+    })
+    .catch((response) => {
+      initForm(response);
+    })
+    .finally(() => {
+      submitting = false;
+    });
+  }
+
+  let clickedPageContents = [];
+
+  function initForm(html) {
+    modal.setBody(html);
+    form = modal.find('form');
+
+    form.querySelector('[type=submit]').style.display = 'none';
+
+    const pageContents = form.querySelectorAll('[data-ohmedia-page-content]');
+
+    pageContents.forEach((pageContent) => {
+      const show = clickedPageContents.includes(pageContent.dataset.ohmediaPageContent);
+
+      pageContent.style.display = show ? '' : 'none';
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      return false;
+    });
+  }
+
+  function isMessageScrollHeight(eventData) {
+    return eventData.scrollHeight && Number.isInteger(eventData.scrollHeight);
+  }
+
+  function isMessagePageContentAvailable(eventData) {
+    return eventData.pageContentAvailable && Array.isArray(eventData.pageContentAvailable);
+  }
+
+  function isMessagePageContent(eventData) {
+    return eventData.pageContent && Array.isArray(eventData.pageContent) && eventData.pageContent.length > 0;
+  }
+
+  function initBtn(pageContent) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-dark';
+    btn.title = pageContent.label;
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      fetchForm([pageContent.name])
+    });
+
+    const icon = document.createElement('i');
+
+    if ('checkbox' === pageContent.type) {
+      icon.className = 'bi bi-check-square';
+    } else if ('choice' === pageContent.type) {
+      icon.className = 'bi bi-menu-down';
+    } else if ('image' === pageContent.type) {
+      icon.className = 'bi bi-image';
+    } else if ('row' === pageContent.type) {
+      icon.className = 'bi bi-layout-three-columns';
+    } else if ('text' === pageContent.type) {
+      icon.className = 'bi bi-fonts';
+    } else if ('textarea' === pageContent.type) {
+      icon.className = 'bi bi-textarea-t';
+    } else if ('wysiwyg' === pageContent.type) {
+      icon.className = 'bi bi-code-slash';
+    }
+
+    btn.appendChild(icon);
+
+    btnGroup.appendChild(btn);
+  }
+
+  window.addEventListener('message', (event) => {
+    if (isMessageScrollHeight(event.data)) {
+      iframe.style.height = event.data.scrollHeight + 'px';
+    } else if (isMessagePageContentAvailable(event.data)) {
+      const missing = allPageContent.filter(x => !event.data.pageContentAvailable.includes(x.name));
+
+      btnGroup.innerHTML = '';
+
+      for (pageContent of missing) {
+        initBtn(pageContent);
+      }
+    } else if (isMessagePageContent(event.data)) {
+      fetchForm(event.data.pageContent);
+    }
+  }, false);
+})(document.currentScript);
+</script>

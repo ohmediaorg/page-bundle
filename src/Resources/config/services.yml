@@ -1,0 +1,139 @@
+services:
+    OHMedia\PageBundle\Twig\PageExtension:
+        autowire: true
+        tags: ["twig.extension"]
+
+    OHMedia\PageBundle\Twig\PageBackendExtension:
+        autowire: true
+        tags: ["twig.extension"]
+
+    OHMedia\PageBundle\Twig\PageContentExtension:
+        autowire: true
+        tags: ["twig.extension"]
+
+    OHMedia\PageBundle\Twig\WysiwygExtension:
+        autowire: true
+        tags: ["twig.extension", "oh_media_wysiwyg.extension"]
+
+    OHMedia\PageBundle\Service\PageManager:
+        autowire: true
+
+    OHMedia\PageBundle\Service\PageRawQuery:
+        autowire: true
+
+    oh_media_page.page_manager:
+        alias: OHMedia\PageBundle\Service\PageManager
+
+    OHMedia\PageBundle\Service\PageRenderer:
+        autowire: true
+
+    oh_media_page.page_renderer:
+        alias: OHMedia\PageBundle\Service\PageRenderer
+
+    OHMedia\PageBundle\Service\PageQueryBuilder:
+        autowire: true
+
+    OHMedia\PageBundle\EventListener\PagePostPersist:
+        arguments: ["@oh_media_page.page_manager"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'postPersist'
+                entity: 'OHMedia\PageBundle\Entity\Page'
+
+    OHMedia\PageBundle\EventListener\PagePostRemove:
+        arguments: ["@oh_media_page.page_manager"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'postRemove'
+                entity: 'OHMedia\PageBundle\Entity\Page'
+
+    OHMedia\PageBundle\EventListener\PagePostUpdate:
+        arguments: ["@oh_media_page.page_manager"]
+        tags:
+            -
+                name: 'doctrine.orm.entity_listener'
+                event: 'postUpdate'
+                entity: 'OHMedia\PageBundle\Entity\Page'
+
+    OHMedia\PageBundle\Form\PageCreateType:
+        autowire: true
+        tags: ["form.type"]
+
+    OHMedia\PageBundle\Form\PageEditType:
+        autowire: true
+        tags: ["form.type"]
+
+    OHMedia\PageBundle\Form\PageNavigationType:
+        autowire: true
+        tags: ["form.type"]
+
+    OHMedia\PageBundle\Form\PageSEOType:
+        autowire: true
+        tags: ["form.type"]
+
+    OHMedia\PageBundle\Form\PageRevisionType:
+        autowire: true
+        tags: ["form.type"]
+
+    OHMedia\PageBundle\Repository\Page301Repository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
+    OHMedia\PageBundle\Repository\PageContentCheckboxRepository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
+    OHMedia\PageBundle\Repository\PageContentImageRepository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
+    OHMedia\PageBundle\Repository\PageContentRowRepository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
+    OHMedia\PageBundle\Repository\PageContentTextRepository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
+    OHMedia\PageBundle\Repository\PageRepository:
+        autowire: true
+        tags: ["doctrine.repository_service"]
+
+    OHMedia\PageBundle\Repository\PageRevisionRepository:
+        autowire: true
+        tags: ["doctrine.repository_service", "oh_media_wysiwyg.repository"]
+
+    OHMedia\PageBundle\Controller\Backend\PageBackendController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
+    OHMedia\PageBundle\Controller\Backend\PageRevisionBackendController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
+    OHMedia\PageBundle\Controller\PageFrontendController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
+    OHMedia\PageBundle\Cleanup\Page301Cleaner:
+        autowire: true
+        tags: ["oh_media_cleanup.cleaner"]
+
+    OHMedia\PageBundle\Cleanup\PageRevisionCleaner:
+        autowire: true
+        tags: ["oh_media_cleanup.cleaner"]
+
+    OHMedia\PageBundle\Security\Voter\PageVoter:
+        tags: ["security.voter"]
+
+    OHMedia\PageBundle\Security\Voter\PageRevisionVoter:
+        tags: ["security.voter"]
+
+    OHMedia\PageBundle\Service\PageNavItemProvider:
+        autowire: true
+        tags: ["oh_media_backend.nav_item_provider"]
+
+    OHMedia\PageBundle\Service\PageEntityChoice:
+        tags: ["oh_media_security.entity_choice"]

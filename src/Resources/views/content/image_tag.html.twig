@@ -1,0 +1,12 @@
+{% set image = content ? content.image : null %}
+
+{% if is_preview %}
+{% set attributes = attributes|merge({
+  title: "Content Area '" ~ name|e('html_attr') ~ "'",
+  'data-ohmedia-page-content': name|e('html_attr')
+}) %}
+{% endif %}
+
+{% if image %}
+{{ image_tag(image, attributes) }}
+{% endif %}

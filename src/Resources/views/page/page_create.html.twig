@@ -1,0 +1,41 @@
+{% extends '@OHMediaBackend/base.html.twig' %}
+
+{% block meta_title %}{{ form_title }}{% endblock %}
+
+{% block breadcrumbs %}
+{{ bootstrap_breadcrumbs(
+  bootstrap_breadcrumb(bootstrap_icon('files') ~ ' Pages', 'page_index'),
+  bootstrap_breadcrumb('Create'),
+) }}
+{% endblock %}
+
+{% block main %}
+<div class="row">
+  <div class="col-xl-8">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="card-title h3">{{ form_title }}</h1>
+
+        {% set form_path %}
+          <div class="mb-3">
+            <label class="form-label">Path</label>
+            <div class="input-group">
+              {{ form_widget(form.parent) }}
+              {{ form_widget(form.slug) }}
+            </div>
+            <p class="form-text mb-0 help-text">
+              Leave the second input blank to auto-generate a value.
+            </p>
+          </div>
+        {% endset %}
+
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            {{ form_path|raw }}
+            {{ form_rest(form) }}
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

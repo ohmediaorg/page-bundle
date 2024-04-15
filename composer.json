@@ -1,0 +1,23 @@
+{
+    "name": "ohmediaorg/page-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony PageBundle",
+    "keywords": ["Page"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Justin Hoffman",
+            "email": "justin@ohmedia.ca"
+        }
+    ],
+    "require": {
+        "ohmediaorg/meta-bundle": "dev-main",
+        "ohmediaorg/security-bundle": "dev-main",
+        "ohmediaorg/wysiwyg-bundle": "dev-main",
+        "php": "^7.2",
+        "symfony/framework-bundle": "5.4.*"
+    },
+    "autoload": {
+        "psr-4": { "OHMedia\\PageBundle\\": "src/" }
+    }
+}

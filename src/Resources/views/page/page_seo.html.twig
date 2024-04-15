@@ -1,0 +1,34 @@
+{% extends '@OHMediaBackend/base.html.twig' %}
+
+{% block meta_title %}{{ form_title }}{% endblock %}
+
+{% block breadcrumbs %}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('files') ~ ' Pages', 'page_index'),
+    bootstrap_breadcrumb(page.name, 'page_view', {id: page.id}),
+    bootstrap_breadcrumb('SEO'),
+  ) }}
+{% endblock %}
+
+{% block main %}
+<div class="card">
+  <div class="card-body">
+    <h1 class="card-title h3">{{ form_title }}</h1>
+
+    {% set form_meta %}
+      {{ form_row(form.meta) }}
+    {% endset %}
+
+    {{ form_start(form) }}
+    <div class="row">
+      <div class="col-md-6">
+        {{ form_rest(form) }}
+      </div>
+      <div class="col-md-6">
+        {{ form_meta|raw }}
+      </div>
+    </div>
+    {{ form_end(form) }}
+  </div>
+</div>
+{% endblock %}

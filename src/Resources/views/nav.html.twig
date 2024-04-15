@@ -1,0 +1,63 @@
+{% macro page_nav(page, current_path, nesting_level, max_nesting_level) %}
+  {% if page.locked %}
+    {% set frontend_attribute = constant('OHMedia\\PageBundle\\Security\\Voter\\PageVoter::FRONTEND') %}
+    {% set show_page_link = is_granted(frontend_attribute, page) %}
+  {% else %}
+    {% set show_page_link = true %}
+  {% endif %}
+
+  {# TODO: use bootstrap? #}
+
+  {% if show_page_link %}
+    {% if page.isRedirectTypeInternal %}
+      {% set page_path = path('oh_media_page_frontend', {
+        path: page.redirectInternal.path
+      }) %}
+    {% elseif page.isRedirectTypeExternal %}
+      {% set page_path = page.redirectExternal %}
+    {% else %}
+      {% set page_path = path('oh_media_page_frontend', {
+        path: page.path
+      }) %}
+    {% endif %}
+
+    {% set classes = [] %}
+
+    {% if page_path == current_path %}
+      {% set classes = classes|merge(['active']) %}
+    {% elseif current_path starts with page_path %}
+      {% set classes = classes|merge(['active-path']) %}
+    {% endif %}
+
+    {% set pages = page.getNavPages %}
+
+    <li class="{{ classes|join(' ') }}">
+      <a
+        href="{{ page_path }}"
+        {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
+      >
+        {{ page.name }}
+      </a>
+      {% if nesting_level <= max_nesting_level and pages|length %}
+      <ul class="nav nav--level-{{ nesting_level }}">
+      {% for page in pages %}
+      {{ _self.page_nav(page, current_path, nesting_level + 1, max_nesting_level) }}
+      {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+  {% endif %}
+{% endmacro %}
+
+
+<ul class="nav nav--level-0">
+  {% if show_home %}
+  <li {% if current_path == home_path %}class="active"{% endif %}>
+    <a href="{{ home_path }}">Home</a>
+  </li>
+  {% endif %}
+
+  {% for page in pages %}
+    {{ _self.page_nav(page, current_path, 1, max_nesting_level) }}
+  {% endfor %}
+</ul>

@@ -1,0 +1,18 @@
+{{ meta_entity(meta) }}
+
+{% if page.noindex %}
+<meta name="robots" content="noindex" />
+{% endif %}
+
+{% if page.isHomepage %}
+  {% set canonical_path = '' %}
+{% elseif page.canonical and page.canonical.isVisibleToPublic %}
+  {% set canonical_path = page.canonical.path %}
+{% else %}
+  {% set canonical_path = page.path %}
+{% endif %}
+
+{% set canonical_url = path('oh_media_page_frontend', {
+  path: canonical_path,
+}) %}
+<link rel="canonical" href="{{ absolute_url(canonical_url) }}" />

@@ -1,0 +1,58 @@
+<script>
+(function () {
+  const LAYOUT_ONE_COLUMN = {{ LAYOUT_ONE_COLUMN|json_encode|raw }};
+  const LAYOUT_THREE_COLUMN = {{ LAYOUT_THREE_COLUMN|json_encode|raw }};
+  const DATA_ATTRIBUTE = {{ DATA_ATTRIBUTE|json_encode|raw }};
+  const DATA_ATTRIBUTE_CAMEL = DATA_ATTRIBUTE.replace('data-', '').replace(/-./g, x=>x[1].toUpperCase());
+
+  function initPageContentRows(parent) {
+    const pageContentRows = parent.querySelectorAll(`[${DATA_ATTRIBUTE}]`);
+
+    for (const pageContentRow of pageContentRows) {
+      initPageContentRow(pageContentRow);
+    }
+  }
+
+  function initPageContentRow(pageContentRow) {
+    delete pageContentRow.dataset[DATA_ATTRIBUTE_CAMEL];
+
+    const layout = pageContentRow.querySelector('[name$="[layout]"]');
+    const column_1 = pageContentRow.querySelector('[name$="[column_1]"]');
+    const column_2 = pageContentRow.querySelector('[name$="[column_2]"]');
+    const column_3 = pageContentRow.querySelector('[name$="[column_3]"]');
+
+    function toggleColumns() {
+      const showColumn1 = !!layout.value;
+      const showColumn2 = layout.value && layout.value !== LAYOUT_ONE_COLUMN;
+      const showColumn3 = layout.value === LAYOUT_THREE_COLUMN;
+
+      column_1.parentNode.style.display = showColumn1 ? '' : 'none';
+      column_2.parentNode.style.display = showColumn2 ? '' : 'none';
+      column_3.parentNode.style.display = showColumn3 ? '' : 'none';
+    }
+
+    layout.addEventListener('change', toggleColumns);
+
+    toggleColumns();
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    initPageContentRows(document);
+
+    const observer = new MutationObserver(function(mutationList, observer) {
+      for (const mutation of mutationList) {
+        if ('childList' !== mutation.type) {
+          continue;
+        }
+
+        initPageContentRows(mutation.target);
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  });
+})();
+</script>

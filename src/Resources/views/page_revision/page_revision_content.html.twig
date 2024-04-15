@@ -1,0 +1,24 @@
+{% extends '@OHMediaBackend/base.html.twig' %}
+
+{% set page = page_revision.page %}
+
+{% block breadcrumbs %}
+{{ bootstrap_breadcrumbs(
+  bootstrap_breadcrumb(bootstrap_icon('files') ~ ' Pages', 'page_index'),
+  bootstrap_breadcrumb(page.name ~ ' - ' ~ page_revision, 'page_view', {
+    id: page.id,
+    revision: page_revision.id,
+  }),
+  bootstrap_breadcrumb('Content'),
+) }}
+{% endblock %}
+
+{% block main %}
+<div class="card">
+  <div class="card-body">
+    <h1 class="card-title h3">{{ form_title }}</h1>
+
+    {{ form(form) }}
+  </div>
+</div>
+{% endblock %}

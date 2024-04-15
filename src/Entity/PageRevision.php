@@ -1,0 +1,329 @@
+<?php
+
+namespace OHMedia\PageBundle\Entity;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use OHMedia\PageBundle\Repository\PageRevisionRepository;
+use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
+
+#[ORM\Entity(repositoryClass: PageRevisionRepository::class)]
+class PageRevision
+{
+    use BlameableTrait;
+
+    #[ORM\Id()]
+    #[ORM\GeneratedValue()]
+    #[ORM\Column(type: 'integer')]
+    private $id;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $published = false;
+
+    #[ORM\Column(length: 255)]
+    private ?string $template = null;
+
+    #[ORM\ManyToOne(inversedBy: 'pageRevisions')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    protected ?Page $page = null;
+
+    #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentCheckbox::class, cascade: ['persist', 'remove'])]
+    private Collection $pageContentCheckboxes;
+
+    #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentImage::class, cascade: ['persist', 'remove'])]
+    private Collection $pageContentImages;
+
+    #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentRow::class, cascade: ['persist', 'remove'])]
+    private Collection $pageContentRows;
+
+    #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentText::class, cascade: ['persist', 'remove'])]
+    private Collection $pageContentTexts;
+
+    public function __construct()
+    {
+        $this->pageContentCheckboxes = new ArrayCollection();
+        $this->pageContentImages = new ArrayCollection();
+        $this->pageContentRows = new ArrayCollection();
+        $this->pageContentTexts = new ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        $dateTime = $this->updated_at ?: new \DateTime();
+
+        return $dateTime->format('Y-m-d H:i:s');
+    }
+
+    public function __clone()
+    {
+        $this->id = null;
+
+        $this->published = false;
+
+        $pageContentCheckboxes = $this->pageContentCheckboxes;
+        $this->pageContentCheckboxes = new ArrayCollection();
+
+        foreach ($pageContentCheckboxes as $pageContentCheckbox) {
+            $clone = clone $pageContentCheckbox;
+
+            $this->addPageContentCheckbox($clone);
+        }
+
+        $pageContentImages = $this->pageContentImages;
+        $this->pageContentImages = new ArrayCollection();
+
+        foreach ($pageContentImages as $pageContentImage) {
+            $clone = clone $pageContentImage;
+
+            $this->addPageContentImage($clone);
+        }
+
+        $pageContentRows = $this->pageContentRows;
+        $this->pageContentRows = new ArrayCollection();
+
+        foreach ($pageContentRows as $pageContentRow) {
+            $clone = clone $pageContentRow;
+
+            $this->addPageContentRow($clone);
+        }
+
+        $pageContentTexts = $this->pageContentTexts;
+        $this->pageContentTexts = new ArrayCollection();
+
+        foreach ($pageContentTexts as $pageContentText) {
+            $clone = clone $pageContentText;
+
+            $this->addPageContentText($clone);
+        }
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->published;
+    }
+
+    public function setPublished(bool $published): self
+    {
+        $this->published = $published;
+
+        return $this;
+    }
+
+    public function getTemplate(): ?string
+    {
+        return $this->template;
+    }
+
+    public function setTemplate(string $template): self
+    {
+        $this->template = $template;
+
+        return $this;
+    }
+
+    public function getTemplateName()
+    {
+        $callable = $this->template.'::getTemplateName';
+
+        return is_callable($callable)
+            ? call_user_func($callable)
+            : $this->template;
+    }
+
+    public function getPage(): ?Page
+    {
+        return $this->page;
+    }
+
+    public function setPage(?Page $page): self
+    {
+        $this->page = $page;
+
+        return $this;
+    }
+
+    public function addPageContent(AbstractPageContent $pageContent)
+    {
+        if ($pageContent instanceof PageContentCheckbox) {
+            return $this->addPageContentCheckbox($pageContent);
+        } elseif ($pageContent instanceof PageContentImage) {
+            return $this->addPageContentImage($pageContent);
+        } elseif ($pageContent instanceof PageContentRow) {
+            return $this->addPageContentRow($pageContent);
+        } elseif ($pageContent instanceof PageContentText) {
+            return $this->addPageContentText($pageContent);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PageContentCheckbox>
+     */
+    public function getPageContentCheckboxes(): Collection
+    {
+        return $this->pageContentCheckboxes;
+    }
+
+    public function addPageContentCheckbox(PageContentCheckbox $pageContentCheckbox): self
+    {
+        if (!$this->pageContentCheckboxes->contains($pageContentCheckbox)) {
+            $this->pageContentCheckboxes->add($pageContentCheckbox);
+            $pageContentCheckbox->setPageRevision($this);
+        }
+
+        return $this;
+    }
+
+    public function removePageContentCheckbox(PageContentCheckbox $pageContentCheckbox): self
+    {
+        if ($this->pageContentCheckboxes->removeElement($pageContentCheckbox)) {
+            // set the owning side to null (unless already changed)
+            if ($pageContentCheckbox->getPage() === $this) {
+                $pageContentCheckbox->setPageRevision(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPageContentCheckbox(string $name): ?PageContentCheckbox
+    {
+        foreach ($this->pageContentCheckboxes as $pageContentCheckbox) {
+            if ($pageContentCheckbox->getName() === $name) {
+                return $pageContentCheckbox;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection<int, PageContentImage>
+     */
+    public function getPageContentImages(): Collection
+    {
+        return $this->pageContentImages;
+    }
+
+    public function addPageContentImage(PageContentImage $pageContentImage): self
+    {
+        if (!$this->pageContentImages->contains($pageContentImage)) {
+            $this->pageContentImages->add($pageContentImage);
+            $pageContentImage->setPageRevision($this);
+        }
+
+        return $this;
+    }
+
+    public function removePageContentImage(PageContentImage $pageContentImage): self
+    {
+        if ($this->pageContentImages->removeElement($pageContentImage)) {
+            // set the owning side to null (unless already changed)
+            if ($pageContentImage->getPage() === $this) {
+                $pageContentImage->setPageRevision(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPageContentImage(string $name): ?PageContentImage
+    {
+        foreach ($this->pageContentImages as $pageContentImage) {
+            if ($pageContentImage->getName() === $name) {
+                return $pageContentImage;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection<int, PageContentRow>
+     */
+    public function getPageContentRows(): Collection
+    {
+        return $this->pageContentRows;
+    }
+
+    public function addPageContentRow(PageContentRow $pageContentRow): self
+    {
+        if (!$this->pageContentRows->contains($pageContentRow)) {
+            $this->pageContentRows->add($pageContentRow);
+            $pageContentRow->setPageRevision($this);
+        }
+
+        return $this;
+    }
+
+    public function removePageContentRow(PageContentRow $pageContentRow): self
+    {
+        if ($this->pageContentRows->removeElement($pageContentRow)) {
+            // set the owning side to null (unless already changed)
+            if ($pageContentRow->getPage() === $this) {
+                $pageContentRow->setPageRevision(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPageContentRow(string $name): ?PageContentRow
+    {
+        foreach ($this->pageContentRows as $pageContentRow) {
+            if ($pageContentRow->getName() === $name) {
+                return $pageContentRow;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection<int, PageContentText>
+     */
+    public function getPageContentTexts(): Collection
+    {
+        return $this->pageContentTexts;
+    }
+
+    public function addPageContentText(PageContentText $pageContentText): self
+    {
+        if (!$this->pageContentTexts->contains($pageContentText)) {
+            $this->pageContentTexts->add($pageContentText);
+            $pageContentText->setPageRevision($this);
+        }
+
+        return $this;
+    }
+
+    public function removePageContentText(PageContentText $pageContentText): self
+    {
+        if ($this->pageContentTexts->removeElement($pageContentText)) {
+            // set the owning side to null (unless already changed)
+            if ($pageContentText->getPage() === $this) {
+                $pageContentText->setPageRevision(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPageContentText(string $name, string $type): ?PageContentText
+    {
+        foreach ($this->pageContentTexts as $pageContentText) {
+            if ($pageContentText->getName() === $name && $pageContentText->getType() === $type) {
+                return $pageContentText;
+            }
+        }
+
+        return null;
+    }
+}

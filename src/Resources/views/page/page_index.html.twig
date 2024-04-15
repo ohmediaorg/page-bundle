@@ -1,0 +1,125 @@
+{% extends '@OHMediaBackend/base.html.twig' %}
+
+{% block meta_title %}Pages{% endblock %}
+
+{% block breadcrumbs %}
+{{ bootstrap_breadcrumbs(
+  bootstrap_breadcrumb(bootstrap_icon('files') ~ ' Pages', 'page_index'),
+) }}
+{% endblock %}
+
+{% block actions %}
+<div class="btn-group btn-group-sm">
+{% if is_granted(attributes.page.create, new_page) %}
+  <a href="{{ path('page_create') }}" class="btn btn-primary">
+    {{ bootstrap_icon('plus') }} Add Page
+  </a>
+{% endif %}
+{% if is_granted(attributes.page.reorder, new_page) %}
+  <a href="{{ path('page_reorder') }}" class="btn btn-primary">
+    {{ bootstrap_icon('arrows-move') }} Reorder
+  </a>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block main %}
+<div class="card">
+  <div class="card-body">
+    <div class="card-title card-title-with-count">
+      <h1 class="card-title-heading">Pages</h1>
+      <div class="card-title-count">
+        <span class="badge text-bg-primary">
+          {{ pagination.count }}
+        </span>
+      </div>
+    </div>
+
+    <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Template</th>
+        <th>Shortcode</th>
+        <th>Last Updated</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for page in pagination.results %}
+        <tr>
+          <td>
+            {{ page.name }}
+            <br />
+            <small class="badge text-bg-light">/{{ page.path }}</small>
+          </td>
+          <td>
+            {% if page.isHomepage %}
+            <span class="badge text-bg-dark" title="Homepage">
+              <i class="bi bi-house-fill"></i>
+              <span class="visually-hidden">Homepage</span>
+            </span>
+            {% endif %}
+
+            {% if page.isPublished %}
+            <span class="badge text-bg-success">
+              Published
+            </span>
+            {% else %}
+            <span class="badge text-bg-warning">
+              Draft
+            </span>
+            {% endif %}
+
+            {% if page.isHidden %}
+            <span class="badge text-bg-dark" title="Hidden">
+              <i class="bi bi-eye-slash-fill"></i>
+              <span class="visually-hidden">Hidden</span>
+            </span>
+            {% endif %}
+
+            {% if page.isLocked %}
+            <span class="badge text-bg-dark" title="Locked">
+              <i class="bi bi-lock-fill"></i>
+              <span class="visually-hidden">Locked</span>
+            </span>
+            {% endif %}
+
+            {% if page.isNewWindow %}
+            <span class="badge text-bg-dark" title="New Window">
+              <i class="bi bi-box-arrow-up-right"></i>
+              <span class="visually-hidden">New Window</span>
+            </span>
+            {% endif %}
+          </td>
+          <td>{{ page.getTemplateName }}</td>
+          <td><code>{{ '{{ page_link('~page.id~') }}' }}</code></td>
+          <td>{{ page.updatedAt|datetime }}</td>
+          <td>
+            {% if is_granted(attributes.page.view, page) %}
+            <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-sm btn-primary" title="View">
+              <i class="bi bi-eye"></i>
+              <span class="visually-hidden">View</span>
+            </a>
+            {% endif %}
+            {% if is_granted(attributes.page.edit, page) %}
+            <a href="{{ path('page_edit', {id: page.id}) }}" class="btn btn-sm btn-primary" title="Edit">
+              <i class="bi-pencil"></i>
+              <span class="visually-hidden">Edit</span>
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+      <tr><td colspan="100%" class="text-center">No pages found.</td></tr>
+      {% endfor %}
+    </tbody>
+    </table>
+
+    {{ bootstrap_pagination(pagination) }}
+
+    <small>{{ bootstrap_pagination_info(pagination) }}</small>
+  </div>
+</div>
+{% endblock %}
