@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "description": "Symfony PageBundle",
     "keywords": ["Page"],
-    "license": "MIT",
+    "license": "proprietary",
     "authors": [
         {
             "name": "Justin Hoffman",
@@ -11,9 +11,6 @@
         }
     ],
     "require": {
-        "ohmediaorg/meta-bundle": "dev-main",
-        "ohmediaorg/security-bundle": "dev-main",
-        "ohmediaorg/wysiwyg-bundle": "dev-main",
         "php": "^7.2",
         "symfony/framework-bundle": "5.4.*"
     },
