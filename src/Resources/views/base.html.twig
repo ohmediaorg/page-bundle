@@ -1,15 +1,23 @@
 {% set block_body = block('body') %}
 
 <!DOCTYPE html>
-{% block html_tag_open %}
-<html>
-{% endblock %}
+{% block html_tag_open %}<html>{% endblock %}
   <head>
-    {% block head_open %}{% endblock %}
+    {{ script_head_open() }}
 
     {{ page_meta() }}
 
-    {% block head_close %}{% endblock %}
+    {{ importmap('frontend') }}
+
+    {% block head %}{% endblock %}
+
+    {{ script_head_close() }}
   </head>
-  <body>{{ block_body|raw }}</body>
+  <body>
+    {{ script_body_open() }}
+
+    {{ block_body|raw }}
+
+    {{ script_body_close() }}
+  </body>
 </html>
