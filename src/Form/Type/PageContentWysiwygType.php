@@ -15,10 +15,22 @@ class PageContentWysiwygType extends AbstractType
     {
         $content = isset($options['data']) ? $options['data'] : null;
 
+        if (!isset($options['wysiwyg_attr']['class'])) {
+            $options['wysiwyg_attr']['class'] = 'wysiwyg';
+        } else {
+            $classes = explode(' ', $options['wysiwyg_attr']['class']);
+
+            if (!in_array('wysiwyg', $classes)) {
+                $classes[] = 'wysiwyg';
+            }
+
+            $options['wysiwyg_attr']['class'] = implode(' ', $classes);
+        }
+
         $builder
             ->add('text', WysiwygType::class, [
                 'label' => false,
-                'required' => $options['required'],
+                'required' => false,
                 'data' => $content ? $content->getText() : null,
                 'attr' => $options['wysiwyg_attr'],
             ])

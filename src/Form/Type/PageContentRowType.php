@@ -18,6 +18,18 @@ class PageContentRowType extends AbstractType
     {
         $row = isset($options['data']) ? $options['data'] : null;
 
+        if (!isset($options['wysiwyg_attr']['class'])) {
+            $options['wysiwyg_attr']['class'] = 'wysiwyg';
+        } else {
+            $classes = explode(' ', $options['wysiwyg_attr']['class']);
+
+            if (!in_array('wysiwyg', $classes)) {
+                $classes[] = 'wysiwyg';
+            }
+
+            $options['wysiwyg_attr']['class'] = implode(' ', $classes);
+        }
+
         $builder
             ->add('layout', ChoiceType::class, [
                 'required' => false,
