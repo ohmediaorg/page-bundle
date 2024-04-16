@@ -18,18 +18,6 @@ class PageContentRowType extends AbstractType
     {
         $row = isset($options['data']) ? $options['data'] : null;
 
-        if (!isset($options['wysiwyg_attr']['class'])) {
-            $options['wysiwyg_attr']['class'] = 'wysiwyg';
-        } else {
-            $classes = explode(' ', $options['wysiwyg_attr']['class']);
-
-            if (!in_array('wysiwyg', $classes)) {
-                $classes[] = 'wysiwyg';
-            }
-
-            $options['wysiwyg_attr']['class'] = implode(' ', $classes);
-        }
-
         $builder
             ->add('layout', ChoiceType::class, [
                 'required' => false,
@@ -44,17 +32,14 @@ class PageContentRowType extends AbstractType
                 'data' => $row ? $row->getLayout() : null,
             ])
             ->add('column_1', WysiwygType::class, [
-                'required' => false,
                 'data' => $row ? $row->getColumn1() : null,
                 'attr' => $options['wysiwyg_attr'],
             ])
             ->add('column_2', WysiwygType::class, [
-                'required' => false,
                 'data' => $row ? $row->getColumn2() : null,
                 'attr' => $options['wysiwyg_attr'],
             ])
             ->add('column_3', WysiwygType::class, [
-                'required' => false,
                 'data' => $row ? $row->getColumn3() : null,
                 'attr' => $options['wysiwyg_attr'],
             ])
