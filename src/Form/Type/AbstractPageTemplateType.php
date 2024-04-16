@@ -98,6 +98,7 @@ abstract class AbstractPageTemplateType extends AbstractType
         $options['label'] = false;
 
         $options['row_attr'] = [
+            'class' => 'fieldset-nostyle',
             'data-ohmedia-page-content-type' => 'image',
         ];
 
