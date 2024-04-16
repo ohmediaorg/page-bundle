@@ -52,7 +52,7 @@ class PageRevision
     {
         $dateTime = $this->updated_at ?: new \DateTime();
 
-        return $dateTime->format('Y-m-d H:i:s');
+        return $dateTime->format('M j, Y @ g:ia');
     }
 
     public function __clone()
