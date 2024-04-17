@@ -7,7 +7,7 @@
 
     {{ page_meta() }}
 
-    {{ importmap('frontend') }}
+    {{ encore_entry_link_tags('frontend', null, 'frontend') }}
 
     {% block head %}{% endblock %}
 
@@ -17,6 +17,8 @@
     {{ script_body_open() }}
 
     {{ block_body|raw }}
+
+    {{ encore_entry_script_tags('frontend', null, 'frontend') }}
 
     {{ script_body_close() }}
   </body>
