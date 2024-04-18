@@ -5,11 +5,11 @@
   <head>
     {{ script_head_open() }}
 
-    {{ page_meta() }}
+    {% block meta %}{{ page_meta() }}{% endblock %}
 
     {{ encore_entry_link_tags('frontend', null, 'frontend') }}
 
-    {% block head %}{% endblock %}
+    {% block head_scripts %}{% endblock %}
 
     {{ script_head_close() }}
   </head>
@@ -19,6 +19,8 @@
     {{ block_body|raw }}
 
     {{ encore_entry_script_tags('frontend', null, 'frontend') }}
+
+    {% block body_scripts %}{% endblock %}
 
     {{ script_body_close() }}
   </body>
