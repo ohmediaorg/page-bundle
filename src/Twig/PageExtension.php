@@ -2,6 +2,8 @@
 
 namespace OHMedia\PageBundle\Twig;
 
+use OHMedia\BootstrapBundle\Component\Breadcrumb;
+use OHMedia\MetaBundle\Entity\Meta;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
 use OHMedia\PageBundle\Service\PageRenderer;
@@ -33,18 +35,35 @@ class PageExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('page_meta', [$this, 'pageMeta'], [
+            new TwigFunction('page_breadcrumbs', [$this, 'breadcrumbs'], [
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
-            new TwigFunction('page_nav', [$this, 'pageNav'], [
+            new TwigFunction('page_meta', [$this, 'meta'], [
+                'needs_environment' => true,
+                'is_safe' => ['html'],
+            ]),
+            new TwigFunction('page_nav', [$this, 'nav'], [
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
         ];
     }
 
-    public function pageMeta(Environment $twig)
+    public function breadcrumbs(Environment $twig)
+    {
+        $page = $this->pageRenderer->getCurrentPage();
+
+        if (!$page) {
+            return;
+        }
+
+        return $twig->render('@OHMediaPage/breadcrumbs.html.twig', [
+            'breadcrumbs' => $this->getBreadcrumbs($page),
+        ]);
+    }
+
+    public function meta(Environment $twig)
     {
         $page = $this->pageRenderer->getCurrentPage();
 
@@ -54,13 +73,35 @@ class PageExtension extends AbstractExtension
 
         $meta = $this->pageRenderer->getMetaEntity();
 
+        $breadcrumbs = $this->getBreadcrumbs($page);
+
+        $breadcrumbSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [],
+        ];
+
+        foreach ($breadcrumbs as $i => $breadcrumb) {
+            $breadcrumbSchema['itemListElement'][] = [
+                '@type' => 'ListItem',
+                'position' => $i + 1,
+                'name' => $breadcrumb->getText(),
+                'item' => $this->urlGenerator->generate(
+                    $breadcrumb->getRoute(),
+                    $breadcrumb->getRouteParams(),
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ),
+            ];
+        }
+
         return $twig->render('@OHMediaPage/meta.html.twig', [
             'page' => $page,
             'meta' => $meta,
+            'breadcrumb_schema' => $breadcrumbSchema,
         ]);
     }
 
-    public function pageNav(Environment $twig, bool $showHome = true, int $maxNestingLevel = 2)
+    public function nav(Environment $twig, bool $showHome = true, int $maxNestingLevel = 2)
     {
         if ($maxNestingLevel < 0) {
             $maxNestingLevel = 0;
@@ -87,5 +128,41 @@ class PageExtension extends AbstractExtension
             'current_path' => $currentPath,
             'max_nesting_level' => $maxNestingLevel,
         ]);
+    }
+
+    private function getBreadcrumbs(Page $page)
+    {
+        $meta = $this->pageRenderer->getMetaEntity();
+
+        $breadcrumbs = [];
+
+        if (!$page->isHomepage()) {
+            $breadcrumbs[] = $this->getBreadcrumb($page, $meta);
+        }
+
+        $curr = $page;
+
+        while ($curr = $curr->getParent()) {
+            $meta = $curr->getMeta();
+
+            array_unshift($breadcrumbs, $this->getBreadcrumb($curr, $meta));
+        }
+
+        array_unshift($breadcrumbs, new Breadcrumb(
+            'Home',
+            'oh_media_page_frontend',
+            ['path' => '']
+        ));
+
+        return $breadcrumbs;
+    }
+
+    private function getBreadcrumb(Page $page, Meta $meta)
+    {
+        return new Breadcrumb(
+            $meta->getTitle() ?? $page->getName(),
+            'oh_media_page_frontend',
+            ['path' => $page->isHomepage() ? '' : $page->getPath()]
+        );
     }
 }
