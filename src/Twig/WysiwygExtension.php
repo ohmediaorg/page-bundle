@@ -9,15 +9,10 @@ use Twig\TwigFunction;
 
 class WysiwygExtension extends AbstractWysiwygExtension
 {
-    private $pageRepository;
-    private $urlGenerator;
-
     public function __construct(
-        PageRepository $pageRepository,
-        UrlGeneratorInterface $urlGenerator
+        private PageRepository $pageRepository,
+        private UrlGeneratorInterface $urlGenerator
     ) {
-        $this->pageRepository = $pageRepository;
-        $this->urlGenerator = $urlGenerator;
     }
 
     public function getFunctions(): array

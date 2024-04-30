@@ -8,11 +8,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Page301Cleaner implements CleanerInterface
 {
-    private $page301Repository;
-
-    public function __construct(Page301Repository $page301Repository)
+    public function __construct(private Page301Repository $page301Repository)
     {
-        $this->page301Repository = $page301Repository;
     }
 
     public function __invoke(OutputInterface $output): void

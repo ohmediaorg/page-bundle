@@ -15,21 +15,12 @@ use Twig\TwigFunction;
 
 class PageExtension extends AbstractExtension
 {
-    private $pageRenderer;
-    private $pageRepository;
-    private $requestStack;
-    private $urlGenerator;
-
     public function __construct(
-        PageRenderer $pageRenderer,
-        PageRepository $pageRepository,
-        RequestStack $requestStack,
-        UrlGeneratorInterface $urlGenerator
+        private PageRenderer $pageRenderer,
+        private PageRepository $pageRepository,
+        private RequestStack $requestStack,
+        private UrlGeneratorInterface $urlGenerator
     ) {
-        $this->pageRenderer = $pageRenderer;
-        $this->pageRepository = $pageRepository;
-        $this->requestStack = $requestStack;
-        $this->urlGenerator = $urlGenerator;
     }
 
     public function getFunctions(): array

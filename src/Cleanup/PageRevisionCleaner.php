@@ -10,11 +10,8 @@ class PageRevisionCleaner implements CleanerInterface
 {
     public const KEEP_PUBLISHED = 5;
 
-    private $pageRevisionRepository;
-
-    public function __construct(PageRevisionRepository $pageRevisionRepository)
+    public function __construct(private PageRevisionRepository $pageRevisionRepository)
     {
-        $this->pageRevisionRepository = $pageRevisionRepository;
     }
 
     public function __invoke(OutputInterface $output): void

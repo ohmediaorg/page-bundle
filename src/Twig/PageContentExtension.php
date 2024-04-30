@@ -18,27 +18,14 @@ use Twig\TwigFunction;
 
 class PageContentExtension extends AbstractExtension
 {
-    private $contentCheckboxRepo;
-    private $contentImageRepo;
-    private $contentRowRepo;
-    private $contentTextRepo;
-    private $imageManager;
-    private $pageRenderer;
-
     public function __construct(
-        ImageManager $imageManager,
-        PageContentCheckboxRepository $contentCheckboxRepo,
-        PageContentImageRepository $contentImageRepo,
-        PageContentRowRepository $contentRowRepo,
-        PageContentTextRepository $contentTextRepo,
-        PageRenderer $pageRenderer
+        private ImageManager $imageManager,
+        private PageContentCheckboxRepository $contentCheckboxRepo,
+        private PageContentImageRepository $contentImageRepo,
+        private PageContentRowRepository $contentRowRepo,
+        private PageContentTextRepository $contentTextRepo,
+        private PageRenderer $pageRenderer
     ) {
-        $this->contentCheckboxRepo = $contentCheckboxRepo;
-        $this->contentImageRepo = $contentImageRepo;
-        $this->contentRowRepo = $contentRowRepo;
-        $this->contentTextRepo = $contentTextRepo;
-        $this->imageManager = $imageManager;
-        $this->pageRenderer = $pageRenderer;
     }
 
     public function getFunctions(): array

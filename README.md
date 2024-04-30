@@ -310,15 +310,10 @@ use Twig\TwigFunction;
 
 class BlogWysiwygExtension extends AbstractWysiwygExtension
 {
-    private $blogRepository;
-    private $pageRenderer;
-
     public function __construct(
-        BlogRepoository $blogRepository,
-        PageRenderer $pageRenderer
+        private BlogRepoository $blogRepository,
+        private PageRenderer $pageRenderer
     ) {
-        $this->blogRepository = $blogRepository;
-        $this->pageRenderer = $pageRenderer;
     }
 
     public function getFunctions(): array

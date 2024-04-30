@@ -8,18 +8,15 @@ use OHMedia\PageBundle\Repository\PageRepository;
 
 class PageQueryBuilder
 {
-    private ?string $alias;
-    private PageRepository $pageRepository;
-    private ?queryBuilder $queryBuilder;
+    private ?string $alias = null;
+    private ?QueryBuilder $queryBuilder = null;
+    private ?Page $exclude = null;
+    private ?bool $homepage = null;
+    private ?bool $locked = null;
+    private ?bool $published = null;
 
-    private ?Page $exclude;
-    private ?bool $homepage;
-    private ?bool $locked;
-    private ?bool $published;
-
-    public function __construct(PageRepository $pageRepository)
+    public function __construct(private PageRepository $pageRepository)
     {
-        $this->pageRepository = $pageRepository;
     }
 
     public function createQueryBuilder(string $alias = 'p'): self

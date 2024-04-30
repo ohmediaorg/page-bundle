@@ -27,9 +27,6 @@ services:
     OHMedia\PageBundle\Service\PageRenderer:
         autowire: true
 
-    oh_media_page.page_renderer:
-        alias: OHMedia\PageBundle\Service\PageRenderer
-
     OHMedia\PageBundle\Service\PageQueryBuilder:
         autowire: true
 

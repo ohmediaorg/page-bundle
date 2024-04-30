@@ -8,11 +8,8 @@ use OHMedia\PageBundle\Service\PageManager;
 
 class PagePostUpdate
 {
-    private $pageManager;
-
-    public function __construct(PageManager $pageManager)
+    public function __construct(private PageManager $pageManager)
     {
-        $this->pageManager = $pageManager;
     }
 
     public function postUpdate(Page $page, PostUpdateEventArgs $event)

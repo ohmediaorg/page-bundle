@@ -13,11 +13,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PageSEOType extends AbstractType
 {
-    private $pageQueryBuilder;
-
-    public function __construct(PageQueryBuilder $pageQueryBuilder)
+    public function __construct(private PageQueryBuilder $pageQueryBuilder)
     {
-        $this->pageQueryBuilder = $pageQueryBuilder;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

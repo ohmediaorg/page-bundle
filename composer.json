@@ -16,5 +16,10 @@
     },
     "autoload": {
         "psr-4": { "OHMedia\\PageBundle\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OHMedia\\PageBundle\\Tests\\": "tests/"
+        }
     }
 }

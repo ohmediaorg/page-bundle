@@ -18,13 +18,11 @@ abstract class AbstractPageTemplateType extends AbstractType
 
     abstract protected function buildFormContent();
 
-    private $builder;
-    private $em;
-    private $pageRevision;
+    private ?FormBuilderInterface $builder = null;
+    private ?PageRevision $pageRevision = null;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(private EntityManagerInterface $em)
     {
-        $this->em = $em;
     }
 
     final public function buildForm(FormBuilderInterface $builder, array $options): void

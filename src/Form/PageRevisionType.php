@@ -11,11 +11,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PageRevisionType extends AbstractType
 {
-    private $pageManager;
-
-    public function __construct(PageManager $pageManager)
+    public function __construct(private PageManager $pageManager)
     {
-        $this->pageManager = $pageManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void

@@ -10,20 +10,13 @@ use OHMedia\PageBundle\Repository\PageRepository;
 
 class PageManager
 {
-    private $pageRawQuery;
-    private $pageRepository;
-    private $page301Repository;
-    private $pageTemplateTypes;
+    private array $pageTemplateTypes = [];
 
     public function __construct(
-        PageRawQuery $pageRawQuery,
-        PageRepository $pageRepository,
-        Page301Repository $page301Repository
+        private PageRawQuery $pageRawQuery,
+        private PageRepository $pageRepository,
+        private Page301Repository $page301Repository
     ) {
-        $this->pageRawQuery = $pageRawQuery;
-        $this->pageRepository = $pageRepository;
-        $this->page301Repository = $page301Repository;
-        $this->pageTemplateTypes = [];
     }
 
     public function addPageTemplateType(AbstractPageTemplateType $pageTemplateType): self

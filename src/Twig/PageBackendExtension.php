@@ -15,12 +15,10 @@ use Twig\TwigFunction;
 
 class PageBackendExtension extends AbstractExtension
 {
-    private $formFactory;
-    private $rendered = false;
+    private bool $rendered = false;
 
-    public function __construct(FormFactoryInterface $formFactory)
+    public function __construct(private FormFactoryInterface $formFactory)
     {
-        $this->formFactory = $formFactory;
     }
 
     public function getFunctions(): array

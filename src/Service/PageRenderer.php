@@ -12,18 +12,16 @@ use Twig\Environment;
 
 class PageRenderer
 {
-    private $currentPage;
-    private $currentPageRevision;
-    private $dynamicPart;
-    private $metaEntity;
-    private $pageRepository;
-    private $preview = false;
-    private $twig;
+    private ?Page $currentPage = null;
+    private ?PageRevision $currentPageRevision = null;
+    private ?string $dynamicPart = null;
+    private ?Meta $metaEntity = null;
+    private bool $preview = false;
 
-    public function __construct(Environment $twig, PageRepository $pageRepository)
+    public function __construct(
+        private Environment $twig,
+        private PageRepository $pageRepository)
     {
-        $this->pageRepository = $pageRepository;
-        $this->twig = $twig;
     }
 
     public function getCurrentPage(): ?Page
