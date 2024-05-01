@@ -50,11 +50,11 @@ class Page
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ['unsigned' => true])]
     private ?int $order_global = null;
 
-    #[ORM\ManyToOne(targetEntity: static::class, inversedBy: 'pages', cascade: ['remove'])]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'pages', cascade: ['remove'])]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?self $parent = null;
 
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: static::class)]
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     #[ORM\OrderBy(['order_local' => 'ASC'])]
     private Collection $pages;
 
@@ -85,7 +85,7 @@ class Page
     #[ORM\Column(options: ['default' => false])]
     private bool $noindex = false;
 
-    #[ORM\ManyToOne(targetEntity: static::class)]
+    #[ORM\ManyToOne(targetEntity: self::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?self $canonical = null;
 
@@ -102,7 +102,7 @@ class Page
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $redirect_type = null;
 
-    #[ORM\ManyToOne(targetEntity: static::class)]
+    #[ORM\ManyToOne(targetEntity: self::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?self $redirect_internal = null;
 
