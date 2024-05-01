@@ -11,10 +11,10 @@ class Page301
 {
     use BlameableTrait;
 
-    #[ORM\Id()]
-    #[ORM\GeneratedValue()]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $path = null;
@@ -33,7 +33,7 @@ class Page301
         return $this->path;
     }
 
-    public function setPath(string $path): self
+    public function setPath(string $path): static
     {
         $this->path = $path;
 
@@ -45,7 +45,7 @@ class Page301
         return $this->page;
     }
 
-    public function setPage(?Page $page): self
+    public function setPage(?Page $page): static
     {
         $this->page = $page;
 

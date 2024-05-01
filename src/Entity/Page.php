@@ -32,10 +32,10 @@ class Page
     public const REDIRECT_TYPE_INTERNAL = 'internal';
     public const REDIRECT_TYPE_EXTERNAL = 'external';
 
-    #[ORM\Id()]
-    #[ORM\GeneratedValue()]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -50,11 +50,11 @@ class Page
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ['unsigned' => true])]
     private ?int $order_global = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'pages', cascade: ['remove'])]
+    #[ORM\ManyToOne(targetEntity: static::class, inversedBy: 'pages', cascade: ['remove'])]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?self $parent = null;
 
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: static::class)]
     #[ORM\OrderBy(['order_local' => 'ASC'])]
     private Collection $pages;
 
@@ -85,7 +85,7 @@ class Page
     #[ORM\Column(options: ['default' => false])]
     private bool $noindex = false;
 
-    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\ManyToOne(targetEntity: static::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?self $canonical = null;
 
@@ -102,7 +102,7 @@ class Page
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $redirect_type = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\ManyToOne(targetEntity: static::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?self $redirect_internal = null;
 
@@ -163,7 +163,7 @@ class Page
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -175,7 +175,7 @@ class Page
         return $this->slug;
     }
 
-    public function setSlug(string $slug): self
+    public function setSlug(string $slug): static
     {
         $this->slug = $slug;
 
@@ -189,7 +189,7 @@ class Page
         return $this->order_local;
     }
 
-    public function setOrderLocal(?int $order_local): self
+    public function setOrderLocal(?int $order_local): static
     {
         $this->order_local = $order_local;
 
@@ -201,7 +201,7 @@ class Page
         return $this->order_global;
     }
 
-    public function setOrderGlobal(?int $order_global): self
+    public function setOrderGlobal(?int $order_global): static
     {
         $this->order_global = $order_global;
 
@@ -213,7 +213,7 @@ class Page
         return $this->parent;
     }
 
-    public function setParent(?self $parent): self
+    public function setParent(?self $parent): static
     {
         $this->parent = $parent;
 
@@ -230,7 +230,7 @@ class Page
         return $this->pages;
     }
 
-    public function addPage(self $page): self
+    public function addPage(self $page): static
     {
         if (!$this->pages->contains($page)) {
             $this->pages->add($page);
@@ -240,7 +240,7 @@ class Page
         return $this;
     }
 
-    public function removePage(self $page): self
+    public function removePage(self $page): static
     {
         if ($this->pages->removeElement($page)) {
             // set the owning side to null (unless already changed)
@@ -257,7 +257,7 @@ class Page
         return $this->new_window;
     }
 
-    public function setNewWindow(bool $new_window): self
+    public function setNewWindow(bool $new_window): static
     {
         $this->new_window = $new_window;
 
@@ -274,7 +274,7 @@ class Page
         return $this->hidden;
     }
 
-    public function setHidden(bool $hidden): self
+    public function setHidden(bool $hidden): static
     {
         $this->hidden = $hidden;
 
@@ -291,7 +291,7 @@ class Page
         return $this->locked;
     }
 
-    public function setLocked(bool $locked): self
+    public function setLocked(bool $locked): static
     {
         $this->locked = $locked;
 
@@ -307,7 +307,7 @@ class Page
         return $this->published;
     }
 
-    public function setPublished(?\DateTimeImmutable $published): self
+    public function setPublished(?\DateTimeImmutable $published): static
     {
         $this->published = $published;
 
@@ -332,7 +332,7 @@ class Page
         return $this->nesting_level;
     }
 
-    public function setNestingLevel(int $nesting_level): self
+    public function setNestingLevel(int $nesting_level): static
     {
         $this->nesting_level = $nesting_level;
 
@@ -344,7 +344,7 @@ class Page
         return $this->path;
     }
 
-    public function setPath(string $path): self
+    public function setPath(string $path): static
     {
         $this->path = $path;
 
@@ -358,7 +358,7 @@ class Page
         return $parentId.':'.$this->slug;
     }
 
-    public function setParentSlug(string $parent_slug = null): self
+    public function setParentSlug(string $parent_slug = null): static
     {
         $this->parent_slug = $this->getParentSlug();
 
@@ -382,7 +382,7 @@ class Page
         return $this->homepage;
     }
 
-    public function setHomepage(bool $homepage): self
+    public function setHomepage(bool $homepage): static
     {
         $this->homepage = $homepage;
 
@@ -419,7 +419,7 @@ class Page
         return $this->noindex;
     }
 
-    public function setNoindex(bool $noindex): self
+    public function setNoindex(bool $noindex): static
     {
         $this->noindex = $noindex;
 
@@ -435,7 +435,7 @@ class Page
         return $this->canonical;
     }
 
-    public function setCanonical(?self $canonical): self
+    public function setCanonical(?self $canonical): static
     {
         $this->canonical = $canonical;
 
@@ -450,7 +450,7 @@ class Page
         return $this->page301s;
     }
 
-    public function addPage301(Page301 $page301): self
+    public function addPage301(Page301 $page301): static
     {
         if (!$this->page301s->contains($page301)) {
             $this->page301s->add($page301);
@@ -460,7 +460,7 @@ class Page
         return $this;
     }
 
-    public function removePage301(Page301 $page301): self
+    public function removePage301(Page301 $page301): static
     {
         if ($this->page301s->removeElement($page301)) {
             // set the owning side to null (unless already changed)
@@ -518,7 +518,7 @@ class Page
         return $currentPageRevision ? $currentPageRevision->getTemplateName() : '';
     }
 
-    public function addPageRevision(PageRevision $pageRevision): self
+    public function addPageRevision(PageRevision $pageRevision): static
     {
         if (!$this->pageRevisions->contains($pageRevision)) {
             $this->pageRevisions->add($pageRevision);
@@ -528,7 +528,7 @@ class Page
         return $this;
     }
 
-    public function removePageRevision(PageRevision $pageRevision): self
+    public function removePageRevision(PageRevision $pageRevision): static
     {
         if ($this->pageRevisions->removeElement($pageRevision)) {
             // set the owning side to null (unless already changed)
@@ -545,7 +545,7 @@ class Page
         return $this->meta;
     }
 
-    public function setMeta(?Meta $meta): self
+    public function setMeta(?Meta $meta): static
     {
         $this->meta = $meta;
 
@@ -557,7 +557,7 @@ class Page
         return $this->redirect_type;
     }
 
-    public function setRedirectType(?string $redirectType): self
+    public function setRedirectType(?string $redirectType): static
     {
         $this->redirect_type = $redirectType;
 
@@ -579,7 +579,7 @@ class Page
         return $this->redirect_internal;
     }
 
-    public function setRedirectInternal(?self $redirectInternal): self
+    public function setRedirectInternal(?self $redirectInternal): static
     {
         $this->redirect_internal = $redirectInternal;
 
@@ -591,7 +591,7 @@ class Page
         return $this->redirect_external;
     }
 
-    public function setRedirectExternal(?string $redirectExternal): self
+    public function setRedirectExternal(?string $redirectExternal): static
     {
         $this->redirect_external = $redirectExternal;
 

@@ -10,10 +10,10 @@ abstract class AbstractPageContent
 {
     use BlameableTrait;
 
-    #[ORM\Id()]
-    #[ORM\GeneratedValue()]
-    #[ORM\Column(type: 'integer')]
-    protected $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    protected ?int $id = null;
 
     #[ORM\Column(length: 255)]
     protected ?string $name = null;
@@ -33,7 +33,7 @@ abstract class AbstractPageContent
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -45,7 +45,7 @@ abstract class AbstractPageContent
         return $this->pageRevision;
     }
 
-    public function setPageRevision(?PageRevision $pageRevision): self
+    public function setPageRevision(?PageRevision $pageRevision): static
     {
         $this->pageRevision = $pageRevision;
 

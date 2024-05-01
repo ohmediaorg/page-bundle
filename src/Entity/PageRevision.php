@@ -13,10 +13,10 @@ class PageRevision
 {
     use BlameableTrait;
 
-    #[ORM\Id()]
-    #[ORM\GeneratedValue()]
-    #[ORM\Column(type: 'integer')]
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
     #[ORM\Column(options: ['default' => false])]
     private bool $published = false;
@@ -108,7 +108,7 @@ class PageRevision
         return $this->published;
     }
 
-    public function setPublished(bool $published): self
+    public function setPublished(bool $published): static
     {
         $this->published = $published;
 
@@ -120,7 +120,7 @@ class PageRevision
         return $this->template;
     }
 
-    public function setTemplate(string $template): self
+    public function setTemplate(string $template): static
     {
         $this->template = $template;
 
@@ -141,7 +141,7 @@ class PageRevision
         return $this->page;
     }
 
-    public function setPage(?Page $page): self
+    public function setPage(?Page $page): static
     {
         $this->page = $page;
 
@@ -171,7 +171,7 @@ class PageRevision
         return $this->pageContentCheckboxes;
     }
 
-    public function addPageContentCheckbox(PageContentCheckbox $pageContentCheckbox): self
+    public function addPageContentCheckbox(PageContentCheckbox $pageContentCheckbox): static
     {
         if (!$this->pageContentCheckboxes->contains($pageContentCheckbox)) {
             $this->pageContentCheckboxes->add($pageContentCheckbox);
@@ -181,7 +181,7 @@ class PageRevision
         return $this;
     }
 
-    public function removePageContentCheckbox(PageContentCheckbox $pageContentCheckbox): self
+    public function removePageContentCheckbox(PageContentCheckbox $pageContentCheckbox): static
     {
         if ($this->pageContentCheckboxes->removeElement($pageContentCheckbox)) {
             // set the owning side to null (unless already changed)
@@ -212,7 +212,7 @@ class PageRevision
         return $this->pageContentImages;
     }
 
-    public function addPageContentImage(PageContentImage $pageContentImage): self
+    public function addPageContentImage(PageContentImage $pageContentImage): static
     {
         if (!$this->pageContentImages->contains($pageContentImage)) {
             $this->pageContentImages->add($pageContentImage);
@@ -222,7 +222,7 @@ class PageRevision
         return $this;
     }
 
-    public function removePageContentImage(PageContentImage $pageContentImage): self
+    public function removePageContentImage(PageContentImage $pageContentImage): static
     {
         if ($this->pageContentImages->removeElement($pageContentImage)) {
             // set the owning side to null (unless already changed)
@@ -253,7 +253,7 @@ class PageRevision
         return $this->pageContentRows;
     }
 
-    public function addPageContentRow(PageContentRow $pageContentRow): self
+    public function addPageContentRow(PageContentRow $pageContentRow): static
     {
         if (!$this->pageContentRows->contains($pageContentRow)) {
             $this->pageContentRows->add($pageContentRow);
@@ -263,7 +263,7 @@ class PageRevision
         return $this;
     }
 
-    public function removePageContentRow(PageContentRow $pageContentRow): self
+    public function removePageContentRow(PageContentRow $pageContentRow): static
     {
         if ($this->pageContentRows->removeElement($pageContentRow)) {
             // set the owning side to null (unless already changed)
@@ -294,7 +294,7 @@ class PageRevision
         return $this->pageContentTexts;
     }
 
-    public function addPageContentText(PageContentText $pageContentText): self
+    public function addPageContentText(PageContentText $pageContentText): static
     {
         if (!$this->pageContentTexts->contains($pageContentText)) {
             $this->pageContentTexts->add($pageContentText);
@@ -304,7 +304,7 @@ class PageRevision
         return $this;
     }
 
-    public function removePageContentText(PageContentText $pageContentText): self
+    public function removePageContentText(PageContentText $pageContentText): static
     {
         if ($this->pageContentTexts->removeElement($pageContentText)) {
             // set the owning side to null (unless already changed)
