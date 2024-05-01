@@ -69,18 +69,12 @@
 {% macro page_revision_icon(page_revision, current_page_revision) %}
   {% if page_revision.isPublished %}
       {% if current_page_revision == page_revision %}
-      <span class="badge text-bg-primary">
-        Live
-      </span>
+      {{ bootstrap_badge_primary('Live') }}
       {% else %}
-      <span class="badge text-bg-success">
-        Published
-      </span>
+      {{ bootstrap_badge_success('Published') }}
       {% endif %}
   {% else %}
-    <span class="badge text-bg-warning">
-      Draft
-    </span>
+    {{ bootstrap_badge_warning('Draft') }}
   {% endif %}
 {% endmacro %}
 
