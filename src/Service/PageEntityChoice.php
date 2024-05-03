@@ -3,6 +3,7 @@
 namespace OHMedia\PageBundle\Service;
 
 use OHMedia\PageBundle\Entity\Page;
+use OHMedia\PageBundle\Entity\PageRevision;
 use OHMedia\SecurityBundle\Service\EntityChoiceInterface;
 
 class PageEntityChoice implements EntityChoiceInterface
@@ -14,6 +15,6 @@ class PageEntityChoice implements EntityChoiceInterface
 
     public function getEntities(): array
     {
-        return [Page::class];
+        return [Page::class, PageRevision::class];
     }
 }
