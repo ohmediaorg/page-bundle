@@ -31,6 +31,7 @@ class PageRevisionType extends AbstractType
 
         $builder->add('template', ChoiceType::class, [
             'choices' => $templates,
+            'expanded' => true,
         ]);
     }
 
