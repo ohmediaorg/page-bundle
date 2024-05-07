@@ -24,7 +24,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
 
     public function pageLink(int $id = null)
     {
-        $page = $this->pageRepository->find($id);
+        $page = $id ? $this->pageRepository->find($id) : null;
 
         return $this->urlGenerator->generate('oh_media_page_frontend', [
             'path' => $page ? $page->getPath() : '',
