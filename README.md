@@ -1,6 +1,26 @@
 # Overview
 
-TODO: installation / setup
+# Installation
+
+Update `composer.json` by adding this to the `repositories` array:
+
+```json
+{
+    "type": "vcs",
+    "url": "https://github.com/ohmediaorg/page-bundle"
+}
+```
+
+Then run `composer require ohmediaorg/page-bundle:dev-main`.
+
+Import the routes in `config/routes.yaml`:
+
+```yaml
+oh_media_page:
+    resource: '@OHMediaPageBundle/config/routes.yaml'
+```
+
+Run `php bin/console make:migration` then run the subsequent migration.
 
 ## Page Templates
 
@@ -16,23 +36,27 @@ Your `templates/base.html.twig` file would look like this:
 <html lang="en" class="no-js">
 {% endblock %}
 
-{# specify content to go after the opening <head> tag #}
-{% block head_open %}
+{# you can optionally customize the meta content, which defaults to page_meta() #}
+{% block meta %}
 {% endblock %}
 
-{# specify content to go before the closing </head> tag #}
-{% block head_close %}
+{# specify content to go after the frontend webpack style tag #}
+{% block head_scripts %}
 {% endblock %}
 
-{# specify content to go within the <body></body> tags #}
+{# specify the main content of the template #}
 {% block body %}
+{% endblock %}
+
+{# specify content to go after the frontend webpack JS tag #}
+{% block body_scripts %}
 {% endblock %}
 ```
 
 Our base template processes the body content first in order to ensure the
 page meta override functionality will work (see [Dynamic Content](#dynamic-content)).
 
-**Note:** the `head_open` and  `head_close` blocks should not contain any of the
+**Note:** the `head_scripts` block should not contain any of the
 tags found in `@OHMediaPage/meta.html.twig` and `@OHMediaMeta/meta.html.twig`.
 
 ## Managing Page Content
@@ -126,9 +150,9 @@ You can also check that the content exists before outputting it:
 ### Image
 
 The function `addPageContentImage($name, $options)` is basically the same as
-`$builder->add($name, ImageEntityType::class, $options)` (from the Meta bundle).
+`$builder->add($name, FileEntityType::class, $options)` (from the File bundle).
 You can pass in the custom option `image_attr` which is the same as `attr` on
-`ImageEntityType`.
+`FileEntityType`.
 
 Inside your template, you can use this content area like so:
 
@@ -149,7 +173,11 @@ You can also check that the content exists before outputting it:
 ```
 
 You should always use `content_image_tag` for displaying an `<img>` element, but
-if you only need the file path, you can use `content_image_path`.
+if you only need the file path, you can use `content_image_path`:
+
+```twig
+<div style="background-image: url({{ content_image_path(name) }})"></div>
+```
 
 ### Row
 
@@ -159,8 +187,7 @@ select a Layout (`one_column`, `two_column`, `three_column`, `sidebar_left`,
 `sidebar_right`), and the `WysiwygType` fields are dynamically shown accordingly.
 
 You can pass in the custom option `wysiwyg_attr` which is the same as `attr` on
-the `WysiwygType` fields. (**Hint:** you might want to pass in a class so JS can
-initialize a WYSIWYG editor.)
+the `WysiwygType` fields.
 
 Inside your template, you can use this content area like so:
 
@@ -265,8 +292,7 @@ You can also check that the content exists before outputting it:
 The function `addPageContentWysiwyg($name, $options)` is basically the same as
 `$builder->add($name, WysiwygType::class, $options)` (from the Wysiwyg bundle).
 You can pass in the custom option `wysiwyg_attr` which is the same as `attr` on
-`WysiwygType`. (**Hint:** you might want to pass in a class so JS can initialize
-a WYSIWYG editor.)
+`WysiwygType`.
 
 Inside your template, you can use this content area like so:
 
@@ -370,55 +396,4 @@ content, you can use the PageRenderer to get that page:
 $page = $this->pageRenderer->getCurrentPage();
 
 $path = $page->getPath();
-```
-
-## Routing
-
-Add the following to `config/routes.yaml`:
-
-```yaml
-oh_media_page_frontend:
-    resource: '@OHMediaPageBundle/Controller/PageFrontendController.php'
-    type: attribute
-```
-
-## Controllers
-
-More routing is provided by extending controllers in
-`OHMedia\PageBundle\Controller`, namely `AbstractPageBackendController` and
-`AbstractPageRevisionBackendController`.
-
-They each have `abstract` functions that will need to be implemented.
-
-### Page Reordering
-
-When implementing `abstract function reorderRender`, the UI will need to be
-setup to `POST` to `page_reorder_post`.
-
-If you pass the PHP variable to the template like so:
-
-```php
-'csrf_token_name' => $csrfTokenName,
-```
-
-the data can include the CSRF token like so:
-
-```php
-const csrfToken = {{ csrf_token(csrf_token_name)|json_encode|raw }};
-
-// ...
-
-const data = new FormData();
-
-data.set({{ csrf_token_name|json_encode|raw }}, csrfToken);
-```
-
-The rest of the data can be set in loops like this:
-
-```js
-data.set(`pages[${index}][id]`, pageId);
-data.set(`pages[${index}][parent_id]`, parentId);
-data.set(`pages[${index}][order_local]`, orderLocal);
-
-index++;
 ```
