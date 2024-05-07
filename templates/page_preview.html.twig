@@ -13,7 +13,7 @@
 
   window.addEventListener('message', (event) => {
     if (isMessageScrollHeight(event.data)) {
-      iframe.style.height = event.data.scrollHeight + 'px';
+      iframe.style.height = (event.data.scrollHeight + 10) + 'px';
     }
   }, false);
 })(document.currentScript);
