@@ -2,10 +2,7 @@
 
 namespace OHMedia\PageBundle\Twig;
 
-use OHMedia\PageBundle\Entity\PageContentCheckbox;
-use OHMedia\PageBundle\Entity\PageContentImage;
 use OHMedia\PageBundle\Entity\PageContentRow;
-use OHMedia\PageBundle\Entity\PageContentText;
 use OHMedia\PageBundle\Entity\PageRevision;
 use OHMedia\PageBundle\Form\Type\PageContentRowType;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -37,35 +34,7 @@ class PageBackendExtension extends AbstractExtension
 
     public function preview(Environment $twig, PageRevision $pageRevision)
     {
-        $form = $this->formFactory->create($pageRevision->getTemplate(), $pageRevision);
-
-        $allPageContent = [];
-
-        // TODO: need to be able to check the "label" option
-        foreach ($form->all() as $name => $field) {
-            $options = $field->getConfig()->getOptions();
-
-            $label = !empty($options['label']) ? $options['label'] : $name;
-
-            $data = $field->getData();
-
-            $type = '';
-
-            if ($data instanceof PageContentCheckbox) {
-                $type = 'checkbox';
-            } elseif ($data instanceof PageContentImage) {
-                $type = 'image';
-            } elseif ($data instanceof PageContentRow) {
-                $type = 'row';
-            } elseif ($data instanceof PageContentText) {
-                $type = $data->getType() ?? 'text';
-            }
-
-            $allPageContent[] = compact('name', 'label', 'type');
-        }
-
         return $twig->render('@OHMediaPage/page_preview.html.twig', [
-            'all_page_content' => $allPageContent,
             'page_revision' => $pageRevision,
         ]);
     }

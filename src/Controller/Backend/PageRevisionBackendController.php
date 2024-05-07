@@ -13,7 +13,6 @@ use OHMedia\PageBundle\Service\PageRenderer;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -147,8 +146,6 @@ class PageRevisionBackendController extends AbstractController
 
         $form->handleRequest($request);
 
-        $isXmlHttpRequest = $request->isXmlHttpRequest();
-
         if ($form->isSubmitted() && $form->isValid()) {
             foreach ($form->all() as $name => $child) {
                 $pageContent = $child->getData();
@@ -164,15 +161,6 @@ class PageRevisionBackendController extends AbstractController
 
             $pageRevisionRepository->save($pageRevision, true);
 
-            if ($isXmlHttpRequest) {
-                $redirect = $this->generateUrl('page_view', [
-                    'id' => $pageRevision->getPage()->getId(),
-                    'revision' => $pageRevision->getId(),
-                ]);
-
-                return new JsonResponse($redirect);
-            }
-
             $this->addFlash('notice', 'The page revision content was updated.');
 
             return $this->redirectToParentPage($pageRevision);
@@ -183,17 +171,7 @@ class PageRevisionBackendController extends AbstractController
         }
 
         if ($form->isSubmitted() && !$form->isValid()) {
-            // TODO: don't set a flash message if $isXmlHttpRequest
-            // and find a way to pass the error back
             $this->addFlash('error', 'There is an error in the form.');
-        }
-
-        if ($isXmlHttpRequest) {
-            $renderView = $this->renderView('@OHMediaPage/xhr/form.html.twig', [
-                'form' => $form->createView(),
-            ]);
-
-            return new JsonResponse($renderView);
         }
 
         return $this->render('@OHMediaPage/page_revision/page_revision_content.html.twig', [

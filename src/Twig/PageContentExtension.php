@@ -107,7 +107,6 @@ class PageContentExtension extends AbstractExtension
             'name' => $name,
             'content' => $content,
             'attributes' => $attributes,
-            'is_preview' => $this->pageRenderer->isPreview(),
             'page_revision' => $this->pageRenderer->getCurrentPageRevision(),
         ]);
     }
@@ -133,7 +132,6 @@ class PageContentExtension extends AbstractExtension
             'name' => $name,
             'content' => $content,
             'allowed_tags' => $allowedTags,
-            'is_preview' => $this->pageRenderer->isPreview(),
             'page_revision' => $this->pageRenderer->getCurrentPageRevision(),
         ]);
     }
@@ -167,12 +165,7 @@ class PageContentExtension extends AbstractExtension
 
         $content = $this->getContent($queryBuilder);
 
-        return $twig->render('@OHMediaPage/content/text.html.twig', [
-            'name' => $name,
-            'content' => $content,
-            'is_preview' => $this->pageRenderer->isPreview(),
-            'page_revision' => $this->pageRenderer->getCurrentPageRevision(),
-        ]);
+        return $content ? (string) $content->getText() : '';
     }
 
     public function contentTextareaExists(string $name): bool
@@ -186,14 +179,9 @@ class PageContentExtension extends AbstractExtension
     {
         $queryBuilder = $this->getContentTextQueryBuilder($name, PageContentText::TYPE_TEXTAREA);
 
-        $content = $this->getContent($queryBuilder);
-
-        return $twig->render('@OHMediaPage/content/textarea.html.twig', [
-            'name' => $name,
-            'content' => $content,
-            'is_preview' => $this->pageRenderer->isPreview(),
-            'page_revision' => $this->pageRenderer->getCurrentPageRevision(),
-        ]);
+        return $content
+            ? nl2br(htmlspecialchars((string) $content->getText()))
+            : '';
     }
 
     public function contentWysiwygExists(string $name): bool
@@ -213,7 +201,6 @@ class PageContentExtension extends AbstractExtension
             'name' => $name,
             'content' => $content,
             'allowed_tags' => $allowedTags,
-            'is_preview' => $this->pageRenderer->isPreview(),
             'page_revision' => $this->pageRenderer->getCurrentPageRevision(),
         ]);
     }

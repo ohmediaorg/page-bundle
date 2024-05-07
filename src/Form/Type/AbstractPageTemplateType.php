@@ -49,10 +49,6 @@ abstract class AbstractPageTemplateType extends AbstractType
 
         $options['label'] = false;
 
-        $options['row_attr'] = [
-            'data-ohmedia-page-content-type' => 'checkbox',
-        ];
-
         return $this->addPageContent(
             $name,
             PageContentCheckboxType::class,
@@ -75,10 +71,6 @@ abstract class AbstractPageTemplateType extends AbstractType
 
         unset($options['expanded']);
 
-        $options['row_attr'] = [
-            'data-ohmedia-page-content-type' => 'choice',
-        ];
-
         return $this->addPageContent(
             $name,
             PageContentChoiceType::class,
@@ -97,7 +89,6 @@ abstract class AbstractPageTemplateType extends AbstractType
 
         $options['row_attr'] = [
             'class' => 'fieldset-nostyle',
-            'data-ohmedia-page-content-type' => 'image',
         ];
 
         return $this->addPageContent(
@@ -110,10 +101,6 @@ abstract class AbstractPageTemplateType extends AbstractType
 
     protected function addPageContentRow(string $name, array $options = []): self
     {
-        $options['row_attr'] = [
-            'data-ohmedia-page-content-type' => 'row',
-        ];
-
         return $this->addPageContent(
             $name,
             PageContentRowType::class,
@@ -124,10 +111,6 @@ abstract class AbstractPageTemplateType extends AbstractType
 
     protected function addPageContentText(string $name, array $options = []): self
     {
-        $options['row_attr'] = [
-            'data-ohmedia-page-content-type' => 'text',
-        ];
-
         return $this->addPageContent(
             $name,
             PageContentTextType::class,
@@ -138,10 +121,6 @@ abstract class AbstractPageTemplateType extends AbstractType
 
     protected function addPageContentTextarea(string $name, array $options = []): self
     {
-        $options['row_attr'] = [
-          'data-ohmedia-page-content-type' => 'textarea',
-    ];
-
         return $this->addPageContent(
             $name,
             PageContentTextareaType::class,
@@ -152,10 +131,6 @@ abstract class AbstractPageTemplateType extends AbstractType
 
     protected function addPageContentWysiwyg(string $name, array $options = []): self
     {
-        $options['row_attr'] = [
-          'data-ohmedia-page-content-type' => 'wysiwyg',
-    ];
-
         return $this->addPageContent(
             $name,
             PageContentWysiwygType::class,
@@ -173,12 +148,6 @@ abstract class AbstractPageTemplateType extends AbstractType
         $options['mapped'] = false;
 
         $options['data'] = $data;
-
-        if (!isset($options['row_attr'])) {
-            $options['row_attr'] = [];
-        }
-
-        $options['row_attr']['data-ohmedia-page-content'] = $name;
 
         $this->builder->add($name, $type, $options);
 

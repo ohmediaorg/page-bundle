@@ -1,10 +1,4 @@
-<div
-  class="page-content page-content__row page-content__row--{{ content.layout }}"
-  {% if is_preview %}
-  title="{{ name|humanize|e('html_attr') }}"
-  data-ohmedia-page-content="{{ name|e('html_attr') }}"
-  {% endif %}
->
+<div class="page-content page-content__row page-content__row--{{ content.layout }}">
   {% if content.layout %}
     <div class="page-content__col page-content__col--1">
       {{ wysiwyg(content.column1, allowed_tags) }}

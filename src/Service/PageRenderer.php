@@ -16,7 +16,6 @@ class PageRenderer
     private ?PageRevision $currentPageRevision = null;
     private ?string $dynamicPart = null;
     private ?Meta $metaEntity = null;
-    private bool $preview = false;
 
     public function __construct(
         private Environment $twig,
@@ -127,8 +126,6 @@ class PageRenderer
             throw new NotFoundHttpException('Page not found.');
         }
 
-        $this->preview = $preview;
-
         $template = $this->currentPageRevision->getTemplate();
 
         $twigTemplate = call_user_func($template.'::getTemplate');
@@ -146,26 +143,9 @@ class PageRenderer
         return new Response($rendered);
     }
 
-    public function isPreview(): bool
-    {
-        return $this->preview;
-    }
-
     private function getPagePreviewScript()
     {
         ob_start(); ?>
-<style>
-  [data-ohmedia-page-content] {
-    cursor: copy;
-    border: 2px dashed #fe5b15;
-    min-height: 10px;
-  }
-
-  span[data-ohmedia-page-content] {
-    display: inline-block;
-  }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const links = document.querySelectorAll('a[href]');
@@ -176,40 +156,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
       return false;
     });
-  });
-
-  function doesRectContain(r, x, y) {
-    return r.top <= y && r.bottom >= y && r.left <= x && r.right >= x;
-  }
-
-  const previewEls = document.querySelectorAll('[data-ohmedia-page-content]');
-
-  let pageContentAvailable = [];
-
-  previewEls.forEach(function(previewEl) {
-    pageContentAvailable.push(previewEl.dataset.ohmediaPageContent);
-  });
-
-  parent.postMessage({
-    pageContentAvailable: pageContentAvailable,
-  }, '*');
-
-  document.addEventListener('click', function(e) {
-    let pageContent = [];
-
-    previewEls.forEach(function(previewEl) {
-      const rect = previewEl.getBoundingClientRect();
-
-      if (doesRectContain(rect, e.clientX, e.clientY)) {
-        pageContent.push(previewEl.dataset.ohmediaPageContent);
-      }
-    });
-
-    if (pageContent.length) {
-      parent.postMessage({
-        pageContent: pageContent,
-      }, '*');
-    }
   });
 
   function postBodyHeight() {

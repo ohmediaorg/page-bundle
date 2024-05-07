@@ -68,11 +68,11 @@
 
 {% macro page_revision_icon(page_revision, current_page_revision) %}
   {% if page_revision.isPublished %}
-      {% if current_page_revision == page_revision %}
-      {{ bootstrap_badge_primary('Live') }}
-      {% else %}
-      {{ bootstrap_badge_success('Published') }}
-      {% endif %}
+    {% if current_page_revision == page_revision %}
+    {{ bootstrap_badge_primary('Live') }}
+    {% else %}
+    {{ bootstrap_badge_success('Published') }}
+    {% endif %}
   {% else %}
     {{ bootstrap_badge_warning('Draft') }}
   {% endif %}
@@ -247,11 +247,9 @@
     width: 100%;
     height: 500px;
     display: block;
+    border: 5px inset var(--bs-primary);
   }
 </style>
 
-<div style="border: 5px inset #fe5b15; background: #212528;">
-  {{ page_preview(preview_page_revision) }}
-</div>
-
+{{ page_preview(preview_page_revision) }}
 {% endblock %}
