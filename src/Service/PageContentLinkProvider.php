@@ -4,7 +4,6 @@ namespace OHMedia\PageBundle\Service;
 
 use OHMedia\BackendBundle\ContentLinks\AbstractContentLinkProvider;
 use OHMedia\BackendBundle\ContentLinks\ContentLink;
-use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
 
 class PageContentLinkProvider extends AbstractContentLinkProvider
@@ -20,51 +19,26 @@ class PageContentLinkProvider extends AbstractContentLinkProvider
 
     public function buildContentLinks(): void
     {
-        $contentLinks = $this->createContentLinks();
-
-        foreach ($contentLinks as $contentLink) {
-            $this->addContentLink($contentLink);
-        }
-    }
-
-    private function createContentLinks(Page $parent = null): array
-    {
-        $queryBuilder = $this->pageRepository->createQueryBuilder('p');
-
-        if ($parent) {
-            $queryBuilder->where('p.parent = :parent');
-            $queryBuilder->setParameter('parent', $parent);
-        } else {
-            $queryBuilder->where('p.parent IS NULL');
-        }
-
-        $pages = $queryBuilder
-            ->orderBy('p.order_local')
+        $pages = $this->pageRepository->createQueryBuilder('p')
+            ->orderBy('p.order_global')
             ->getQuery()
             ->getResult();
 
-        $contentLinks = [];
-
         foreach ($pages as $page) {
+            if (!$page->isPublished()) {
+                continue;
+            }
+
             $id = $page->getId();
 
-            $title = sprintf('%s (ID:%s)', $page, $id);
+            $prefix = str_repeat('- ', $page->getNestingLevel());
+
+            $title = sprintf('%s%s (ID:%s)', $prefix, $page, $id);
 
             $contentLink = new ContentLink($title);
             $contentLink->setShortcode('page_href('.$id.')');
 
-            $contentLinks[] = $contentLink;
-
-            $children = $this->createContentLinks($page);
-
-            if ($children) {
-                $contentLink = new ContentLink((string) $page.' (Child Pages)');
-                $contentLink->setChildren(...$children);
-
-                $contentLinks[] = $contentLink;
-            }
+            $this->addContentLink($contentLink);
         }
-
-        return $contentLinks;
     }
 }
