@@ -134,3 +134,7 @@ services:
 
     OHMedia\PageBundle\Service\PageEntityChoice:
         tags: ["oh_media_security.entity_choice"]
+
+    OHMedia\PageBundle\Service\PageContentLinkProvider:
+        autowire: true
+        tags: ["oh_media_backend.content_link_provider"]
