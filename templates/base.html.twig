@@ -20,6 +20,17 @@
 
     {{ encore_entry_script_tags('frontend', null, 'frontend') }}
 
+    {% set organization_name = setting('schema_organization_name') %}
+
+    {% if organization_name %}
+      {% set schema = {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        'name': organization_name,
+      } %}
+      <script type="application/ld+json">{{ schema|json_encode|raw }}</script>
+    {% endif %}
+
     {% block body_scripts %}{% endblock %}
 
     {{ script_body_close() }}
