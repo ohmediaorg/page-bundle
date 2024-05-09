@@ -33,9 +33,10 @@ class PageContentLinkProvider extends AbstractContentLinkProvider
 
             $prefix = str_repeat('- ', $page->getNestingLevel());
 
-            $title = sprintf('%s%s (ID:%s)', $prefix, $page, $id);
-
-            $contentLink = new ContentLink($title);
+            $contentLink = new ContentLink(
+                sprintf('%s%s (ID:%s)', $prefix, $page, $id),
+                (string) $page
+            );
             $contentLink->setShortcode('page_href('.$id.')');
 
             $this->addContentLink($contentLink);
