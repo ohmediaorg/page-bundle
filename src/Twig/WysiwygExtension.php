@@ -18,11 +18,11 @@ class WysiwygExtension extends AbstractWysiwygExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('page_link', [$this, 'pageLink']),
+            new TwigFunction('page_href', [$this, 'href']),
         ];
     }
 
-    public function pageLink(int $id = null)
+    public function href(int $id = null)
     {
         $page = $id ? $this->pageRepository->find($id) : null;
 
