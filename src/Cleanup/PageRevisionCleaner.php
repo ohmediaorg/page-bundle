@@ -25,10 +25,10 @@ class PageRevisionCleaner implements CleanerInterface
     {
         $threeMonthsAgo = new \DateTime('-3 months');
 
-        $this->pageRevisionRepository->createQueryBuilder('pv')
+        $this->pageRevisionRepository->createQueryBuilder('pr')
             ->delete()
-            ->where('pv.updated_at < :three_months')
-            ->andWhere('pv.published = 0')
+            ->where('pr.updated_at < :three_months')
+            ->andWhere('pr.published = 0')
             ->setParameter('three_months', $threeMonthsAgo)
             ->getQuery()
             ->execute();
@@ -37,11 +37,11 @@ class PageRevisionCleaner implements CleanerInterface
     private function cleanupPublished()
     {
         // get a count of published page revisions by page
-        $counts = $this->pageRevisionRepository->createQueryBuilder('pv')
-            ->select('COUNT(pv.id) AS count')
-            ->addSelect('IDENTITY(pv.page) AS page_id')
-            ->where('pv.published = 1')
-            ->groupBy('pv.page')
+        $counts = $this->pageRevisionRepository->createQueryBuilder('pr')
+            ->select('COUNT(pr.id) AS count')
+            ->addSelect('IDENTITY(pr.page) AS page_id')
+            ->where('pr.published = 1')
+            ->groupBy('pr.page')
             ->getQuery()
             ->getArrayResult();
 
@@ -52,11 +52,11 @@ class PageRevisionCleaner implements CleanerInterface
                 continue;
             }
 
-            $pageRevisions = $this->pageRevisionRepository->createQueryBuilder('pv')
-                ->where('IDENTITY(pv.page) = :page_id')
+            $pageRevisions = $this->pageRevisionRepository->createQueryBuilder('pr')
+                ->where('IDENTITY(pr.page) = :page_id')
                 ->setParameter('page_id', $count['page_id'])
-                ->andWhere('pv.published = 1')
-                ->orderBy('pv.updated_at', 'ASC')
+                ->andWhere('pr.published = 1')
+                ->orderBy('pr.updated_at', 'ASC')
                 ->setMaxResults($delete)
                 ->getQuery()
                 ->getResult();
