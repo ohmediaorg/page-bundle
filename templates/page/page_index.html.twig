@@ -8,10 +8,14 @@
 ) }}
 {% endblock %}
 
+{% set can_create_page = is_granted(attributes.page.create, new_page) %}
+
+{% set create_page_href = path('page_create') %}
+
 {% block actions %}
 <div class="btn-group btn-group-sm">
-{% if is_granted(attributes.page.create, new_page) %}
-  <a href="{{ path('page_create') }}" class="btn btn-primary">
+{% if can_create_page %}
+  <a href="{{ create_page_href }}" class="btn btn-primary">
     {{ bootstrap_icon('plus') }} Add Page
   </a>
 {% endif %}
@@ -33,6 +37,7 @@
       </div>
     </div>
 
+    {% if pagination.count %}
     <table class="table table-striped">
     <thead>
       <tr>
@@ -105,8 +110,6 @@
             {% endif %}
           </td>
         </tr>
-      {% else %}
-      <tr><td colspan="100%" class="text-center">No pages found.</td></tr>
       {% endfor %}
     </tbody>
     </table>
@@ -114,6 +117,14 @@
     {{ bootstrap_pagination(pagination) }}
 
     <small>{{ bootstrap_pagination_info(pagination) }}</small>
+    {% else %}
+      <p>
+        No pages found.
+        {% if can_create_page %}
+        <a href="{{ create_page_href }}">Click here to add a page.</a>
+        {% endif %}
+      </p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
