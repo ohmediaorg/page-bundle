@@ -20,6 +20,8 @@
 
     {{ encore_entry_script_tags('frontend', null, 'frontend') }}
 
+    {{ captcha_script() }}
+
     {% set organization_name = setting('schema_organization_name') %}
 
     {% if organization_name %}
