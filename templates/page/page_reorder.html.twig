@@ -19,13 +19,13 @@
         <label class="form-check-label" for="page-tree-checkbox-{{ page.id }}">
           {{ page.name }}
           {% if page.isHidden %}
-          <i class="bi bi-eye-slash-fill"></i>
+          {{ bootstrap_icon('eye-slash-fill') }}
           {% endif %}
           {% if page.isLocked %}
-          <i class="bi bi-lock-fill"></i>
+          {{ bootstrap_icon('lock-fill') }}
           {% endif %}
           {% if page.isNewWindow %}
-          <i class="bi bi-box-arrow-up-right"></i>
+          {{ bootstrap_icon('box-arrow-up-right') }}
           {% endif %}
         </label>
       </div>

@@ -60,7 +60,7 @@
           <td>
             {% if page.isHomepage %}
             <span class="badge text-bg-dark" title="Homepage">
-              <i class="bi bi-house-fill"></i>
+              {{ bootstrap_icon('house-fill') }}
               <span class="visually-hidden">Homepage</span>
             </span>
             {% endif %}
@@ -73,21 +73,21 @@
 
             {% if page.isHidden %}
             <span class="badge text-bg-dark" title="Hidden">
-              <i class="bi bi-eye-slash-fill"></i>
+              {{ bootstrap_icon('eye-slash-fill') }}
               <span class="visually-hidden">Hidden</span>
             </span>
             {% endif %}
 
             {% if page.isLocked %}
             <span class="badge text-bg-dark" title="Locked">
-              <i class="bi bi-lock-fill"></i>
+              {{ bootstrap_icon('lock-fill') }}
               <span class="visually-hidden">Locked</span>
             </span>
             {% endif %}
 
             {% if page.isNewWindow %}
             <span class="badge text-bg-dark" title="New Window">
-              <i class="bi bi-box-arrow-up-right"></i>
+              {{ bootstrap_icon('box-arrow-up-right') }}
               <span class="visually-hidden">New Window</span>
             </span>
             {% endif %}
@@ -98,7 +98,7 @@
           <td>
             {% if is_granted(attributes.page.view, page) %}
             <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-sm btn-primary" title="View">
-              <i class="bi bi-eye"></i>
+              {{ bootstrap_icon('eye') }}
               <span class="visually-hidden">View</span>
             </a>
             {% endif %}
