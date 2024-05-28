@@ -15,6 +15,9 @@ use OHMedia\TimezoneBundle\Util\DateTimeUtil;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// TODO: see if we just want unique slugs regardless of parent
+// otherwise we need to account for this when reordering pages
+
 #[ORM\Entity(repositoryClass: PageRepository::class)]
 #[UniqueEntity(
     fields: ['parent_slug'],
