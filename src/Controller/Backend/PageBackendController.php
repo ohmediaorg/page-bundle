@@ -30,8 +30,12 @@ class PageBackendController extends AbstractController
 {
     public const CSRF_TOKEN_REORDER = 'pages_reorder';
 
+    public function __construct(private PageRepository $pageRepository)
+    {
+    }
+
     #[Route('/pages', name: 'page_index', methods: ['GET'])]
-    public function index(PageRepository $pageRepository, Paginator $paginator): Response
+    public function index(Paginator $paginator): Response
     {
         $this->denyAccessUnlessGranted(
             PageVoter::INDEX,
@@ -39,7 +43,7 @@ class PageBackendController extends AbstractController
             'You cannot access the list of pages.'
         );
 
-        $queryBuilder = $pageRepository->createQueryBuilder('p')
+        $queryBuilder = $this->pageRepository->createQueryBuilder('p')
             ->orderBy('p.order_global', 'asc');
 
         return $this->render('@OHMediaPage/page/page_index.html.twig', [
@@ -50,7 +54,7 @@ class PageBackendController extends AbstractController
     }
 
     #[Route('/pages/reorder', name: 'page_reorder', methods: ['GET'])]
-    public function reorder(PageRepository $pageRepository)
+    public function reorder()
     {
         $this->denyAccessUnlessGranted(
             PageVoter::REORDER,
@@ -58,11 +62,11 @@ class PageBackendController extends AbstractController
             'You cannot reorder the pages.'
         );
 
-        $homepage = $pageRepository->findOneBy([
+        $homepage = $this->pageRepository->findOneBy([
             'homepage' => true,
         ]);
 
-        $topLevelPages = $pageRepository->getTopLevel();
+        $topLevelPages = $this->pageRepository->getTopLevel();
         $csrfTokenName = self::CSRF_TOKEN_REORDER;
 
         return $this->render('@OHMediaPage/page/page_reorder.html.twig', [
@@ -119,10 +123,8 @@ class PageBackendController extends AbstractController
     }
 
     #[Route('/page/create', name: 'page_create', methods: ['GET', 'POST'])]
-    public function create(
-        Request $request,
-        PageRepository $pageRepository
-    ): Response {
+    public function create(Request $request): Response
+    {
         $page = new Page();
 
         $this->denyAccessUnlessGranted(
@@ -138,7 +140,7 @@ class PageBackendController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            $this->setPageSlug($page, $pageRepository);
+            $this->setPageSlug($page);
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -152,7 +154,7 @@ class PageBackendController extends AbstractController
 
             $page->setMeta($meta);
 
-            $pageRepository->save($page, true);
+            $this->pageRepository->save($page, true);
 
             $this->addFlash('notice', 'The page was created successfully.');
 
@@ -196,7 +198,6 @@ class PageBackendController extends AbstractController
     public function edit(
         Request $request,
         Page $page,
-        PageRepository $pageRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             PageVoter::EDIT,
@@ -210,10 +211,10 @@ class PageBackendController extends AbstractController
 
         $form->handleRequest($request);
 
-        $this->setPageSlug($page, $pageRepository);
+        $this->setPageSlug($page);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $pageRepository->save($page, true);
+            $this->pageRepository->save($page, true);
 
             $this->addFlash('notice', 'Changes to the page were saved successfully.');
 
@@ -231,7 +232,6 @@ class PageBackendController extends AbstractController
     public function navigation(
         Request $request,
         Page $page,
-        PageRepository $pageRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             PageVoter::NAVIGATION,
@@ -246,7 +246,7 @@ class PageBackendController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $pageRepository->save($page, true);
+            $this->pageRepository->save($page, true);
 
             $this->addFlash('notice', 'The page navigation was updated successfully.');
 
@@ -264,7 +264,6 @@ class PageBackendController extends AbstractController
     public function seo(
         Request $request,
         Page $page,
-        PageRepository $pageRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             PageVoter::NAVIGATION,
@@ -279,7 +278,7 @@ class PageBackendController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $pageRepository->save($page, true);
+            $this->pageRepository->save($page, true);
 
             $this->addFlash('notice', 'The page SEO was updated successfully.');
 
@@ -293,7 +292,7 @@ class PageBackendController extends AbstractController
         ]);
     }
 
-    private function setPageSlug(Page $page, PageRepository $pageRepository): void
+    private function setPageSlug(Page $page): void
     {
         $slugger = new AsciiSlugger();
 
@@ -308,7 +307,7 @@ class PageBackendController extends AbstractController
             $id = $page->getId();
 
             $i = 1;
-            while ($pageRepository->countBySlug($slug, $id)) {
+            while ($this->pageRepository->countBySlug($slug, $id)) {
                 $slug = $slugger->slug($name.'-'.$i);
 
                 ++$i;
@@ -325,7 +324,6 @@ class PageBackendController extends AbstractController
     public function homepageAction(
         Request $request,
         Page $page,
-        PageRepository $pageRepository
     ) {
         $this->denyAccessUnlessGranted(
             PageVoter::HOMEPAGE,
@@ -337,16 +335,16 @@ class PageBackendController extends AbstractController
         $csrfTokenValue = $request->request->get($csrfTokenName);
 
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
-            $existingHomepage = $pageRepository->findOneBy([
+            $existingHomepage = $this->pageRepository->findOneBy([
                 'homepage' => 1,
             ]);
 
             $page->setHomepage(true);
-            $pageRepository->save($page, true);
+            $this->pageRepository->save($page, true);
 
             if ($existingHomepage && $existingHomepage !== $page) {
                 $existingHomepage->setHomepage(false);
-                $pageRepository->save($existingHomepage, true);
+                $this->pageRepository->save($existingHomepage, true);
             }
 
             $this->addFlash('notice', 'The page was set as the homepage.');
@@ -359,7 +357,6 @@ class PageBackendController extends AbstractController
     public function publishAction(
         Request $request,
         Page $page,
-        PageRepository $pageRepository
     ) {
         $this->denyAccessUnlessGranted(
             PageVoter::PUBLISH,
@@ -372,7 +369,7 @@ class PageBackendController extends AbstractController
 
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $page->setPublished(new \DateTimeImmutable());
-            $pageRepository->save($page, true);
+            $this->pageRepository->save($page, true);
 
             $this->addFlash('notice', 'The page was published.');
         }
@@ -384,7 +381,6 @@ class PageBackendController extends AbstractController
     public function unpublishAction(
         Request $request,
         Page $page,
-        PageRepository $pageRepository
     ) {
         $this->denyAccessUnlessGranted(
             PageVoter::UNPUBLISH,
@@ -397,7 +393,7 @@ class PageBackendController extends AbstractController
 
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $page->setPublished(null);
-            $pageRepository->save($page, true);
+            $this->pageRepository->save($page, true);
 
             $this->addFlash('notice', 'The page was unpublished.');
         }
@@ -409,7 +405,6 @@ class PageBackendController extends AbstractController
     public function delete(
         Request $request,
         Page $page,
-        PageRepository $pageRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             PageVoter::DELETE,
@@ -424,7 +419,7 @@ class PageBackendController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $pageRepository->remove($page, true);
+            $this->pageRepository->remove($page, true);
 
             $this->addFlash('notice', 'The page was deleted successfully.');
 

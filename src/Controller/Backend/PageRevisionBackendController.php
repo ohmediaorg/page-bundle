@@ -20,11 +20,14 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Admin]
 class PageRevisionBackendController extends AbstractController
 {
+    public function __construct(private PageRevisionRepository $pageRevisionRepository)
+    {
+    }
+
     #[Route('/page/{id}/revision/create', name: 'page_revision_create', methods: ['GET', 'POST'])]
     public function create(
         Request $request,
         Page $page,
-        PageRevisionRepository $pageRevisionRepository
     ): Response {
         $pageRevision = new PageRevision();
         $pageRevision->setPage($page);
@@ -35,7 +38,7 @@ class PageRevisionBackendController extends AbstractController
             'You cannot create a new page revision.'
         );
 
-        return $this->form($request, $pageRevision, $pageRevisionRepository);
+        return $this->form($request, $pageRevision);
     }
 
     #[Route('/page/revision/{id}', name: 'page_revision_view', methods: ['GET'])]
@@ -56,7 +59,6 @@ class PageRevisionBackendController extends AbstractController
     public function template(
         Request $request,
         PageRevision $pageRevision,
-        PageRevisionRepository $pageRevisionRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::TEMPLATE,
@@ -64,13 +66,12 @@ class PageRevisionBackendController extends AbstractController
             'You cannot change the template of this page revision.'
         );
 
-        return $this->form($request, $pageRevision, $pageRevisionRepository);
+        return $this->form($request, $pageRevision);
     }
 
     private function form(
         Request $request,
         PageRevision $pageRevision,
-        PageRevisionRepository $pageRevisionRepository
     ): Response {
         $creating = !$pageRevision->getId();
 
@@ -97,7 +98,7 @@ class PageRevisionBackendController extends AbstractController
             $templatesChanged = $newTemplate !== $oldTemplate;
 
             if ($templatesChanged) {
-                $pageRevisionRepository->save($pageRevision, true);
+                $this->pageRevisionRepository->save($pageRevision, true);
 
                 $this->addFlash('notice', 'The page template was updated successfully.');
             }
@@ -122,7 +123,6 @@ class PageRevisionBackendController extends AbstractController
     public function content(
         Request $request,
         PageRevision $pageRevision,
-        PageRevisionRepository $pageRevisionRepository
     ) {
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::CONTENT,
@@ -159,7 +159,7 @@ class PageRevisionBackendController extends AbstractController
 
             $pageRevision->setUpdatedAt(new \DateTime());
 
-            $pageRevisionRepository->save($pageRevision, true);
+            $this->pageRevisionRepository->save($pageRevision, true);
 
             $this->addFlash('notice', 'The page revision content was updated.');
 
@@ -185,7 +185,6 @@ class PageRevisionBackendController extends AbstractController
     public function publishAction(
         Request $request,
         PageRevision $pageRevision,
-        PageRevisionRepository $pageRevisionRepository
     ) {
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::PUBLISH,
@@ -199,7 +198,7 @@ class PageRevisionBackendController extends AbstractController
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $pageRevision->setPublished(true);
             $pageRevision->setUpdatedAt(new \DateTime());
-            $pageRevisionRepository->save($pageRevision, true);
+            $this->pageRevisionRepository->save($pageRevision, true);
 
             $this->addFlash('notice', 'The page revision was published.');
         }
@@ -211,7 +210,6 @@ class PageRevisionBackendController extends AbstractController
     public function delete(
         Request $request,
         PageRevision $pageRevision,
-        PageRevisionRepository $pageRevisionRepository
     ): Response {
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::DELETE,
@@ -226,7 +224,7 @@ class PageRevisionBackendController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $pageRevisionRepository->remove($pageRevision, true);
+            $this->pageRevisionRepository->remove($pageRevision, true);
 
             $this->addFlash('notice', 'The page revision was deleted successfully.');
 
