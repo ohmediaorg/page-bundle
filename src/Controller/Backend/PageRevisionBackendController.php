@@ -93,17 +93,21 @@ class PageRevisionBackendController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $newTemplate = $pageRevision->getTemplate();
-            $templatesChanged = $newTemplate !== $oldTemplate;
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $newTemplate = $pageRevision->getTemplate();
+                $templatesChanged = $newTemplate !== $oldTemplate;
 
-            if ($templatesChanged) {
-                $this->pageRevisionRepository->save($pageRevision, true);
+                if ($templatesChanged) {
+                    $this->pageRevisionRepository->save($pageRevision, true);
 
-                $this->addFlash('notice', 'The page template was updated successfully.');
+                    $this->addFlash('notice', 'The page template was updated successfully.');
+                }
+
+                return $this->redirectToParentPage($pageRevision);
             }
 
-            return $this->redirectToParentPage($pageRevision);
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         if ($cloned) {
@@ -146,32 +150,32 @@ class PageRevisionBackendController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            foreach ($form->all() as $name => $child) {
-                $pageContent = $child->getData();
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                foreach ($form->all() as $name => $child) {
+                    $pageContent = $child->getData();
 
-                if (!($pageContent instanceof AbstractPageContent)) {
-                    continue;
+                    if (!($pageContent instanceof AbstractPageContent)) {
+                        continue;
+                    }
+
+                    $pageRevision->addPageContent($pageContent);
                 }
 
-                $pageRevision->addPageContent($pageContent);
+                $pageRevision->setUpdatedAt(new \DateTime());
+
+                $this->pageRevisionRepository->save($pageRevision, true);
+
+                $this->addFlash('notice', 'The page revision content was updated.');
+
+                return $this->redirectToParentPage($pageRevision);
             }
 
-            $pageRevision->setUpdatedAt(new \DateTime());
-
-            $this->pageRevisionRepository->save($pageRevision, true);
-
-            $this->addFlash('notice', 'The page revision content was updated.');
-
-            return $this->redirectToParentPage($pageRevision);
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         if ($cloned) {
             $this->addFlash('warning', 'Updating the content will create a new page revision.');
-        }
-
-        if ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash('error', 'There is an error in the form.');
         }
 
         return $this->render('@OHMediaPage/page_revision/page_revision_content.html.twig', [
@@ -223,12 +227,16 @@ class PageRevisionBackendController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->pageRevisionRepository->remove($pageRevision, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->pageRevisionRepository->remove($pageRevision, true);
 
-            $this->addFlash('notice', 'The page revision was deleted successfully.');
+                $this->addFlash('notice', 'The page revision was deleted successfully.');
 
-            return $this->redirectToParentPage($pageRevision, false);
+                return $this->redirectToParentPage($pageRevision, false);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaPage/page_revision/page_revision_delete.html.twig', [

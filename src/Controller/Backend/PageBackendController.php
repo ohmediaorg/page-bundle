@@ -143,22 +143,26 @@ class PageBackendController extends AbstractController
             $this->setPageSlug($page);
         }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // make sure this page is last locally
-            // the event subscriber will clean things up
-            $page->setOrderLocal(Page::ORDER_LOCAL_END);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                // make sure this page is last locally
+                // the event subscriber will clean things up
+                $page->setOrderLocal(Page::ORDER_LOCAL_END);
 
-            $meta = (new Meta())
-                ->setTitle($page->getName())
-                ->setAppendBaseTitle(true);
+                $meta = (new Meta())
+                    ->setTitle($page->getName())
+                    ->setAppendBaseTitle(true);
 
-            $page->setMeta($meta);
+                $page->setMeta($meta);
 
-            $this->pageRepository->save($page, true);
+                $this->pageRepository->save($page, true);
 
-            $this->addFlash('notice', 'The page was created successfully.');
+                $this->addFlash('notice', 'The page was created successfully.');
 
-            return $this->redirectToView($page);
+                return $this->redirectToView($page);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaPage/page/page_create.html.twig', [
@@ -213,12 +217,16 @@ class PageBackendController extends AbstractController
 
         $this->setPageSlug($page);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->pageRepository->save($page, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->pageRepository->save($page, true);
 
-            $this->addFlash('notice', 'Changes to the page were saved successfully.');
+                $this->addFlash('notice', 'Changes to the page were saved successfully.');
 
-            return $this->redirectToView($page);
+                return $this->redirectToView($page);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaPage/page/page_edit.html.twig', [
@@ -245,12 +253,16 @@ class PageBackendController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->pageRepository->save($page, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->pageRepository->save($page, true);
 
-            $this->addFlash('notice', 'The page navigation was updated successfully.');
+                $this->addFlash('notice', 'The page navigation was updated successfully.');
 
-            return $this->redirectToView($page);
+                return $this->redirectToView($page);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaPage/page/page_navigation.html.twig', [
@@ -277,12 +289,16 @@ class PageBackendController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->pageRepository->save($page, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->pageRepository->save($page, true);
 
-            $this->addFlash('notice', 'The page SEO was updated successfully.');
+                $this->addFlash('notice', 'The page SEO was updated successfully.');
 
-            return $this->redirectToView($page);
+                return $this->redirectToView($page);
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         return $this->render('@OHMediaPage/page/page_seo.html.twig', [
@@ -418,12 +434,16 @@ class PageBackendController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->pageRepository->remove($page, true);
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->pageRepository->remove($page, true);
 
-            $this->addFlash('notice', 'The page was deleted successfully.');
+                $this->addFlash('notice', 'The page was deleted successfully.');
 
-            return $this->redirectToRoute('page_index');
+                return $this->redirectToRoute('page_index');
+            }
+
+            $this->addFlash('error', 'There are some errors in the form below.');
         }
 
         $this->addFlash('warning', 'Deleting a page will also delete all descendant pages!');
