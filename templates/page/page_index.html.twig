@@ -93,7 +93,7 @@
             {% endif %}
           </td>
           <td>{{ page.getTemplateName }}</td>
-          <td><code>{{ '{{ page_href('~page.id~') }}' }}</code></td>
+          <td><code>{{ '{{page_href('~page.id~')}}' }}</code></td>
           <td>{{ page.updatedAt|datetime }}</td>
           <td>
             {% if is_granted(attributes.page.view, page) %}
