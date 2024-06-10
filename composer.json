@@ -11,8 +11,8 @@
         }
     ],
     "require": {
-        "php": "^7.2",
-        "symfony/framework-bundle": "5.4.*"
+        "php": ">=8.2",
+        "symfony/framework-bundle": "6.4.*"
     },
     "autoload": {
         "psr-4": { "OHMedia\\PageBundle\\": "src/" }
