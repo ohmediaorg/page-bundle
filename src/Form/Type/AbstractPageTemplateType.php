@@ -49,6 +49,10 @@ abstract class AbstractPageTemplateType extends AbstractType
 
         $options['label'] = false;
 
+        $options['row_attr'] = [
+            'class' => 'fieldset-nostyle',
+        ];
+
         return $this->addPageContent(
             $name,
             PageContentCheckboxType::class,
@@ -70,6 +74,10 @@ abstract class AbstractPageTemplateType extends AbstractType
         }
 
         unset($options['expanded']);
+
+        $options['row_attr'] = [
+            'class' => 'fieldset-nostyle',
+        ];
 
         return $this->addPageContent(
             $name,
@@ -111,6 +119,10 @@ abstract class AbstractPageTemplateType extends AbstractType
 
     protected function addPageContentText(string $name, array $options = []): self
     {
+        $options['row_attr'] = [
+            'class' => 'fieldset-nostyle',
+        ];
+
         return $this->addPageContent(
             $name,
             PageContentTextType::class,
@@ -121,6 +133,10 @@ abstract class AbstractPageTemplateType extends AbstractType
 
     protected function addPageContentTextarea(string $name, array $options = []): self
     {
+        $options['row_attr'] = [
+            'class' => 'fieldset-nostyle',
+        ];
+
         return $this->addPageContent(
             $name,
             PageContentTextareaType::class,
@@ -131,6 +147,10 @@ abstract class AbstractPageTemplateType extends AbstractType
 
     protected function addPageContentWysiwyg(string $name, array $options = []): self
     {
+        $options['row_attr'] = [
+            'class' => 'fieldset-nostyle',
+        ];
+
         return $this->addPageContent(
             $name,
             PageContentWysiwygType::class,
