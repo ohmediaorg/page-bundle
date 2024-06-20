@@ -179,6 +179,8 @@ class PageContentExtension extends AbstractExtension
     {
         $queryBuilder = $this->getContentTextQueryBuilder($name, PageContentText::TYPE_TEXTAREA);
 
+        $content = $this->getContent($queryBuilder);
+
         return $content
             ? nl2br(htmlspecialchars((string) $content->getText()))
             : '';
