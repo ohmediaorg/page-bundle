@@ -2,6 +2,7 @@
 
 namespace OHMedia\PageBundle\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\PageBundle\Repository\PageContentTextRepository;
 
@@ -17,7 +18,7 @@ class PageContentText extends AbstractPageContent
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     protected ?PageRevision $pageRevision = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $text = null;
 
     #[ORM\Column(length: 10)]
