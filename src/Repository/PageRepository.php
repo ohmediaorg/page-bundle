@@ -69,4 +69,13 @@ class PageRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getHomepage(): ?Page
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.homepage = 1')
+            ->setMaxResults()
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

@@ -62,9 +62,7 @@ class PageBackendController extends AbstractController
             'You cannot reorder the pages.'
         );
 
-        $homepage = $this->pageRepository->findOneBy([
-            'homepage' => true,
-        ]);
+        $homepage = $this->pageRepository->getHomepage();
 
         $topLevelPages = $this->pageRepository->getTopLevel();
         $csrfTokenName = self::CSRF_TOKEN_REORDER;
@@ -351,9 +349,7 @@ class PageBackendController extends AbstractController
         $csrfTokenValue = $request->request->get($csrfTokenName);
 
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
-            $existingHomepage = $this->pageRepository->findOneBy([
-                'homepage' => 1,
-            ]);
+            $existingHomepage = $this->pageRepository->getHomepage();
 
             $page->setHomepage(true);
             $this->pageRepository->save($page, true);
