@@ -74,7 +74,7 @@ class PageRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->where('p.homepage = 1')
-            ->setMaxResults()
+            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
     }
