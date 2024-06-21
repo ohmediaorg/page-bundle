@@ -29,6 +29,11 @@ class PageNavigationType extends AbstractType
         }
 
         $builder
+            ->add('nav_text', TextType::class, [
+                'required' => false,
+                'label' => 'Navigation Link Text',
+                'help' => 'Will fall back to the page name: '.$page->getName(),
+            ])
             ->add('new_window', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Open in a new window in navigation menu',

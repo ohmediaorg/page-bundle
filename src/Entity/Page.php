@@ -112,6 +112,9 @@ class Page
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $redirect_external = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nav_text = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -619,5 +622,17 @@ class Page
         return $this->pages->filter(function (Page $page) {
             return $page->isNavEligible();
         });
+    }
+
+    public function getNavText(): ?string
+    {
+        return $this->nav_text;
+    }
+
+    public function setNavText(?string $nav_text): static
+    {
+        $this->nav_text = $nav_text;
+
+        return $this;
     }
 }
