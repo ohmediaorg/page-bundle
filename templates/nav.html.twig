@@ -6,8 +6,6 @@
     {% set show_page_link = true %}
   {% endif %}
 
-  {# TODO: use bootstrap? #}
-
   {% if show_page_link %}
     {% if page.isRedirectTypeInternal %}
       {% set page_path = path('oh_media_page_frontend', {
@@ -21,29 +19,58 @@
       }) %}
     {% endif %}
 
-    {% set classes = [] %}
+    {% set nav_text = page.navText ?: page.name %}
 
-    {% if page_path == current_path %}
-      {% set classes = classes|merge(['active']) %}
-    {% elseif current_path starts with page_path %}
-      {% set classes = classes|merge(['active-path']) %}
+    {% set nav_item_classes = ['nav-item'] %}
+
+    {% if current_path starts with page_path %}
+      {% set nav_item_classes = nav_item_classes|merge(['active-path']) %}
+    {% endif %}
+
+    {% set nav_link_classes = ['nav-link'] %}
+
+    {% set is_nav_link_active = page_path == current_path %}
+
+    {% if is_nav_link_active %}
+      {% set nav_link_classes = nav_link_classes|merge(['active']) %}
     {% endif %}
 
     {% set pages = page.getNavPages %}
 
-    <li class="{{ classes|join(' ') }}">
-      <a
-        href="{{ page_path }}"
-        {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
-      >
-        {{ page.name }}
-      </a>
-      {% if nesting_level <= max_nesting_level and pages|length %}
-      <ul class="nav nav--level-{{ nesting_level }}">
-      {% for page in pages %}
-      {{ _self.page_nav(page, current_path, nesting_level + 1, max_nesting_level) }}
-      {% endfor %}
-      </ul>
+    {% set has_dropdown = nesting_level <= max_nesting_level and pages|length %}
+
+    {% if has_dropdown %}
+      {% set nav_item_classes = nav_item_classes|merge(['dropdown']) %}
+    {% endif %}
+
+    <li class="{{ nav_item_classes|join(' ') }}">
+      {% if has_dropdown %}
+        <a
+          href="#"
+          class="nav-link dropdown-toggle"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          {{ nav_text }}
+        </a>
+        <ul class="dropdown-menu nav--level-{{ nesting_level }}">
+          <li class="nav-item">
+            <a href="{{ page_path }}" class="{{ nav_link_classes|join(' ') }}">{{ nav_text }}</a>
+          </li>
+          {% for page in pages %}
+          {{ _self.page_nav(page, current_path, nesting_level + 1, max_nesting_level) }}
+          {% endfor %}
+        </ul>
+      {% else %}
+        <a
+          href="{{ page_path }}"
+          {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
+          class="{{ nav_link_classes|join(' ') }}"
+          {% if is_nav_link_active %}aria-current{% endif %}
+        >
+          {{ nav_text }}
+        </a>
       {% endif %}
     </li>
   {% endif %}
@@ -52,8 +79,13 @@
 
 <ul class="{{ class_name }} nav--level-0">
   {% if show_home %}
-  <li {% if current_path == home_path %}class="active"{% endif %}>
-    <a href="{{ home_path }}">Home</a>
+  <li class="nav-item">
+    <a
+      href="{{ home_path }}"
+      class="nav-link{% if current_path == home_path %} active{% endif %}"
+    >
+      Home
+    </a>
   </li>
   {% endif %}
 
