@@ -613,8 +613,7 @@ class Page
     public function isNavEligible()
     {
         return $this->isPublished()
-            && !$this->isHidden()
-            && !$this->isHomepage();
+            && !$this->isHidden();
     }
 
     public function getNavPages(): Collection

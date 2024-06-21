@@ -22,12 +22,6 @@ class PageNavigationType extends AbstractType
     {
         $page = $options['data'];
 
-        if ($page->isHomepage()) {
-            $hiddenHelp = 'A special "Home" link is handled separately.';
-        } else {
-            $hiddenHelp = '';
-        }
-
         $builder
             ->add('nav_text', TextType::class, [
                 'required' => false,
@@ -41,8 +35,6 @@ class PageNavigationType extends AbstractType
             ->add('hidden', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Exclude from navigation',
-                'help' => $hiddenHelp,
-                'disabled' => $page->isHomepage(),
             ])
             ->add('redirect_type', ChoiceType::class, [
                 'choices' => [
