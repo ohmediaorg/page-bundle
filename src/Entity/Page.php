@@ -395,12 +395,12 @@ class Page
                 ->setNoIndex(false)
                 // homepage must be canonical to itself
                 ->setCanonical(null)
-                // homepage must be hidden from nav
-                // because the Home link handled separately
-                ->setHidden(true)
                 // homepage cannot be locked
                 ->setLocked(false);
 
+            // permissions shouldn't allow a page with child pages
+            // to become the homepage, but this is here as a failsafe
+            // so those pages don't get excluded from navigation
             foreach ($this->getPages() as $page) {
                 $page->setParent($this->getParent());
             }
