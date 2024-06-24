@@ -63,7 +63,6 @@
   {% endif %}
 {% endmacro %}
 
-
 <ul class="{{ class_name }} nav--level-0">
   {% if show_home %}
   <li class="nav-item">
@@ -71,7 +70,7 @@
       href="{{ home_path }}"
       class="nav-link {{ current_path == home_path ? 'active' : '' }}"
     >
-      Home
+      {{ homepage.navText ?: homepage.name }}
     </a>
   </li>
   {% endif %}

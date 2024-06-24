@@ -124,7 +124,8 @@ class PageExtension extends AbstractExtension
         return $twig->render('@OHMediaPage/nav.html.twig', [
             'pages' => $pages,
             'home_path' => $homePath,
-            'show_home' => $homepage->isNavEligible(),
+            'show_home' => $homepage ? $homepage->isNavEligible() : false,
+            'homepage' => $homepage,
             'class_name' => $className,
             'current_path' => $currentPath,
             'max_nesting_level' => $maxNestingLevel,
@@ -149,8 +150,10 @@ class PageExtension extends AbstractExtension
             array_unshift($breadcrumbs, $this->getBreadcrumb($curr, $meta));
         }
 
+        $homepage = $this->pageRepository->getHomepage();
+
         array_unshift($breadcrumbs, new Breadcrumb(
-            'Home',
+            $homepage ? $homepage->getNavText() : 'Home',
             'oh_media_page_frontend',
             ['path' => '']
         ));
