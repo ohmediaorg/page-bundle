@@ -153,7 +153,7 @@ class PageExtension extends AbstractExtension
         $homepage = $this->pageRepository->getHomepage();
 
         array_unshift($breadcrumbs, new Breadcrumb(
-            $homepage ? $homepage->getNavText() : 'Home',
+            $homepage && $homepage->getNavText() ? $homepage->getNavText() : 'Home',
             'oh_media_page_frontend',
             ['path' => '']
         ));
