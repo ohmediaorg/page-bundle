@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -25,8 +26,8 @@ class PageNavigationType extends AbstractType
         $builder
             ->add('nav_text', TextType::class, [
                 'required' => false,
-                'label' => 'Navigation Link Text',
-                'help' => 'Will fall back to the page name: '.$page->getName(),
+                'label' => 'Link Text',
+                'help' => 'Default value: '.$page->getName(),
             ])
             ->add('new_window', CheckboxType::class, [
                 'required' => false,
