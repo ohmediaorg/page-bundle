@@ -272,11 +272,6 @@ class Page
 
     public function isHidden(): bool
     {
-        if ($this->isHomepage()) {
-            // homepage nav link is rendered separately
-            return true;
-        }
-
         return $this->hidden;
     }
 
