@@ -49,11 +49,11 @@
       </ul>
     </li>
     {% else %}
-    <li class="{{ nesting_level > 0 ? '' : 'nav-item' }}">
+    <li class="{{ nesting_level > 1 ? '' : 'nav-item' }}">
       <a
         href="{{ page_path }}"
         {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
-        class="{{ nesting_level > 0 ? 'dropdown-item' : 'nav-link' }} {{ active ? 'active' : '' }}"
+        class="{{ nesting_level > 1 ? 'dropdown-item' : 'nav-link' }} {{ active ? 'active' : '' }}"
         {% if active %}aria-current{% endif %}
       >
         {{ text }}
