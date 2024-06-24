@@ -94,6 +94,10 @@ class PageExtension extends AbstractExtension
 
     public function nav(Environment $twig, string $className = 'nav', int $maxNestingLevel = 1)
     {
+        // NOTE: Bootstrap only supports 1 level of dropdown out of the box
+        // still figuring out what we want to do with the navigation
+        $maxNestingLevel = 1;
+
         if ($maxNestingLevel < 0) {
             $maxNestingLevel = 0;
         }

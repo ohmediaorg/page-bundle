@@ -19,60 +19,47 @@
       }) %}
     {% endif %}
 
-    {% set nav_text = page.navText ?: page.name %}
+    {% set text = page.navText ?: page.name %}
 
-    {% set nav_item_classes = ['nav-item'] %}
-
-    {% if current_path starts with page_path %}
-      {% set nav_item_classes = nav_item_classes|merge(['active-path']) %}
-    {% endif %}
-
-    {% set nav_link_classes = ['nav-link'] %}
-
-    {% set is_nav_link_active = page_path == current_path %}
-
-    {% if is_nav_link_active %}
-      {% set nav_link_classes = nav_link_classes|merge(['active']) %}
-    {% endif %}
+    {% set active = page_path == current_path %}
+    {% set active_path = page_path == current_path starts with page_path %}
 
     {% set pages = page.getNavPages %}
 
     {% set has_dropdown = nesting_level <= max_nesting_level and pages|length %}
 
     {% if has_dropdown %}
-      {% set nav_item_classes = nav_item_classes|merge(['dropdown']) %}
-    {% endif %}
-
-    <li class="{{ nav_item_classes|join(' ') }}">
-      {% if has_dropdown %}
-        <a
-          href="#"
-          class="nav-link dropdown-toggle"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          {{ nav_text }}
-        </a>
-        <ul class="dropdown-menu nav--level-{{ nesting_level }}">
-          <li class="nav-item">
-            <a href="{{ page_path }}" class="{{ nav_link_classes|join(' ') }}">{{ nav_text }}</a>
-          </li>
-          {% for page in pages %}
-          {{ _self.page_nav(page, current_path, nesting_level + 1, max_nesting_level) }}
-          {% endfor %}
-        </ul>
-      {% else %}
-        <a
-          href="{{ page_path }}"
-          {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
-          class="{{ nav_link_classes|join(' ') }}"
-          {% if is_nav_link_active %}aria-current{% endif %}
-        >
-          {{ nav_text }}
-        </a>
-      {% endif %}
+    <li class="nav-item dropdown {{ active_path ? 'active-path' : '' }}">
+      <a
+        href="#"
+        class="nav-link dropdown-toggle"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        {{ text }}
+      </a>
+      <ul class="dropdown-menu nav--level-{{ nesting_level }}">
+        <li>
+          <a href="{{ page_path }}" class="dropdown-item {{ active ? 'active' : '' }}">{{ text }}</a>
+        </li>
+        {% for page in pages %}
+        {{ _self.page_nav(page, current_path, nesting_level + 1, max_nesting_level) }}
+        {% endfor %}
+      </ul>
     </li>
+    {% else %}
+    <li class="{{ nesting_level > 0 ? '' : 'nav-item' }}">
+      <a
+        href="{{ page_path }}"
+        {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
+        class="{{ nesting_level > 0 ? 'dropdown-item' : 'nav-link' }} {{ active ? 'active' : '' }}"
+        {% if active %}aria-current{% endif %}
+      >
+        {{ text }}
+      </a>
+    </li>
+    {% endif %}
   {% endif %}
 {% endmacro %}
 
@@ -82,7 +69,7 @@
   <li class="nav-item">
     <a
       href="{{ home_path }}"
-      class="nav-link{% if current_path == home_path %} active{% endif %}"
+      class="nav-link {{ current_path == home_path ? 'active' : '' }}"
     >
       Home
     </a>
