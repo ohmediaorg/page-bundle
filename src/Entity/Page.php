@@ -112,6 +112,9 @@ class Page
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $redirect_external = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $nav_text = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -269,11 +272,6 @@ class Page
 
     public function isHidden(): bool
     {
-        if ($this->isHomepage()) {
-            // homepage nav link is rendered separately
-            return true;
-        }
-
         return $this->hidden;
     }
 
@@ -397,12 +395,12 @@ class Page
                 ->setNoIndex(false)
                 // homepage must be canonical to itself
                 ->setCanonical(null)
-                // homepage must be hidden from nav
-                // because the Home link handled separately
-                ->setHidden(true)
                 // homepage cannot be locked
                 ->setLocked(false);
 
+            // permissions shouldn't allow a page with child pages
+            // to become the homepage, but this is here as a failsafe
+            // so those pages don't get excluded from navigation
             foreach ($this->getPages() as $page) {
                 $page->setParent($this->getParent());
             }
@@ -610,8 +608,7 @@ class Page
     public function isNavEligible()
     {
         return $this->isPublished()
-            && !$this->isHidden()
-            && !$this->isHomepage();
+            && !$this->isHidden();
     }
 
     public function getNavPages(): Collection
@@ -619,5 +616,17 @@ class Page
         return $this->pages->filter(function (Page $page) {
             return $page->isNavEligible();
         });
+    }
+
+    public function getNavText(): ?string
+    {
+        return $this->nav_text;
+    }
+
+    public function setNavText(?string $nav_text): static
+    {
+        $this->nav_text = $nav_text;
+
+        return $this;
     }
 }

@@ -33,9 +33,7 @@ class PageManager
 
     public function updateHierarchy()
     {
-        $homepage = $this->pageRepository->findOneBy([
-            'homepage' => true,
-        ]);
+        $homepage = $this->pageRepository->getHomepage();
 
         if ($homepage) {
             $this->updateHomepageHierarchy($homepage);

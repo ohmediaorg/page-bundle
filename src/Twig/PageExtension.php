@@ -92,8 +92,12 @@ class PageExtension extends AbstractExtension
         ]);
     }
 
-    public function nav(Environment $twig, bool $showHome = true, int $maxNestingLevel = 2)
+    public function nav(Environment $twig, string $className = 'nav', int $maxNestingLevel = 1)
     {
+        // NOTE: Bootstrap only supports 1 level of dropdown out of the box
+        // still figuring out what we want to do with the navigation
+        $maxNestingLevel = 1;
+
         if ($maxNestingLevel < 0) {
             $maxNestingLevel = 0;
         }
@@ -106,6 +110,11 @@ class PageExtension extends AbstractExtension
             return $page->isNavEligible();
         });
 
+        // NOTE: homepage is handled separately because a page's path property
+        // cannot be blank and the homepage blank path is a special case
+
+        $homepage = $this->pageRepository->getHomepage();
+
         $homePath = $this->urlGenerator->generate('oh_media_page_frontend', [
             'path' => '',
         ]);
@@ -115,7 +124,9 @@ class PageExtension extends AbstractExtension
         return $twig->render('@OHMediaPage/nav.html.twig', [
             'pages' => $pages,
             'home_path' => $homePath,
-            'show_home' => $showHome,
+            'show_home' => $homepage ? $homepage->isNavEligible() : false,
+            'homepage' => $homepage,
+            'class_name' => $className,
             'current_path' => $currentPath,
             'max_nesting_level' => $maxNestingLevel,
         ]);
@@ -139,8 +150,10 @@ class PageExtension extends AbstractExtension
             array_unshift($breadcrumbs, $this->getBreadcrumb($curr, $meta));
         }
 
+        $homepage = $this->pageRepository->getHomepage();
+
         array_unshift($breadcrumbs, new Breadcrumb(
-            'Home',
+            $homepage && $homepage->getNavText() ? $homepage->getNavText() : 'Home',
             'oh_media_page_frontend',
             ['path' => '']
         ));

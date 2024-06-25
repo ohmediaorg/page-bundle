@@ -83,9 +83,7 @@ class PageRenderer
         $path = ltrim($path, '/');
 
         if (!$path) {
-            $homepage = $this->pageRepository->findOneBy([
-                'homepage' => true,
-            ]);
+            $homepage = $this->pageRepository->getHomepage();
 
             return $this->setCurrentPage($homepage);
         }
