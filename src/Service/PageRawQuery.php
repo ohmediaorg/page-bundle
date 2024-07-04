@@ -3,6 +3,8 @@
 namespace OHMedia\PageBundle\Service;
 
 use Doctrine\DBAL\Connection;
+use OHMedia\PageBundle\Entity\PageContentRow;
+use OHMedia\PageBundle\Entity\PageContentText;
 use OHMedia\WysiwygBundle\Util\Shortcode;
 
 class PageRawQuery
@@ -73,18 +75,18 @@ class PageRawQuery
     public function getPathWithShortcode(string $shortcode): ?string
     {
         // shortcodes can only be in page_content_text with type 'wysiwyg'
-        $pctCount = "
+        $pctCount = '
             SELECT COUNT(pct.id)
             FROM `page_content_text` pct
             WHERE pct.page_revision_id = pr.id
-            AND pct.type = 'wysiwyg'
+            AND pct.type = :pct_type_wysiwyg
             AND pct.text LIKE :shortcode
-        ";
+        ';
 
         // a column's content is not output if the layout does not call for it
-        $pcrOneColumnOr = "pcr.layout = 'one_column' AND pcr.column_1 LIKE :shortcode";
-        $pcrTwoColumnsOr = "pcr.layout NOT IN ('one_column', 'three_column') AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode)";
-        $pcrThreeColumnsOr = "pcr.layout = 'three_column' AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode OR pcr.column_3 LIKE :shortcode)";
+        $pcrOneColumnOr = 'pcr.layout = :pcr_one_column AND pcr.column_1 LIKE :shortcode';
+        $pcrTwoColumnsOr = 'pcr.layout NOT IN (:pcr_two_column) AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode)';
+        $pcrThreeColumnsOr = 'pcr.layout = :pcr_three_column AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode OR pcr.column_3 LIKE :shortcode)';
 
         $pcrCount = "
             SELECT COUNT(pcr.id)
@@ -108,6 +110,14 @@ class PageRawQuery
         $stmt = $this->connection->prepare($sql);
 
         $results = $stmt->execute([
+            'pct_type_wysiwyg' => PageContentText::TYPE_WYSIWYG,
+            'pcr_one_column' => PageContentRow::LAYOUT_ONE_COLUMN,
+            'pcr_two_column' => implode(', ', [
+                PageContentRow::LAYOUT_TWO_COLUMN,
+                PageContentRow::LAYOUT_SIDEBAR_LEFT,
+                PageContentRow::LAYOUT_SIDEBAR_RIGHT,
+            ]),
+            'pcr_three_column' => PageContentRow::LAYOUT_THREE_COLUMN,
             'shortcode' => '%'.Shortcode::format($shortcode).'%',
         ]);
 
