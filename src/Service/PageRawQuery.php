@@ -72,6 +72,7 @@ class PageRawQuery
 
     public function getPathWithShortcode(string $shortcode): ?string
     {
+        // shortcodes can only be in page_content_text with type 'wysiwyg'
         $pctCount = "
             SELECT COUNT(pct.id)
             FROM `page_content_text` pct
