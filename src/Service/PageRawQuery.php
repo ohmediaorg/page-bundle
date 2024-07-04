@@ -84,28 +84,39 @@ class PageRawQuery
         ';
 
         // a column's content is not output if the layout does not call for it
-        $pcrOneColumnOr = 'pcr.layout = :pcr_one_column AND pcr.column_1 LIKE :shortcode';
-        $pcrTwoColumnsOr = 'pcr.layout IN (:pcr_two_column) AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode)';
-        $pcrThreeColumnsOr = 'pcr.layout = :pcr_three_column AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode OR pcr.column_3 LIKE :shortcode)';
+        $pcrOneColumnOr = '(pcr.layout = :pcr_one_column AND pcr.column_1 LIKE :shortcode)';
+        $pcrTwoColumnsOr = '(pcr.layout IN (:pcr_two_column) AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode))';
+        $pcrThreeColumnsOr = '(pcr.layout = :pcr_three_column AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode OR pcr.column_3 LIKE :shortcode))';
 
-        $pcrCount = "
+        $pcrOrs = [
+            $pcrOneColumnOr,
+            $pcrTwoColumnsOr,
+            $pcrThreeColumnsOr,
+        ];
+
+        $pcrCount = '
             SELECT COUNT(pcr.id)
             FROM `page_content_row` pcr
             WHERE pcr.page_revision_id = pr.id
-            AND (($pcrOneColumnOr) OR ($pcrTwoColumnsOr) OR ($pcrThreeColumnsOr))
-        ";
+            AND ('.implode(' OR ', $pcrOrs).')
+        ';
 
-        $sql = "
-            SELECT p.path
+        $countOrs = [
+            "($pctCount) > 0",
+            "($pcrCount) > 0",
+        ];
+
+        $sql = '
+            SELECT pr.id, p.path
             FROM `page_revision` pr
             JOIN `page` p on p.id = pr.page_id
             WHERE pr.published = 1
             AND p.published IS NOT NULL
             AND p.published < UTC_TIMESTAMP()
-            AND (($pctCount) > 0 OR ($pcrCount) > 0)
+            AND ('.implode(' OR ', $countOrs).')
             ORDER BY pr.updated_at DESC
             LIMIT 1
-        ";
+        ';
 
         $stmt = $this->connection->prepare($sql);
 
