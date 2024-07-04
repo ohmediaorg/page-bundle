@@ -85,7 +85,7 @@ class PageRawQuery
 
         // a column's content is not output if the layout does not call for it
         $pcrOneColumnOr = 'pcr.layout = :pcr_one_column AND pcr.column_1 LIKE :shortcode';
-        $pcrTwoColumnsOr = 'pcr.layout NOT IN (:pcr_two_column) AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode)';
+        $pcrTwoColumnsOr = 'pcr.layout IN (:pcr_two_column) AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode)';
         $pcrThreeColumnsOr = 'pcr.layout = :pcr_three_column AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode OR pcr.column_3 LIKE :shortcode)';
 
         $pcrCount = "
