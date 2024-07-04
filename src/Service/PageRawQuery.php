@@ -105,11 +105,11 @@ class PageRawQuery
 
         $stmt = $this->connection->prepare($sql);
 
-        $stmt->execute([
+        $results = $stmt->execute([
             'shortcode' => '%'.Shortcode::format($shortcode).'%',
         ]);
 
-        $result = $stmt->fetch();
+        $result = $results->fetch();
 
         return $result['path'] ?? null;
     }
