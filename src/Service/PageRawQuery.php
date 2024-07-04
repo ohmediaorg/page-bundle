@@ -80,6 +80,7 @@ class PageRawQuery
             AND pct.text LIKE :shortcode
         ";
 
+        // a column's content is not output if the layout does not call for it
         $pcrOneColumnOr = "pcr.layout = 'one_column' AND pcr.column_1 LIKE :shortcode";
         $pcrTwoColumnsOr = "pcr.layout NOT IN ('one_column', 'three_column') AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode)";
         $pcrThreeColumnsOr = "pcr.layout = 'three_column' AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode OR pcr.column_3 LIKE :shortcode)";
