@@ -3,6 +3,7 @@
 namespace OHMedia\PageBundle\Service;
 
 use Doctrine\DBAL\Connection;
+use OHMedia\WysiwygBundle\Util\Shortcode;
 
 class PageRawQuery
 {
@@ -67,5 +68,49 @@ class PageRawQuery
         $fields['id'] = $id;
 
         $stmt->execute($fields);
+    }
+
+    public function getPathWithShortcode(string $shortcode): ?string
+    {
+        $pctCount = "
+            SELECT COUNT(pct.id)
+            FROM `page_content_text` pct
+            WHERE pct.page_revision_id = pr.id
+            AND pct.type = 'wysiwyg'
+            AND pct.text LIKE :shortcode
+        ";
+
+        $pcrOneColumnOr = "pcr.layout = 'one_column' AND pcr.column_1 LIKE :shortcode";
+        $pcrTwoColumnsOr = "pcr.layout NOT IN ('one_column', 'three_column') AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode)";
+        $pcrThreeColumnsOr = "pcr.layout = 'three_column' AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode OR pcr.column_3 LIKE :shortcode)";
+
+        $pcrCount = "
+            SELECT COUNT(pcr.id)
+            FROM `page_content_row` pcr
+            WHERE pcr.page_revision_id = pr.id
+            AND (($pcrOneColumnOr) OR ($pcrTwoColumnsOr) OR ($pcrThreeColumnsOr))
+        ";
+
+        $sql = "
+            SELECT p.path
+            FROM `page_revision` pr
+            JOIN `page` p on p.id = pr.page_id
+            WHERE pr.published = 1
+            AND p.published IS NOT NULL
+            AND p.published < UTC_TIMESTAMP()
+            AND (($pctCount) > 0 OR ($pcrCount) > 0)
+            ORDER BY pr.updated_at DESC
+            LIMIT 1
+        ";
+
+        $stmt = $this->connection->prepare($sql);
+
+        $stmt->execute([
+            'shortcode' => '%'.Shortcode::format($shortcode).'%',
+        ]);
+
+        $result = $stmt->fetch();
+
+        return $result['path'] ?? null;
     }
 }
