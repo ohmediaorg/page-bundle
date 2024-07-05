@@ -109,7 +109,7 @@ class PageRawQuery
         // the subselect in the WHERE clauses ensures we are dealing with the
         // most-recent (ie. Live) revision
         $sql = '
-            SELECT pr.id, p.path
+            SELECT p.path
             FROM `page_revision` pr
             JOIN `page` p on p.id = pr.page_id
             WHERE p.published IS NOT NULL
