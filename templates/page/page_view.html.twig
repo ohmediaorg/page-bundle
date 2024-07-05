@@ -81,7 +81,7 @@
 {% block actions %}
 <div class="btn-group btn-group-sm" role="group" aria-label="Page actions">
   {% if page.isPublished %}
-  <a href="{{ path('oh_media_page_frontend', {path: page.path}) }}" class="btn btn-outline-dark" target="_blank" rel="noopener">
+  <a href="{{ page_path(page.path) }}" class="btn btn-outline-dark" target="_blank" rel="noopener">
     Live Page
   </a>
   {% endif %}

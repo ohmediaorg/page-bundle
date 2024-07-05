@@ -26,6 +26,7 @@ class PageExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
+            new TwigFunction('page_path', [$this, 'path']),
             new TwigFunction('page_breadcrumbs', [$this, 'breadcrumbs'], [
                 'needs_environment' => true,
                 'is_safe' => ['html'],
@@ -39,6 +40,13 @@ class PageExtension extends AbstractExtension
                 'is_safe' => ['html'],
             ]),
         ];
+    }
+
+    public function path(string $path): string
+    {
+        return $this->urlGenerator->generate('oh_media_page_frontend', [
+            'path' => $path,
+        ]);
     }
 
     public function breadcrumbs(Environment $twig)
@@ -115,9 +123,7 @@ class PageExtension extends AbstractExtension
 
         $homepage = $this->pageRepository->getHomepage();
 
-        $homePath = $this->urlGenerator->generate('oh_media_page_frontend', [
-            'path' => '',
-        ]);
+        $homePath = $this->path('');
 
         $currentPath = $this->requestStack->getCurrentRequest()->getPathInfo();
 
