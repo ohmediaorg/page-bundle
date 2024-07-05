@@ -71,7 +71,7 @@ class PageRevision
         foreach ($pageContents as $pageContent) {
             $clone = clone $pageContent;
 
-            $this->addPageContent($pageContent);
+            $this->addPageContent($clone);
         }
     }
 
