@@ -152,6 +152,21 @@ class PageRevision
         return $this;
     }
 
+    public function removePageContent(AbstractPageContent $pageContent)
+    {
+        if ($pageContent instanceof PageContentCheckbox) {
+            return $this->removePageContentCheckbox($pageContent);
+        } elseif ($pageContent instanceof PageContentImage) {
+            return $this->removePageContentImage($pageContent);
+        } elseif ($pageContent instanceof PageContentRow) {
+            return $this->removePageContentRow($pageContent);
+        } elseif ($pageContent instanceof PageContentText) {
+            return $this->removePageContentText($pageContent);
+        }
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, PageContentCheckbox>
      */
