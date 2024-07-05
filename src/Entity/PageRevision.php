@@ -52,6 +52,8 @@ class PageRevision
     {
         $dateTime = $this->updated_at ?: new \DateTime();
 
+        $dateTime->setTimeZone(new \DateTimeZone(date_default_timezone_get()));
+
         return $dateTime->format('M j, Y @ g:ia');
     }
 
