@@ -2,6 +2,7 @@
 
 namespace OHMedia\PageBundle\Controller\Backend;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\PageBundle\Entity\AbstractPageContent;
 use OHMedia\PageBundle\Entity\Page;
@@ -20,8 +21,10 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Admin]
 class PageRevisionBackendController extends AbstractController
 {
-    public function __construct(private PageRevisionRepository $pageRevisionRepository)
-    {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private PageRevisionRepository $pageRevisionRepository
+    ) {
     }
 
     #[Route('/page/{id}/revision/create', name: 'page_revision_create', methods: ['GET', 'POST'])]
@@ -202,12 +205,41 @@ class PageRevisionBackendController extends AbstractController
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $pageRevision->setPublished(true);
             $pageRevision->setUpdatedAt(new \DateTime());
+
+            $this->removePageContent($pageRevision);
+
             $this->pageRevisionRepository->save($pageRevision, true);
 
             $this->addFlash('notice', 'The page revision was published.');
         }
 
         return $this->redirectToParentPage($pageRevision);
+    }
+
+    /**
+     * Remove AbstractPageContent entities that are not relevant to the current template.
+     */
+    private function removePageContent(PageRevision $pageRevision): void
+    {
+        $contentForm = $this->createForm($pageRevision->getTemplate(), $pageRevision);
+
+        $pageContents = $pageRevision->getPageContents();
+
+        foreach ($pageContents as $pageContent) {
+            $name = $pageContent->getName();
+
+            if ($contentForm->has($name)) {
+                $dataClass = $contentForm->get($name)->getConfig()->getDataClass();
+
+                if ($dataClass === $pageContent::class) {
+                    continue;
+                }
+            }
+
+            $pageRevision->removePageContent($pageContent);
+
+            $this->entityManager->remove($pageContent);
+        }
     }
 
     #[Route('/page/revision/{id}/delete', name: 'page_revision_delete', methods: ['GET', 'POST'])]
