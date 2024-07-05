@@ -61,40 +61,17 @@ class PageRevision
 
         $this->published = false;
 
-        $pageContentCheckboxes = $this->pageContentCheckboxes;
+        $pageContents = $this->getPageContents();
+
         $this->pageContentCheckboxes = new ArrayCollection();
-
-        foreach ($pageContentCheckboxes as $pageContentCheckbox) {
-            $clone = clone $pageContentCheckbox;
-
-            $this->addPageContentCheckbox($clone);
-        }
-
-        $pageContentImages = $this->pageContentImages;
         $this->pageContentImages = new ArrayCollection();
-
-        foreach ($pageContentImages as $pageContentImage) {
-            $clone = clone $pageContentImage;
-
-            $this->addPageContentImage($clone);
-        }
-
-        $pageContentRows = $this->pageContentRows;
         $this->pageContentRows = new ArrayCollection();
-
-        foreach ($pageContentRows as $pageContentRow) {
-            $clone = clone $pageContentRow;
-
-            $this->addPageContentRow($clone);
-        }
-
-        $pageContentTexts = $this->pageContentTexts;
         $this->pageContentTexts = new ArrayCollection();
 
-        foreach ($pageContentTexts as $pageContentText) {
-            $clone = clone $pageContentText;
+        foreach ($pageContents as $pageContent) {
+            $clone = clone $pageContent;
 
-            $this->addPageContentText($clone);
+            $this->addPageContent($pageContent);
         }
     }
 
@@ -146,6 +123,18 @@ class PageRevision
         $this->page = $page;
 
         return $this;
+    }
+
+    public function getPageContents(): Collection
+    {
+        return new ArrayCollection(
+            array_merge(
+                $this->pageContentCheckboxes->toArray(),
+                $this->pageContentImages->toArray(),
+                $this->pageContentRows->toArray(),
+                $this->pageContentTexts->toArray(),
+            ),
+        );
     }
 
     public function addPageContent(AbstractPageContent $pageContent)
