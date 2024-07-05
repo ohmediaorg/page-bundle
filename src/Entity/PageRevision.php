@@ -189,7 +189,7 @@ class PageRevision
     {
         if ($this->pageContentCheckboxes->removeElement($pageContentCheckbox)) {
             // set the owning side to null (unless already changed)
-            if ($pageContentCheckbox->getPage() === $this) {
+            if ($pageContentCheckbox->getPageRevision() === $this) {
                 $pageContentCheckbox->setPageRevision(null);
             }
         }
@@ -230,7 +230,7 @@ class PageRevision
     {
         if ($this->pageContentImages->removeElement($pageContentImage)) {
             // set the owning side to null (unless already changed)
-            if ($pageContentImage->getPage() === $this) {
+            if ($pageContentImage->getPageRevision() === $this) {
                 $pageContentImage->setPageRevision(null);
             }
         }
@@ -271,7 +271,7 @@ class PageRevision
     {
         if ($this->pageContentRows->removeElement($pageContentRow)) {
             // set the owning side to null (unless already changed)
-            if ($pageContentRow->getPage() === $this) {
+            if ($pageContentRow->getPageRevision() === $this) {
                 $pageContentRow->setPageRevision(null);
             }
         }
@@ -312,7 +312,7 @@ class PageRevision
     {
         if ($this->pageContentTexts->removeElement($pageContentText)) {
             // set the owning side to null (unless already changed)
-            if ($pageContentText->getPage() === $this) {
+            if ($pageContentText->getPageRevision() === $this) {
                 $pageContentText->setPageRevision(null);
             }
         }
