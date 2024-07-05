@@ -74,7 +74,7 @@ class PageRawQuery
 
     public function getPathWithShortcode(string $shortcode): ?string
     {
-        // shortcodes can only be in page_content_text with type 'wysiwyg'
+        // shortcodes can only be in PageContentText::TYPE_WYSIWYG
         $pctCount = '
             SELECT COUNT(pct.id)
             FROM `page_content_text` pct
@@ -85,7 +85,7 @@ class PageRawQuery
 
         // a column's content is not output if the layout does not call for it
         $pcrOneColumnOr = '(pcr.layout = :pcr_one_column AND pcr.column_1 LIKE :shortcode)';
-        $pcrTwoColumnsOr = '(pcr.layout IN (:pcr_two_column) AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode))';
+        $pcrTwoColumnsOr = '(pcr.layout IN (:pcr_two_column, :pcr_sidebar_left, :pcr_sidebar_right) AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode))';
         $pcrThreeColumnsOr = '(pcr.layout = :pcr_three_column AND (pcr.column_1 LIKE :shortcode OR pcr.column_2 LIKE :shortcode OR pcr.column_3 LIKE :shortcode))';
 
         $pcrOrs = [
@@ -106,16 +106,23 @@ class PageRawQuery
             "($pcrCount) > 0",
         ];
 
+        // the subselect in the WHERE clauses ensures we are dealing with the
+        // most-recent (ie. Live) revision
         $sql = '
             SELECT pr.id, p.path
             FROM `page_revision` pr
             JOIN `page` p on p.id = pr.page_id
-            WHERE pr.published = 1
-            AND p.published IS NOT NULL
+            WHERE p.published IS NOT NULL
             AND p.published < UTC_TIMESTAMP()
+            AND (
+                SELECT pr_sub.id
+                FROM `page_revision` pr_sub
+                WHERE pr_sub.page_id = p.id
+                AND pr_sub.published = 1
+                ORDER BY pr_sub.updated_at DESC
+                LIMIT 1
+            ) = pr.id
             AND ('.implode(' OR ', $countOrs).')
-            ORDER BY pr.updated_at DESC
-            LIMIT 1
         ';
 
         $stmt = $this->connection->prepare($sql);
@@ -123,11 +130,9 @@ class PageRawQuery
         $results = $stmt->execute([
             'pct_type_wysiwyg' => PageContentText::TYPE_WYSIWYG,
             'pcr_one_column' => PageContentRow::LAYOUT_ONE_COLUMN,
-            'pcr_two_column' => implode(', ', [
-                PageContentRow::LAYOUT_TWO_COLUMN,
-                PageContentRow::LAYOUT_SIDEBAR_LEFT,
-                PageContentRow::LAYOUT_SIDEBAR_RIGHT,
-            ]),
+            'pcr_two_column' => PageContentRow::LAYOUT_TWO_COLUMN,
+            'pcr_sidebar_left' => PageContentRow::LAYOUT_SIDEBAR_LEFT,
+            'pcr_sidebar_right' => PageContentRow::LAYOUT_SIDEBAR_RIGHT,
             'pcr_three_column' => PageContentRow::LAYOUT_THREE_COLUMN,
             'shortcode' => '%'.Shortcode::format($shortcode).'%',
         ]);
