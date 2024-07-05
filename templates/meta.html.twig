@@ -12,9 +12,7 @@
   {% set canonical_path = page.path %}
 {% endif %}
 
-{% set canonical_url = path('oh_media_page_frontend', {
-  path: canonical_path,
-}) %}
+{% set canonical_url = page_path(canonical_path) %}
 <link rel="canonical" href="{{ absolute_url(canonical_url) }}" />
 
 <script type="application/ld+json">{{ breadcrumb_schema|json_encode|raw }}</script>

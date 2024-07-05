@@ -8,15 +8,11 @@
 
   {% if show_page_link %}
     {% if page.isRedirectTypeInternal %}
-      {% set page_path = path('oh_media_page_frontend', {
-        path: page.redirectInternal.path
-      }) %}
+      {% set page_path = page_path(page.redirectInternal.path) %}
     {% elseif page.isRedirectTypeExternal %}
       {% set page_path = page.redirectExternal %}
     {% else %}
-      {% set page_path = path('oh_media_page_frontend', {
-        path: page.path
-      }) %}
+      {% set page_path = page_path(page.path) %}
     {% endif %}
 
     {% set text = page.navText ?: page.name %}
