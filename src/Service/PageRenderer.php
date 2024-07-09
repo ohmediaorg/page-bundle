@@ -66,7 +66,7 @@ class PageRenderer
             return '';
         }
 
-        if ($this->currentPage->isDynamic()) {
+        if ($this->currentPage->isDynamic() && $this->dynamicPart) {
             return $this->currentPage->getPath().'/'.$this->dynamicPart;
         }
 
