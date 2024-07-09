@@ -115,6 +115,9 @@ class Page
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nav_text = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $dynamic = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -626,6 +629,18 @@ class Page
     public function setNavText(?string $nav_text): static
     {
         $this->nav_text = $nav_text;
+
+        return $this;
+    }
+
+    public function isDynamic(): ?bool
+    {
+        return $this->dynamic;
+    }
+
+    public function setDynamic(?bool $dynamic): static
+    {
+        $this->dynamic = $dynamic;
 
         return $this;
     }
