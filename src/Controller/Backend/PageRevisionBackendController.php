@@ -253,6 +253,10 @@ class PageRevisionBackendController extends AbstractController
 
     private function hasDynamicShortcode(PageRevision $pageRevision, ShortcodeManager $shortcodeManager)
     {
+        if ($pageRevision->getPage()->isHomepage()) {
+            return false;
+        }
+
         $dynamicShortcodes = $shortcodeManager->getDynamicShortcodes();
 
         $pageContentTexts = $pageRevision->getPageContentTexts();
