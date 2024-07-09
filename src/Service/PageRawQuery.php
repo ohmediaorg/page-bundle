@@ -114,6 +114,8 @@ class PageRawQuery
             JOIN `page` p on p.id = pr.page_id
             WHERE p.published IS NOT NULL
             AND p.published < UTC_TIMESTAMP()
+            AND p.dynamic = 1
+            AND (p.homepage IS NULL OR p.homepage = 0)
             AND (
                 SELECT pr_sub.id
                 FROM `page_revision` pr_sub
