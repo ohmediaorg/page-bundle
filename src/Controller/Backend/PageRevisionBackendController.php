@@ -206,7 +206,7 @@ class PageRevisionBackendController extends AbstractController
             $pageRevision->setPublished(true);
             $pageRevision->setUpdatedAt(new \DateTime());
 
-            $this->removePageContent($pageRevision);
+            $this->purgePageContent($pageRevision);
 
             $this->pageRevisionRepository->save($pageRevision, true);
 
@@ -217,9 +217,9 @@ class PageRevisionBackendController extends AbstractController
     }
 
     /**
-     * Remove AbstractPageContent entities that are not relevant to the current template.
+     * Removes AbstractPageContent entities that are not relevant to the current template.
      */
-    private function removePageContent(PageRevision $pageRevision): void
+    private function purgePageContent(PageRevision $pageRevision): void
     {
         $contentForm = $this->createForm($pageRevision->getTemplate(), $pageRevision);
 
