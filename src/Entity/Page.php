@@ -399,7 +399,10 @@ class Page
                 // homepage must be canonical to itself
                 ->setCanonical(null)
                 // homepage cannot be locked
-                ->setLocked(false);
+                ->setLocked(false)
+                // homepage cannot be dynamic
+                ->setDynamic(false)
+            ;
 
             // permissions shouldn't allow a page with child pages
             // to become the homepage, but this is here as a failsafe
@@ -635,6 +638,11 @@ class Page
 
     public function isDynamic(): ?bool
     {
+        if ($this->isHomepage()) {
+            // homepage cannot be dynamic
+            return false;
+        }
+
         return $this->dynamic;
     }
 
