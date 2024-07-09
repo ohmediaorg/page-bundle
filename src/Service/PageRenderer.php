@@ -130,6 +130,7 @@ class PageRenderer
 
             $dynamicPage = $this->pageRepository->findOneBy([
                 'path' => $dynamicPath,
+                'dynamic' => true,
             ]);
         }
 
