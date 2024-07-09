@@ -261,6 +261,10 @@ class PageRevisionBackendController extends AbstractController
 
         $dynamicShortcodes = $shortcodeManager->getDynamicShortcodes();
 
+        if (!$dynamicShortcodes) {
+            return false;
+        }
+
         $pageContentTexts = $pageRevision->getPageContentTexts();
 
         foreach ($pageContentTexts as $pageContentText) {
