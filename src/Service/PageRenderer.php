@@ -16,7 +16,6 @@ class PageRenderer
     private ?PageRevision $currentPageRevision = null;
     private ?string $dynamicPart = null;
     private ?Meta $metaEntity = null;
-    private ?string $canonicalPath = null;
 
     public function __construct(
         private Environment $twig,
@@ -58,8 +57,6 @@ class PageRenderer
     {
         $this->metaEntity = $metaEntity;
 
-        $this->canonicalPath = $this->currentPage->getPath().'/'.$this->dynamicPart;
-
         return $this;
     }
 
@@ -69,8 +66,8 @@ class PageRenderer
             return '';
         }
 
-        if ($this->canonicalPath) {
-            return $this->canonicalPath;
+        if ($this->currentPage->isDynamic()) {
+            return $this->currentPage->getPath().'/'.$this->dynamicPart;
         }
 
         $canonicalPage = $this->currentPage->getCanonical();
