@@ -60,6 +60,25 @@ class PageRenderer
         return $this;
     }
 
+    public function getCanonicalPath(): ?string
+    {
+        if ($this->currentPage->isHomepage()) {
+            return '';
+        }
+
+        if ($this->currentPage->isDynamic() && $this->dynamicPart) {
+            return $this->currentPage->getPath().'/'.$this->dynamicPart;
+        }
+
+        $canonicalPage = $this->currentPage->getCanonical();
+
+        if ($canonicalPage && $canonicalPage->isVisibleToPublic()) {
+            return $canonicalPage->getPath();
+        }
+
+        return $this->currentPage->getPath();
+    }
+
     public function setCurrentPageRevision(PageRevision $pageRevision): self
     {
         $this->currentPageRevision = $pageRevision;
@@ -108,6 +127,7 @@ class PageRenderer
 
             $dynamicPage = $this->pageRepository->findOneBy([
                 'path' => $dynamicPath,
+                'dynamic' => true,
             ]);
         }
 

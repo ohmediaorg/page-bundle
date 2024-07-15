@@ -72,6 +72,8 @@ class PageExtension extends AbstractExtension
 
         $meta = $this->pageRenderer->getMetaEntity();
 
+        $canonicalPath = $this->pageRenderer->getCanonicalPath();
+
         $breadcrumbs = $this->getBreadcrumbs($page);
 
         $breadcrumbSchema = [
@@ -96,6 +98,7 @@ class PageExtension extends AbstractExtension
         return $twig->render('@OHMediaPage/meta.html.twig', [
             'page' => $page,
             'meta' => $meta,
+            'canonical_path' => $canonicalPath,
             'breadcrumb_schema' => $breadcrumbSchema,
         ]);
     }

@@ -43,6 +43,11 @@ class PageContentRow extends AbstractPageContent
         return $this;
     }
 
+    public function layoutHasOneColumn()
+    {
+        return !empty($this->layout);
+    }
+
     public function layoutHasTwoColumns()
     {
         return in_array($this->layout, [

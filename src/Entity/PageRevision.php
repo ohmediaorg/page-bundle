@@ -52,6 +52,8 @@ class PageRevision
     {
         $dateTime = $this->updated_at ?: new \DateTime();
 
+        $dateTime->setTimeZone(new \DateTimeZone(date_default_timezone_get()));
+
         return $dateTime->format('M j, Y @ g:ia');
     }
 
@@ -61,40 +63,17 @@ class PageRevision
 
         $this->published = false;
 
-        $pageContentCheckboxes = $this->pageContentCheckboxes;
+        $pageContents = $this->getPageContents();
+
         $this->pageContentCheckboxes = new ArrayCollection();
-
-        foreach ($pageContentCheckboxes as $pageContentCheckbox) {
-            $clone = clone $pageContentCheckbox;
-
-            $this->addPageContentCheckbox($clone);
-        }
-
-        $pageContentImages = $this->pageContentImages;
         $this->pageContentImages = new ArrayCollection();
-
-        foreach ($pageContentImages as $pageContentImage) {
-            $clone = clone $pageContentImage;
-
-            $this->addPageContentImage($clone);
-        }
-
-        $pageContentRows = $this->pageContentRows;
         $this->pageContentRows = new ArrayCollection();
-
-        foreach ($pageContentRows as $pageContentRow) {
-            $clone = clone $pageContentRow;
-
-            $this->addPageContentRow($clone);
-        }
-
-        $pageContentTexts = $this->pageContentTexts;
         $this->pageContentTexts = new ArrayCollection();
 
-        foreach ($pageContentTexts as $pageContentText) {
-            $clone = clone $pageContentText;
+        foreach ($pageContents as $pageContent) {
+            $clone = clone $pageContent;
 
-            $this->addPageContentText($clone);
+            $this->addPageContent($clone);
         }
     }
 
@@ -148,6 +127,18 @@ class PageRevision
         return $this;
     }
 
+    public function getPageContents(): Collection
+    {
+        return new ArrayCollection(
+            array_merge(
+                $this->pageContentCheckboxes->toArray(),
+                $this->pageContentImages->toArray(),
+                $this->pageContentRows->toArray(),
+                $this->pageContentTexts->toArray(),
+            ),
+        );
+    }
+
     public function addPageContent(AbstractPageContent $pageContent)
     {
         if ($pageContent instanceof PageContentCheckbox) {
@@ -158,6 +149,21 @@ class PageRevision
             return $this->addPageContentRow($pageContent);
         } elseif ($pageContent instanceof PageContentText) {
             return $this->addPageContentText($pageContent);
+        }
+
+        return $this;
+    }
+
+    public function removePageContent(AbstractPageContent $pageContent)
+    {
+        if ($pageContent instanceof PageContentCheckbox) {
+            return $this->removePageContentCheckbox($pageContent);
+        } elseif ($pageContent instanceof PageContentImage) {
+            return $this->removePageContentImage($pageContent);
+        } elseif ($pageContent instanceof PageContentRow) {
+            return $this->removePageContentRow($pageContent);
+        } elseif ($pageContent instanceof PageContentText) {
+            return $this->removePageContentText($pageContent);
         }
 
         return $this;
@@ -185,7 +191,7 @@ class PageRevision
     {
         if ($this->pageContentCheckboxes->removeElement($pageContentCheckbox)) {
             // set the owning side to null (unless already changed)
-            if ($pageContentCheckbox->getPage() === $this) {
+            if ($pageContentCheckbox->getPageRevision() === $this) {
                 $pageContentCheckbox->setPageRevision(null);
             }
         }
@@ -226,7 +232,7 @@ class PageRevision
     {
         if ($this->pageContentImages->removeElement($pageContentImage)) {
             // set the owning side to null (unless already changed)
-            if ($pageContentImage->getPage() === $this) {
+            if ($pageContentImage->getPageRevision() === $this) {
                 $pageContentImage->setPageRevision(null);
             }
         }
@@ -267,7 +273,7 @@ class PageRevision
     {
         if ($this->pageContentRows->removeElement($pageContentRow)) {
             // set the owning side to null (unless already changed)
-            if ($pageContentRow->getPage() === $this) {
+            if ($pageContentRow->getPageRevision() === $this) {
                 $pageContentRow->setPageRevision(null);
             }
         }
@@ -308,7 +314,7 @@ class PageRevision
     {
         if ($this->pageContentTexts->removeElement($pageContentText)) {
             // set the owning side to null (unless already changed)
-            if ($pageContentText->getPage() === $this) {
+            if ($pageContentText->getPageRevision() === $this) {
                 $pageContentText->setPageRevision(null);
             }
         }

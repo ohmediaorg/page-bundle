@@ -2,13 +2,17 @@
 
 namespace OHMedia\PageBundle\Controller\Backend;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
+use OHMedia\BackendBundle\Shortcodes\ShortcodeManager;
 use OHMedia\PageBundle\Entity\AbstractPageContent;
 use OHMedia\PageBundle\Entity\Page;
+use OHMedia\PageBundle\Entity\PageContentText;
 use OHMedia\PageBundle\Entity\PageRevision;
 use OHMedia\PageBundle\Form\PageRevisionType;
 use OHMedia\PageBundle\Repository\PageRevisionRepository;
 use OHMedia\PageBundle\Security\Voter\PageRevisionVoter;
+use OHMedia\PageBundle\Service\PageRawQuery;
 use OHMedia\PageBundle\Service\PageRenderer;
 use OHMedia\SecurityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,8 +24,10 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Admin]
 class PageRevisionBackendController extends AbstractController
 {
-    public function __construct(private PageRevisionRepository $pageRevisionRepository)
-    {
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private PageRevisionRepository $pageRevisionRepository
+    ) {
     }
 
     #[Route('/page/{id}/revision/create', name: 'page_revision_create', methods: ['GET', 'POST'])]
@@ -188,7 +194,9 @@ class PageRevisionBackendController extends AbstractController
     #[Route('/page/revision/{id}/publish', name: 'page_revision_publish', methods: ['POST'])]
     public function publishAction(
         Request $request,
+        PageRawQuery $pageRawQuery,
         PageRevision $pageRevision,
+        ShortcodeManager $shortcodeManager,
     ) {
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::PUBLISH,
@@ -202,12 +210,118 @@ class PageRevisionBackendController extends AbstractController
         if ($this->isCsrfTokenValid($csrfTokenName, $csrfTokenValue)) {
             $pageRevision->setPublished(true);
             $pageRevision->setUpdatedAt(new \DateTime());
+
+            $this->purgePageContent($pageRevision);
+
             $this->pageRevisionRepository->save($pageRevision, true);
+
+            $isDynamic = $this->hasDynamicShortcode($pageRevision, $shortcodeManager);
+
+            $pageRawQuery->update($pageRevision->getPage()->getId(), [
+                'dynamic' => $isDynamic,
+            ]);
 
             $this->addFlash('notice', 'The page revision was published.');
         }
 
         return $this->redirectToParentPage($pageRevision);
+    }
+
+    /**
+     * Removes AbstractPageContent entities that are not relevant to the current template.
+     */
+    private function purgePageContent(PageRevision $pageRevision): void
+    {
+        $contentForm = $this->createForm($pageRevision->getTemplate(), $pageRevision);
+
+        $pageContents = $pageRevision->getPageContents();
+
+        foreach ($pageContents as $pageContent) {
+            $name = $pageContent->getName();
+
+            if ($contentForm->has($name)) {
+                $dataClass = $contentForm->get($name)->getConfig()->getDataClass();
+
+                if ($dataClass === $pageContent::class) {
+                    continue;
+                }
+            }
+
+            $pageRevision->removePageContent($pageContent);
+
+            $this->entityManager->remove($pageContent);
+        }
+    }
+
+    private function hasDynamicShortcode(PageRevision $pageRevision, ShortcodeManager $shortcodeManager)
+    {
+        if ($pageRevision->getPage()->isHomepage()) {
+            return false;
+        }
+
+        $dynamicShortcodes = $shortcodeManager->getDynamicShortcodes();
+
+        if (!$dynamicShortcodes) {
+            return false;
+        }
+
+        $pageContentTexts = $pageRevision->getPageContentTexts();
+
+        foreach ($pageContentTexts as $pageContentText) {
+            if (PageContentText::TYPE_WYSIWYG !== $pageContentText->getType()) {
+                continue;
+            }
+
+            $text = $pageContentText->getText();
+
+            foreach ($dynamicShortcodes as $dynamicShortcode) {
+                if (str_contains($text, $dynamicShortcode)) {
+                    return true;
+                }
+            }
+        }
+
+        $pageContentRows = $pageRevision->getPageContentRows();
+
+        foreach ($pageContentRows as $pageContentRow) {
+            if (!$pageContentRow->layoutHasOneColumn()) {
+                continue;
+            }
+
+            $column1 = $pageContentRow->getColumn1();
+
+            foreach ($dynamicShortcodes as $dynamicShortcode) {
+                if (str_contains($column1, $dynamicShortcode)) {
+                    return true;
+                }
+            }
+
+            if (!$pageContentRow->layoutHasTwoColumns()) {
+                continue;
+            }
+
+            $column2 = $pageContentRow->getColumn2();
+
+            foreach ($dynamicShortcodes as $dynamicShortcode) {
+                if (str_contains($column2, $dynamicShortcode)) {
+                    return true;
+                }
+            }
+
+            if (!$pageContentRow->layoutHasThreeColumns()) {
+                continue;
+            }
+
+            $column3 = $pageContentRow->getColumn3();
+
+            foreach ($dynamicShortcodes as $dynamicShortcode) {
+                if (str_contains($column3, $dynamicShortcode)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     #[Route('/page/revision/{id}/delete', name: 'page_revision_delete', methods: ['GET', 'POST'])]
