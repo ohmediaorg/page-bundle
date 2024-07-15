@@ -16,7 +16,7 @@ use OHMedia\PageBundle\Security\Voter\PageRevisionVoter;
 use OHMedia\PageBundle\Security\Voter\PageVoter;
 use OHMedia\PageBundle\Service\PageManager;
 use OHMedia\PageBundle\Service\PageRawQuery;
-use OHMedia\SecurityBundle\Form\DeleteType;
+use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;

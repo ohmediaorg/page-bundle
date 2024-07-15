@@ -14,7 +14,7 @@ use OHMedia\PageBundle\Repository\PageRevisionRepository;
 use OHMedia\PageBundle\Security\Voter\PageRevisionVoter;
 use OHMedia\PageBundle\Service\PageRawQuery;
 use OHMedia\PageBundle\Service\PageRenderer;
-use OHMedia\SecurityBundle\Form\DeleteType;
+use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
