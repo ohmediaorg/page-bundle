@@ -10,8 +10,8 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\MetaBundle\Entity\Meta;
 use OHMedia\PageBundle\Repository\PageRepository;
-use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
 use OHMedia\TimezoneBundle\Util\DateTimeUtil;
+use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Page
 {
-    use BlameableTrait;
+    use BlameableEntityTrait;
 
     public const ORDER_LOCAL_END = 9999;
 

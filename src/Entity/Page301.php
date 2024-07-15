@@ -4,12 +4,12 @@ namespace OHMedia\PageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\PageBundle\Repository\Page301Repository;
-use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
+use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 
 #[ORM\Entity(repositoryClass: Page301Repository::class)]
 class Page301
 {
-    use BlameableTrait;
+    use BlameableEntityTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -3,12 +3,12 @@
 namespace OHMedia\PageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use OHMedia\SecurityBundle\Entity\Traits\BlameableTrait;
+use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 
 #[ORM\MappedSuperclass]
 abstract class AbstractPageContent
 {
-    use BlameableTrait;
+    use BlameableEntityTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
