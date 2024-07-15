@@ -115,6 +115,9 @@ class Page
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nav_text = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $dynamic = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -396,7 +399,10 @@ class Page
                 // homepage must be canonical to itself
                 ->setCanonical(null)
                 // homepage cannot be locked
-                ->setLocked(false);
+                ->setLocked(false)
+                // homepage cannot be dynamic
+                ->setDynamic(false)
+            ;
 
             // permissions shouldn't allow a page with child pages
             // to become the homepage, but this is here as a failsafe
@@ -626,6 +632,23 @@ class Page
     public function setNavText(?string $nav_text): static
     {
         $this->nav_text = $nav_text;
+
+        return $this;
+    }
+
+    public function isDynamic(): ?bool
+    {
+        if ($this->isHomepage()) {
+            // homepage cannot be dynamic
+            return false;
+        }
+
+        return $this->dynamic;
+    }
+
+    public function setDynamic(?bool $dynamic): static
+    {
+        $this->dynamic = $dynamic;
 
         return $this;
     }
