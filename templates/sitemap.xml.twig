@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+    http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+{% for sitemap_url in sitemap_urls %}
+<url>
+  <loc>{{ absolute_url(path('oh_media_page_frontend', {path: sitemap_url.path})) }}</loc>
+  <lastmod>{{ sitemap_url.lastmod|date('Y-m-d\TH:i:s\Z') }}</lastmod>
+  <priority>{{ sitemap_url.priority }}</priority>
+</url>
+{% endfor %}
+</urlset>

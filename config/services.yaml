@@ -114,6 +114,10 @@ services:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true
 
+    OHMedia\PageBundle\Controller\SitemapController:
+        tags: ["container.service_subscriber", "controller.service_arguments"]
+        autowire: true
+
     OHMedia\PageBundle\Cleanup\Page301Cleaner:
         autowire: true
         tags: ["oh_media_cleanup.cleaner"]

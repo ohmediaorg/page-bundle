@@ -1,0 +1,43 @@
+<?php
+
+namespace OHMedia\PageBundle\Controller;
+
+use OHMedia\PageBundle\Repository\PageRepository;
+use OHMedia\PageBundle\Sitemap\SitemapUrl;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class SitemapController extends AbstractController
+{
+    #[Route('/sitemap.xml', name: 'oh_media_page_sitemap')]
+    public function sitemap(PageRepository $pageRepository): Response
+    {
+        $pages = $pageRepository->createQueryBuilder('p')
+            ->orderBy('p.order_global', 'asc')
+            ->getQuery()
+            ->getResult();
+
+        $sitemapUrls = [];
+
+        foreach ($pages as $page) {
+            if (!$page->isVisibleToPublic()) {
+                continue;
+            }
+
+            $pageRevision = $page->getCurrentPageRevision();
+
+            $path = $page->isHomepage() ? '' : $page->getPath();
+
+            $sitemapUrls[] = new SitemapUrl($path, $pageRevision->getUpdatedAt());
+        }
+
+        $response = $this->render('@OHMediaPage/sitemap.xml.twig', [
+            'sitemap_urls' => $sitemapUrls,
+        ]);
+
+        $response->headers->set('Content-Type', 'xml');
+
+        return $response;
+    }
+}
