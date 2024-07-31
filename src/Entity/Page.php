@@ -405,6 +405,8 @@ class Page
                 ->setLocked(false)
                 // homepage cannot be dynamic
                 ->setDynamic(false)
+                // homepage must be in sitemap
+                ->setSitemap(true)
             ;
 
             // permissions shouldn't allow a page with child pages
@@ -658,6 +660,11 @@ class Page
 
     public function isSitemap(): ?bool
     {
+        if ($this->isHomepage()) {
+            // homepage must be in the sitemap
+            return true;
+        }
+
         return $this->sitemap;
     }
 
