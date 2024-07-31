@@ -3,7 +3,6 @@
 namespace OHMedia\PageBundle\Controller;
 
 use OHMedia\PageBundle\Repository\Page301Repository;
-use OHMedia\PageBundle\Security\Voter\PageVoter;
 use OHMedia\PageBundle\Service\PageRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -44,8 +43,8 @@ class PageFrontendController extends AbstractController
 
         if ($page->isLocked()) {
             $this->denyAccessUnlessGranted(
-                PageVoter::FRONTEND,
-                $page,
+                'IS_AUTHENTICATED_FULLY',
+                null,
                 'You must log in to view this page.'
             );
         }

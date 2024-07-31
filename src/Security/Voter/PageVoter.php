@@ -19,7 +19,6 @@ class PageVoter extends AbstractEntityVoter
     public const PUBLISH = 'publish';
     public const UNPUBLISH = 'unpublish';
     public const DELETE = 'delete';
-    public const FRONTEND = 'frontend';
 
     protected function getAttributes(): array
     {
@@ -35,7 +34,6 @@ class PageVoter extends AbstractEntityVoter
             self::PUBLISH,
             self::UNPUBLISH,
             self::DELETE,
-            self::FRONTEND,
         ];
     }
 
@@ -113,10 +111,5 @@ class PageVoter extends AbstractEntityVoter
     protected function canDelete(Page $page, User $loggedIn): bool
     {
         return !$page->isHomepage() && !$page->isPublished();
-    }
-
-    protected function canFrontend(Page $page, User $loggedIn): bool
-    {
-        return true;
     }
 }

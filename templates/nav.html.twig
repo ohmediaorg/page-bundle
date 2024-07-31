@@ -1,7 +1,6 @@
 {% macro page_nav(page, current_path, nesting_level, max_nesting_level) %}
   {% if page.locked %}
-    {% set frontend_attribute = constant('OHMedia\\PageBundle\\Security\\Voter\\PageVoter::FRONTEND') %}
-    {% set show_page_link = is_granted(frontend_attribute, page) %}
+    {% set show_page_link = is_granted('IS_AUTHENTICATED_FULLY') %}
   {% else %}
     {% set show_page_link = true %}
   {% endif %}
