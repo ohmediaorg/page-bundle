@@ -118,6 +118,9 @@ class Page
     #[ORM\Column(nullable: true)]
     private ?bool $dynamic = null;
 
+    #[ORM\Column(options: ['default' => true])]
+    private ?bool $sitemap = true;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -649,6 +652,18 @@ class Page
     public function setDynamic(?bool $dynamic): static
     {
         $this->dynamic = $dynamic;
+
+        return $this;
+    }
+
+    public function isSitemap(): ?bool
+    {
+        return $this->sitemap;
+    }
+
+    public function setSitemap(bool $sitemap): static
+    {
+        $this->sitemap = $sitemap;
 
         return $this;
     }
