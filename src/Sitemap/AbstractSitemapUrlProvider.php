@@ -4,6 +4,7 @@ namespace OHMedia\PageBundle\Sitemap;
 
 abstract class AbstractSitemapUrlProvider
 {
+    private bool $built = false;
     private array $sitemapUrls = [];
 
     abstract protected function buildSitemapUrls(): void;
@@ -17,7 +18,11 @@ abstract class AbstractSitemapUrlProvider
 
     final public function getSitemapUrls(): array
     {
-        $this->buildSitemapUrls();
+        if (!$this->built) {
+            $this->built = true;
+
+            $this->buildSitemapUrls();
+        }
 
         return $this->sitemapUrls;
     }
