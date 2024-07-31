@@ -118,6 +118,9 @@ services:
         tags: ["container.service_subscriber", "controller.service_arguments"]
         autowire: true
 
+    oh_media_page.sitemap_controller:
+        alias: OHMedia\PageBundle\Controller\SitemapController
+
     OHMedia\PageBundle\Cleanup\Page301Cleaner:
         autowire: true
         tags: ["oh_media_cleanup.cleaner"]
