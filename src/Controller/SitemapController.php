@@ -22,6 +22,7 @@ class SitemapController extends AbstractController
     public function sitemap(PageRepository $pageRepository): Response
     {
         $pages = $pageRepository->createQueryBuilder('p')
+            ->where('p.homepage = 1 OR p.sitemap = 1')
             ->orderBy('p.order_global', 'asc')
             ->getQuery()
             ->getResult();
