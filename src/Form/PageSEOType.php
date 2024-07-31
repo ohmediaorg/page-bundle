@@ -43,14 +43,12 @@ class PageSEOType extends AbstractType
                 'required' => false,
                 'label' => 'Tell search bots not to index this page',
                 'help' => $noindexHelp,
-                'help_html' => true,
                 'disabled' => $page->isHomepage(),
             ])
             ->add('sitemap', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Include this page in sitemap.xml',
                 'help' => $sitemapHelp,
-                'help_html' => true,
                 'disabled' => $page->isHomepage(),
             ])
             ->add('canonical', EntityType::class, [
