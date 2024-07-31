@@ -397,3 +397,11 @@ $page = $this->pageRenderer->getCurrentPage();
 
 $path = $page->getPath();
 ```
+
+### Sitemap URLs
+
+To hook into the sitemap.xml functionality, create a service that extends
+`OHMedia\PageBundle\Sitemap\AbstractSitemapUrlProvider`. You may need to
+manually tag the service with `oh_media_page.sitemap_url_provider`.
+
+See [EventSitemapUrlProvider](https://github.com/ohmediaorg/event-bundle/blob/main/src/Service/EventSitemapUrlProvider.php) in the event-bundle.
