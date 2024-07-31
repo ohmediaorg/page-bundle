@@ -10,7 +10,7 @@ abstract class AbstractSitemapUrlProvider
 
     final protected function addSitemapUrl(string $path, \DateTimeInterface $lastmod): static
     {
-        $this->sitemapUrls = new SitemapUrl($path, $lastmod);
+        $this->sitemapUrls[] = new SitemapUrl($path, $lastmod);
 
         return $this;
     }
