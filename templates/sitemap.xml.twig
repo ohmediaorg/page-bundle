@@ -6,7 +6,7 @@
     http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 {% for sitemap_url in sitemap_urls %}
 <url>
-  <loc>{{ absolute_url(path('oh_media_page_frontend', {path: sitemap_url.path})) }}</loc>
+  <loc>{{ absolute_url(page_path(sitemap_url.path)) }}</loc>
   <lastmod>{{ sitemap_url.lastmod|date('c') }}</lastmod>
   <priority>{{ sitemap_url.priority }}</priority>
 </url>
