@@ -308,17 +308,24 @@ You can also check that the content exists before outputting it:
 {% endif %}
 ```
 
-## Dynamic Content
+## Dynamic Pages
 
-Using a Blog as an example, you might have a Page entity with path "/blog". If
-there was no Page entity with a path equal to "/blog/some-blog-post", this path
-would be "caught" and the "/blog" Page would be rendered. The "some-blog-post"
-portion of the path would be stored for later use.
+Only dynamic pages can "catch" URLs. Pages will be flagged as dynamic or not
+when a `PageRevision` is published.
 
-__**Note:** this would also extend to "/blog/some-blog-post/some-other-slug" and so on.__
+This can happen in two ways.
 
-Your Blog entity might also have its own Meta entity which you would want to
-override on the Page.
+### Dynamic Template
+
+Sometimes there may dynamic content baked directly into the template that sits
+outside of the content areas. In this case, the `AbstractPageTemplateType` has a
+function called `isDynamic` that can be overridden. This function will be checked
+first when a `PageRevision` is published.
+
+### Dynamic Content
+
+Let's say you want to have a Blog page at "/blog" such that "/blog/some-blog-post"
+would be handled dynamically.
 
 You can create an `AbstractWysiwygExtension` extension from the Wysiwyg Bundle
 to handle your dynamic content:
@@ -379,18 +386,45 @@ class BlogWysiwygExtension extends AbstractWysiwygExtension
 }
 ```
 
-Then place the tag `{{ blog() }}` somewhere in a WysiwygType field within your
-Page content.
+Your Blog entity might also have its own Meta entity which you would want to
+override on the Page (seen above with `$this->pageRenderer->setMetaEntity(...)`).
+
+Next you will need to implement an
+[AbstractShortcodeProvider](https://github.com/ohmediaorg/backend-bundle?tab=readme-ov-file#shortcodes),
+making sure to flag the `Shortcode` as dynamic:
+
+```php
+namespace App\Service;
+
+use OHMedia\BackendBundle\Shortcodes\AbstractShortcodeProvider;
+use OHMedia\BackendBundle\Shortcodes\Shortcode;
+
+class BlogShortcodeProvider extends AbstractShortcodeProvider
+{
+    public function getTitle(): string
+    {
+        return 'Blog';
+    }
+
+    public function buildShortcodes(): void
+    {
+        $this->addShortcode(new Shortcode('Blog Listing', 'blog()', true));
+    }
+}
+```
+
+Using the TinyMCE plugin, place the shortcode in a content area. Once the
+`PageRevision` is published, the `Page` entity will be flagged as dynamic.
 
 This blog page can be freely moved around the page hierarchy. The dynamic
 content doesn't care about the "/blog" portion of the URL, just the section
 after it. In other words, the functionality would still work if the dynamic page
 path was updated to "/about-us/blog".
 
-### Linking Back
+## Linking to the Parent Page
 
 If you want to link back or reference the parent page from within your dynamic
-content, you can use the PageRenderer to get that page:
+content, you can use the `PageRenderer` service to get that page:
 
 ```php
 $page = $this->pageRenderer->getCurrentPage();
@@ -398,10 +432,21 @@ $page = $this->pageRenderer->getCurrentPage();
 $path = $page->getPath();
 ```
 
-### Sitemap URLs
+If you are not in the context of the page you want, you must know the shortcode
+you want to find. Then you can use the `PageRawQuery` service:
+
+```php
+$pagePath = $this->pageRawQuery->getPathWithShortcode('blog()');
+```
+
+## Sitemap URLs
 
 To hook into the sitemap.xml functionality, create a service that extends
 `OHMedia\PageBundle\Sitemap\AbstractSitemapUrlProvider`. You may need to
 manually tag the service with `oh_media_page.sitemap_url_provider`.
 
-See [EventSitemapUrlProvider](https://github.com/ohmediaorg/event-bundle/blob/main/src/Service/EventSitemapUrlProvider.php) in the event-bundle.
+See [EventSitemapUrlProvider](https://github.com/ohmediaorg/event-bundle/blob/main/src/Service/EventSitemapUrlProvider.php)
+for an example with a dynamic shortcode.
+
+See [WinnersSitemapUrlProvider](https://github.com/ohmediaorg/saskvlt-patron/blob/main/src/Service/WinnersSitemapUrlProvider.php)
+for an example with a dynamic template.
