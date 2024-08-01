@@ -115,6 +115,15 @@ class PageRevision
             : $this->template;
     }
 
+    public function isTemplateDynamic(): bool
+    {
+        $callable = $this->template.'::isDynamic';
+
+        return is_callable($callable)
+            ? call_user_func($callable)
+            : false;
+    }
+
     public function getPage(): ?Page
     {
         return $this->page;

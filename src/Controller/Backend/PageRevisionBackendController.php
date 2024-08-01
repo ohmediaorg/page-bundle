@@ -259,6 +259,10 @@ class PageRevisionBackendController extends AbstractController
             return false;
         }
 
+        if ($pageRevision->isTemplateDynamic()) {
+            return true;
+        }
+
         $dynamicShortcodes = $shortcodeManager->getDynamicShortcodes();
 
         if (!$dynamicShortcodes) {

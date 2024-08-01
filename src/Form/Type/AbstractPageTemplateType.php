@@ -25,6 +25,11 @@ abstract class AbstractPageTemplateType extends AbstractType
     {
     }
 
+    public static function isDynamic(): bool
+    {
+        return false;
+    }
+
     final public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $this->pageRevision = $options['data'];
