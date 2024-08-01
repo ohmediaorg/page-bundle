@@ -24,9 +24,13 @@ class PageSEOType extends AbstractType
         if ($page->isHomepage()) {
             $noindexHelp = 'The homepage must be indexable.';
 
+            $sitemapHelp = 'The homepage must be in the sitemap.';
+
             $canonicalHelp = 'The homepage must be canonical to itself.';
         } else {
-            $noindexHelp = $page->isLocked() ? '<i><b>Note:</b> this page cannot be indexed because it requires login!</i>' : '';
+            $noindexHelp = 'A locked page will not be indexable.';
+
+            $sitemapHelp = 'To appear in the sitemap, a page must also be: published, not locked, indexable, have no redirect, and must be canonical to itself.';
 
             $canonicalHelp = 'Search bots will not index a page that specifies a different <a href="https://www.google.com/search?q=what+is+a+canonical+url" target="_blank">canonical URL</a>.';
         }
@@ -39,7 +43,12 @@ class PageSEOType extends AbstractType
                 'required' => false,
                 'label' => 'Tell search bots not to index this page',
                 'help' => $noindexHelp,
-                'help_html' => true,
+                'disabled' => $page->isHomepage(),
+            ])
+            ->add('sitemap', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Include this page in sitemap.xml',
+                'help' => $sitemapHelp,
                 'disabled' => $page->isHomepage(),
             ])
             ->add('canonical', EntityType::class, [

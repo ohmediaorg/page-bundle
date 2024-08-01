@@ -118,6 +118,9 @@ class Page
     #[ORM\Column(nullable: true)]
     private ?bool $dynamic = null;
 
+    #[ORM\Column(options: ['default' => true])]
+    private ?bool $sitemap = true;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -402,6 +405,8 @@ class Page
                 ->setLocked(false)
                 // homepage cannot be dynamic
                 ->setDynamic(false)
+                // homepage must be in sitemap
+                ->setSitemap(true)
             ;
 
             // permissions shouldn't allow a page with child pages
@@ -649,6 +654,23 @@ class Page
     public function setDynamic(?bool $dynamic): static
     {
         $this->dynamic = $dynamic;
+
+        return $this;
+    }
+
+    public function isSitemap(): ?bool
+    {
+        if ($this->isHomepage()) {
+            // homepage must be in the sitemap
+            return true;
+        }
+
+        return $this->sitemap;
+    }
+
+    public function setSitemap(bool $sitemap): static
+    {
+        $this->sitemap = $sitemap;
 
         return $this;
     }
