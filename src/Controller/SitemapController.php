@@ -2,6 +2,7 @@
 
 namespace OHMedia\PageBundle\Controller;
 
+use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
 use OHMedia\PageBundle\Sitemap\AbstractSitemapUrlProvider;
 use OHMedia\PageBundle\Sitemap\SitemapUrl;
@@ -22,7 +23,11 @@ class SitemapController extends AbstractController
     public function sitemap(PageRepository $pageRepository): Response
     {
         $pages = $pageRepository->createQueryBuilder('p')
-            ->where('p.homepage = 1 OR p.sitemap = 1')
+            ->where('(p.homepage = 1 OR p.sitemap = 1)')
+            ->andWhere('IDENTITY(p.canonical) IS NULL')
+            ->andWhere('(p.redirect_type = :redirect_type_none OR p.redirect_type IS NULL)')
+            ->setParameter('redirect_type_none', Page::REDIRECT_TYPE_NONE)
+            ->andWhere('p.noindex = 0')
             ->orderBy('p.order_global', 'asc')
             ->getQuery()
             ->getResult();

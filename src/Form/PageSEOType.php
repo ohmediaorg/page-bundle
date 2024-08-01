@@ -30,7 +30,7 @@ class PageSEOType extends AbstractType
         } else {
             $noindexHelp = 'A locked page will not be indexable.';
 
-            $sitemapHelp = 'A page must be published and not locked to appear in the sitemap.';
+            $sitemapHelp = 'To appear in the sitemap, a page must also be: published, not locked, indexable, have no redirect, and must be canonical to itself.';
 
             $canonicalHelp = 'Search bots will not index a page that specifies a different <a href="https://www.google.com/search?q=what+is+a+canonical+url" target="_blank">canonical URL</a>.';
         }
