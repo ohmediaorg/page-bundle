@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\PageBundle\Repository\PageRevisionRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
+use OHMedia\WysiwygBundle\Util\Shortcode;
 
 #[ORM\Entity(repositoryClass: PageRevisionRepository::class)]
 class PageRevision
@@ -344,6 +345,8 @@ class PageRevision
 
     public function containsShortcode(string $shortcode)
     {
+        $shortcode = Shortcode::format($shortcode);
+
         $pageContentTexts = $this->getPageContentTexts();
 
         foreach ($pageContentTexts as $pageContentText) {
