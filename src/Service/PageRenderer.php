@@ -2,6 +2,7 @@
 
 namespace OHMedia\PageBundle\Service;
 
+use OHMedia\BootstrapBundle\Component\Breadcrumb;
 use OHMedia\MetaBundle\Entity\Meta;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Entity\PageRevision;
@@ -42,7 +43,7 @@ class PageRenderer
         return $this->dynamicBreadcrumbs;
     }
 
-    public function addDynamicBreadcrumb(string $text, string $path): array
+    public function addDynamicBreadcrumb(string $text, string $path): self
     {
         array_unshift($this->dynamicBreadcrumbs, new Breadcrumb(
             $text,
@@ -154,10 +155,12 @@ class PageRenderer
         if ($dynamicPage) {
             $this->dynamicPart = implode('/', $dynamicParts);
 
+            $this->setCurrentPage($dynamicPage);
+
             $this->eventDispatcher->dispatch(new DynamicPageEvent());
         }
 
-        return $this->setCurrentPage($dynamicPage);
+        return $this;
     }
 
     public function renderPage(bool $preview = false): Response
