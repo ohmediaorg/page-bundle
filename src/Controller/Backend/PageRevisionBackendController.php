@@ -214,7 +214,7 @@ class PageRevisionBackendController extends AbstractController
 
             $this->pageRevisionRepository->save($pageRevision, true);
 
-            $isDynamic = $this->hasDynamicShortcode($pageRevision, $shortcodeManager);
+            $isDynamic = $this->isDynamic($pageRevision, $shortcodeManager);
 
             $pageRawQuery->update($pageRevision->getPage()->getId(), [
                 'dynamic' => $isDynamic,
@@ -252,7 +252,7 @@ class PageRevisionBackendController extends AbstractController
         }
     }
 
-    private function hasDynamicShortcode(PageRevision $pageRevision, ShortcodeManager $shortcodeManager)
+    private function isDynamic(PageRevision $pageRevision, ShortcodeManager $shortcodeManager)
     {
         if ($pageRevision->getPage()->isHomepage()) {
             return false;
