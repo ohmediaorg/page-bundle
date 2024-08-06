@@ -5,8 +5,9 @@ namespace OHMedia\PageBundle\Service;
 use OHMedia\MetaBundle\Entity\Meta;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Entity\PageRevision;
+use OHMedia\PageBundle\Event\DynamicPageEvent;
 use OHMedia\PageBundle\Repository\PageRepository;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
@@ -21,7 +22,7 @@ class PageRenderer
 
     public function __construct(
         private Environment $twig,
-        private EventDispatcher $eventDispatcher,
+        private EventDispatcherInterface $eventDispatcher,
         private PageRepository $pageRepository,
     ) {
     }
