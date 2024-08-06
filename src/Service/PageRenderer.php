@@ -152,10 +152,10 @@ class PageRenderer
             ]);
         }
 
+        $this->setCurrentPage($dynamicPage);
+
         if ($dynamicPage) {
             $this->dynamicPart = implode('/', $dynamicParts);
-
-            $this->setCurrentPage($dynamicPage);
 
             $this->eventDispatcher->dispatch(new DynamicPageEvent());
         }
