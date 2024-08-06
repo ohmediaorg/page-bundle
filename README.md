@@ -373,7 +373,7 @@ class BlogWysiwygExtension extends AbstractWysiwygExtension
 
             if ($blogPost) {
                 // override the page meta data
-                $this->pageRenderer->setMetaEntity($blogPost->getMeta());
+                $this->pageRenderer->setDynamicMeta($blogPost->getMeta());
 
                 // return rendered blog post
             }
@@ -387,7 +387,7 @@ class BlogWysiwygExtension extends AbstractWysiwygExtension
 ```
 
 Your Blog entity might also have its own Meta entity which you would want to
-override on the Page (seen above with `$this->pageRenderer->setMetaEntity(...)`).
+override on the Page (seen above with `$this->pageRenderer->setDynamicMeta(...)`).
 
 Next you will need to implement an
 [AbstractShortcodeProvider](https://github.com/ohmediaorg/backend-bundle?tab=readme-ov-file#shortcodes),

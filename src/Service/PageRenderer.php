@@ -6,6 +6,7 @@ use OHMedia\MetaBundle\Entity\Meta;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Entity\PageRevision;
 use OHMedia\PageBundle\Repository\PageRepository;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
@@ -14,13 +15,15 @@ class PageRenderer
 {
     private ?Page $currentPage = null;
     private ?PageRevision $currentPageRevision = null;
+    private array $dynamicBreadcrumbs = [];
+    private ?Meta $dynamicMeta = null;
     private ?string $dynamicPart = null;
-    private ?Meta $metaEntity = null;
 
     public function __construct(
         private Environment $twig,
-        private PageRepository $pageRepository)
-    {
+        private EventDispatcher $eventDispatcher,
+        private PageRepository $pageRepository,
+    ) {
     }
 
     public function getCurrentPage(): ?Page
@@ -33,6 +36,22 @@ class PageRenderer
         return $this->currentPageRevision;
     }
 
+    public function getDynamicBreadcrumbs(): array
+    {
+        return $this->dynamicBreadcrumbs;
+    }
+
+    public function addDynamicBreadcrumb(string $text, string $path): array
+    {
+        array_unshift($this->dynamicBreadcrumbs, new Breadcrumb(
+            $text,
+            'oh_media_page_frontend',
+            ['path' => $path]
+        ));
+
+        return $this;
+    }
+
     public function getDynamicPart(): ?string
     {
         return $this->dynamicPart;
@@ -40,8 +59,8 @@ class PageRenderer
 
     public function getMetaEntity(): Meta
     {
-        if ($this->metaEntity) {
-            return $this->metaEntity;
+        if ($this->dynamicMeta) {
+            return $this->dynamicMeta;
         }
 
         if ($this->currentPage) {
@@ -53,9 +72,9 @@ class PageRenderer
             ->getAppendBaseTitle(true);
     }
 
-    public function setMetaEntity(?Meta $metaEntity): self
+    public function setDynamicMeta(?Meta $dynamicMeta): self
     {
-        $this->metaEntity = $metaEntity;
+        $this->dynamicMeta = $dynamicMeta;
 
         return $this;
     }
@@ -133,6 +152,8 @@ class PageRenderer
 
         if ($dynamicPage) {
             $this->dynamicPart = implode('/', $dynamicParts);
+
+            $this->eventDispatcher->dispatch(new DynamicPageEvent());
         }
 
         return $this->setCurrentPage($dynamicPage);
