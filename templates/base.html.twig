@@ -1,5 +1,3 @@
-{% set block_body = block('body') %}
-
 <!DOCTYPE html>
 {% block html_tag_open %}<html>{% endblock %}
   <head>
@@ -16,7 +14,7 @@
   <body>
     {{ script_body_open() }}
 
-    {{ block_body|raw }}
+    {% block body %}{% endblock %}
 
     {{ encore_entry_script_tags('frontend', null, 'frontend') }}
 
