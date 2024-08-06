@@ -341,4 +341,49 @@ class PageRevision
 
         return null;
     }
+
+    public function containsShortcode(string $shortcode)
+    {
+        $pageContentTexts = $this->getPageContentTexts();
+
+        foreach ($pageContentTexts as $pageContentText) {
+            if (PageContentText::TYPE_WYSIWYG !== $pageContentText->getType()) {
+                continue;
+            }
+
+            if (str_contains($pageContentText->getText(), $shortcode)) {
+                return true;
+            }
+        }
+
+        $pageContentRows = $this->getPageContentRows();
+
+        foreach ($pageContentRows as $pageContentRow) {
+            if (!$pageContentRow->layoutHasOneColumn()) {
+                continue;
+            }
+
+            if (str_contains($pageContentRow->getColumn1(), $shortcode)) {
+                return true;
+            }
+
+            if (!$pageContentRow->layoutHasTwoColumns()) {
+                continue;
+            }
+
+            if (str_contains($pageContentRow->getColumn2(), $shortcode)) {
+                return true;
+            }
+
+            if (!$pageContentRow->layoutHasThreeColumns()) {
+                continue;
+            }
+
+            if (str_contains($pageContentRow->getColumn3(), $shortcode)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

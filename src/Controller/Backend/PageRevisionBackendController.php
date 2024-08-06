@@ -7,7 +7,6 @@ use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BackendBundle\Shortcodes\ShortcodeManager;
 use OHMedia\PageBundle\Entity\AbstractPageContent;
 use OHMedia\PageBundle\Entity\Page;
-use OHMedia\PageBundle\Entity\PageContentText;
 use OHMedia\PageBundle\Entity\PageRevision;
 use OHMedia\PageBundle\Form\PageRevisionType;
 use OHMedia\PageBundle\Repository\PageRevisionRepository;
@@ -269,59 +268,9 @@ class PageRevisionBackendController extends AbstractController
             return false;
         }
 
-        $pageContentTexts = $pageRevision->getPageContentTexts();
-
-        foreach ($pageContentTexts as $pageContentText) {
-            if (PageContentText::TYPE_WYSIWYG !== $pageContentText->getType()) {
-                continue;
-            }
-
-            $text = $pageContentText->getText();
-
-            foreach ($dynamicShortcodes as $dynamicShortcode) {
-                if (str_contains($text, $dynamicShortcode)) {
-                    return true;
-                }
-            }
-        }
-
-        $pageContentRows = $pageRevision->getPageContentRows();
-
-        foreach ($pageContentRows as $pageContentRow) {
-            if (!$pageContentRow->layoutHasOneColumn()) {
-                continue;
-            }
-
-            $column1 = $pageContentRow->getColumn1();
-
-            foreach ($dynamicShortcodes as $dynamicShortcode) {
-                if (str_contains($column1, $dynamicShortcode)) {
-                    return true;
-                }
-            }
-
-            if (!$pageContentRow->layoutHasTwoColumns()) {
-                continue;
-            }
-
-            $column2 = $pageContentRow->getColumn2();
-
-            foreach ($dynamicShortcodes as $dynamicShortcode) {
-                if (str_contains($column2, $dynamicShortcode)) {
-                    return true;
-                }
-            }
-
-            if (!$pageContentRow->layoutHasThreeColumns()) {
-                continue;
-            }
-
-            $column3 = $pageContentRow->getColumn3();
-
-            foreach ($dynamicShortcodes as $dynamicShortcode) {
-                if (str_contains($column3, $dynamicShortcode)) {
-                    return true;
-                }
+        foreach ($dynamicShortcodes as $dynamicShortcode) {
+            if ($pageRevision->containsShortcode($dynamicShortcode)) {
+                return true;
             }
         }
 
