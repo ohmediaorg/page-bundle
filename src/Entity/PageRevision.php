@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\PageBundle\Repository\PageRevisionRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
+use OHMedia\WysiwygBundle\Util\Shortcode;
 
 #[ORM\Entity(repositoryClass: PageRevisionRepository::class)]
 class PageRevision
@@ -340,5 +341,52 @@ class PageRevision
         }
 
         return null;
+    }
+
+    public function containsShortcode(string $shortcode)
+    {
+        $shortcode = Shortcode::format($shortcode);
+
+        $pageContentTexts = $this->getPageContentTexts();
+
+        foreach ($pageContentTexts as $pageContentText) {
+            if (PageContentText::TYPE_WYSIWYG !== $pageContentText->getType()) {
+                continue;
+            }
+
+            if (str_contains($pageContentText->getText(), $shortcode)) {
+                return true;
+            }
+        }
+
+        $pageContentRows = $this->getPageContentRows();
+
+        foreach ($pageContentRows as $pageContentRow) {
+            if (!$pageContentRow->layoutHasOneColumn()) {
+                continue;
+            }
+
+            if (str_contains($pageContentRow->getColumn1(), $shortcode)) {
+                return true;
+            }
+
+            if (!$pageContentRow->layoutHasTwoColumns()) {
+                continue;
+            }
+
+            if (str_contains($pageContentRow->getColumn2(), $shortcode)) {
+                return true;
+            }
+
+            if (!$pageContentRow->layoutHasThreeColumns()) {
+                continue;
+            }
+
+            if (str_contains($pageContentRow->getColumn3(), $shortcode)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

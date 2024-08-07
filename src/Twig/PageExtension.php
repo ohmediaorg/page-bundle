@@ -3,7 +3,6 @@
 namespace OHMedia\PageBundle\Twig;
 
 use OHMedia\BootstrapBundle\Component\Breadcrumb;
-use OHMedia\MetaBundle\Entity\Meta;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
 use OHMedia\PageBundle\Service\PageRenderer;
@@ -141,41 +140,46 @@ class PageExtension extends AbstractExtension
         ]);
     }
 
-    private function getBreadcrumbs(Page $page)
+    private function getBreadcrumbs(Page $page): array
     {
-        $meta = $this->pageRenderer->getMetaEntity();
-
-        $breadcrumbs = [];
-
-        if (!$page->isHomepage()) {
-            $breadcrumbs[] = $this->getBreadcrumb($page, $meta);
+        if ($page->isHomepage()) {
+            return [$this->getHomepageBreadcrumb()];
         }
+
+        $breadcrumbs = $this->pageRenderer->getDynamicBreadcrumbs();
 
         $curr = $page;
 
-        while ($curr = $curr->getParent()) {
+        do {
             $meta = $curr->getMeta();
 
-            array_unshift($breadcrumbs, $this->getBreadcrumb($curr, $meta));
-        }
+            $text = $meta->getTitle() ?? $curr->getName();
 
-        $homepage = $this->pageRepository->getHomepage();
+            array_unshift($breadcrumbs, $this->getBreadcrumb($text, $curr->getPath()));
+        } while ($curr = $curr->getParent());
 
-        array_unshift($breadcrumbs, new Breadcrumb(
-            $homepage && $homepage->getNavText() ? $homepage->getNavText() : 'Home',
-            'oh_media_page_frontend',
-            ['path' => '']
-        ));
+        array_unshift($breadcrumbs, $this->getHomepageBreadcrumb());
 
         return $breadcrumbs;
     }
 
-    private function getBreadcrumb(Page $page, Meta $meta)
+    private function getHomepageBreadcrumb(): Breadcrumb
+    {
+        $homepage = $this->pageRepository->getHomepage();
+
+        $text = $homepage && $homepage->getNavText()
+            ? $homepage->getNavText()
+            : 'Home';
+
+        return $this->getBreadcrumb($text, '');
+    }
+
+    private function getBreadcrumb(string $text, string $path): Breadcrumb
     {
         return new Breadcrumb(
-            $meta->getTitle() ?? $page->getName(),
+            $text,
             'oh_media_page_frontend',
-            ['path' => $page->isHomepage() ? '' : $page->getPath()]
+            ['path' => $path]
         );
     }
 }

@@ -324,94 +324,20 @@ first when a `PageRevision` is published.
 
 ### Dynamic Content
 
-Let's say you want to have a Blog page at "/blog" such that "/blog/some-blog-post"
-would be handled dynamically.
-
 You can create an `AbstractWysiwygExtension` extension from the Wysiwyg Bundle
-to handle your dynamic content:
+to handle your dynamic content.
 
-```php
-<?php
-
-namespace App\Twig;
-
-use App\Repository\BlogRepository;
-use OHMedia\PageBundle\Service\PageRenderer;
-use OHMedia\WysiwygBundle\Twig\AbstractWysiwygExtension;
-use Twig\Environment;
-use Twig\TwigFunction;
-
-class BlogWysiwygExtension extends AbstractWysiwygExtension
-{
-    public function __construct(
-        private BlogRepoository $blogRepository,
-        private PageRenderer $pageRenderer
-    ) {
-    }
-
-    public function getFunctions(): array
-    {
-        return [
-            new TwigFunction('blog', [$this, 'blog'], [
-                'is_safe' => ['html'],
-                'needs_environment' => true,
-            ]),
-        ];
-    }
-
-    public function blog(Environment $twig): string
-    {
-        $dynamicPart = $this->pageRenderer->getDynamicPart();
-
-        if ($dynamicPart) {
-            // user is at /blog/some-blog-post
-            // and $dynamicPart = "some-blog-post"
-            $blogPost = $this->blogRepository->findOneBy([
-                'slug' => $dynamicPart,
-                // ...
-            ]);
-
-            if ($blogPost) {
-                // override the page meta data
-                $this->pageRenderer->setMetaEntity($blogPost->getMeta());
-
-                // return rendered blog post
-            }
-
-            // throw a not-found exception or let fall to rendered listing
-        }
-
-        // return rendered blog listing
-    }
-}
-```
-
-Your Blog entity might also have its own Meta entity which you would want to
-override on the Page (seen above with `$this->pageRenderer->setMetaEntity(...)`).
+See [WysiwygExtension](https://github.com/ohmediaorg/event-bundle/blob/main/src/Twig/WysiwygExtension.php)
+in the event-bundle. This class is also listening for the `DynamicPageEvent` in
+order to query for the dynamic `Event` entity and populate the dynamic `Meta`
+and `Breadcrumb` data before the page is rendered.
 
 Next you will need to implement an
 [AbstractShortcodeProvider](https://github.com/ohmediaorg/backend-bundle?tab=readme-ov-file#shortcodes),
 making sure to flag the `Shortcode` as dynamic:
 
-```php
-namespace App\Service;
-
-use OHMedia\BackendBundle\Shortcodes\AbstractShortcodeProvider;
-use OHMedia\BackendBundle\Shortcodes\Shortcode;
-
-class BlogShortcodeProvider extends AbstractShortcodeProvider
-{
-    public function getTitle(): string
-    {
-        return 'Blog';
-    }
-
-    public function buildShortcodes(): void
-    {
-        $this->addShortcode(new Shortcode('Blog Listing', 'blog()', true));
-    }
-}
-```
+See [EventShortcodeProvider](https://github.com/ohmediaorg/event-bundle/blob/main/src/Service/EventShortcodeProvider.php),
+again in the event-bundle.
 
 Using the TinyMCE plugin, place the shortcode in a content area. Once the
 `PageRevision` is published, the `Page` entity will be flagged as dynamic.
