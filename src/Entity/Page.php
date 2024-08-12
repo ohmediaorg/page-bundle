@@ -53,11 +53,11 @@ class Page
     #[ORM\Column(type: Types::SMALLINT, nullable: true, options: ['unsigned' => true])]
     private ?int $order_global = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'pages', cascade: ['remove'])]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'pages')]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?self $parent = null;
 
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
     #[ORM\OrderBy(['order_local' => 'ASC'])]
     private Collection $pages;
 
