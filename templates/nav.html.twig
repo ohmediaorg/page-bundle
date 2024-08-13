@@ -36,7 +36,14 @@
       </a>
       <ul class="dropdown-menu nav--level-{{ nesting_level }}">
         <li>
-          <a href="{{ page_path }}" class="dropdown-item {{ active ? 'active' : '' }}">{{ text }}</a>
+          <a
+            href="{{ page_path }}"
+            {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
+            class="dropdown-item {{ active ? 'active' : '' }}"
+            {% if active %}aria-current{% endif %}
+          >
+            {{ text }}
+          </a>
         </li>
         {% for page in pages %}
         {{ _self.page_nav(page, current_path, nesting_level + 1, max_nesting_level) }}
