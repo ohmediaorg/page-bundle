@@ -616,19 +616,6 @@ class Page
             && !$this->isLocked();
     }
 
-    public function isNavEligible()
-    {
-        return $this->isPublished()
-            && !$this->isHidden();
-    }
-
-    public function getNavPages(): Collection
-    {
-        return $this->pages->filter(function (Page $page) {
-            return $page->isNavEligible();
-        });
-    }
-
     public function getNavText(): ?string
     {
         return $this->nav_text;
