@@ -16,6 +16,8 @@ use OHMedia\PageBundle\Entity\Page;
  */
 class PageRepository extends ServiceEntityRepository
 {
+    private ?Page $homepage = null;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Page::class);
@@ -39,7 +41,7 @@ class PageRepository extends ServiceEntityRepository
         }
     }
 
-    public function countBySlug(string $slug, int $id = null)
+    public function countBySlug(string $slug, ?int $id = null)
     {
         $params = [
             new Parameter('slug', $slug),
@@ -72,10 +74,14 @@ class PageRepository extends ServiceEntityRepository
 
     public function getHomepage(): ?Page
     {
-        return $this->createQueryBuilder('p')
-            ->where('p.homepage = 1')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+        if (!$this->homepage) {
+            $this->homepage = $this->createQueryBuilder('p')
+                  ->where('p.homepage = 1')
+                  ->setMaxResults(1)
+                  ->getQuery()
+                  ->getOneOrNullResult();
+        }
+
+        return $this->homepage;
     }
 }

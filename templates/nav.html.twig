@@ -1,4 +1,6 @@
-{% macro page_nav(page, current_path, nesting_level, max_nesting_level) %}
+{% macro page_nav(nav_item, current_path, nesting_level) %}
+  {% set page = nav_item.page %}
+
   {% if page.locked %}
     {% set show_page_link = is_granted('IS_AUTHENTICATED_FULLY') %}
   {% else %}
@@ -6,7 +8,9 @@
   {% endif %}
 
   {% if show_page_link %}
-    {% if page.isRedirectTypeInternal %}
+    {% if page.isHomepage %}
+      {% set page_path = page_path('') %}
+    {% elseif page.isRedirectTypeInternal %}
       {% set page_path = page_path(page.redirectInternal.path) %}
     {% elseif page.isRedirectTypeExternal %}
       {% set page_path = page.redirectExternal %}
@@ -19,11 +23,7 @@
     {% set active = page_path == current_path %}
     {% set active_path = page_path == current_path starts with page_path %}
 
-    {% set pages = page.getNavPages %}
-
-    {% set has_dropdown = nesting_level <= max_nesting_level and pages|length %}
-
-    {% if has_dropdown %}
+    {% if nav_item.children|length %}
     <li class="nav-item dropdown {{ active_path ? 'active-path' : '' }}">
       <a
         href="#"
@@ -45,8 +45,8 @@
             {{ text }}
           </a>
         </li>
-        {% for page in pages %}
-        {{ _self.page_nav(page, current_path, nesting_level + 1, max_nesting_level) }}
+        {% for child_nav_item in nav_item.children %}
+        {{ _self.page_nav(child_nav_item, current_path, nesting_level + 1) }}
         {% endfor %}
       </ul>
     </li>
@@ -66,18 +66,7 @@
 {% endmacro %}
 
 <ul class="{{ class_name }} nav--level-0">
-  {% if show_home %}
-  <li class="nav-item">
-    <a
-      href="{{ home_path }}"
-      class="nav-link {{ current_path == home_path ? 'active' : '' }}"
-    >
-      {{ homepage.navText ?: homepage.name }}
-    </a>
-  </li>
-  {% endif %}
-
-  {% for page in pages %}
-    {{ _self.page_nav(page, current_path, 1, max_nesting_level) }}
+  {% for nav_item in nav %}
+    {{ _self.page_nav(nav_item, current_path, 1) }}
   {% endfor %}
 </ul>

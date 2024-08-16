@@ -365,7 +365,7 @@ class Page
         return $parentId.':'.$this->slug;
     }
 
-    public function setParentSlug(string $parent_slug = null): static
+    public function setParentSlug(?string $parent_slug = null): static
     {
         $this->parent_slug = $this->getParentSlug();
 
@@ -614,19 +614,6 @@ class Page
     {
         return $this->isPublished()
             && !$this->isLocked();
-    }
-
-    public function isNavEligible()
-    {
-        return $this->isPublished()
-            && !$this->isHidden();
-    }
-
-    public function getNavPages(): Collection
-    {
-        return $this->pages->filter(function (Page $page) {
-            return $page->isNavEligible();
-        });
     }
 
     public function getNavText(): ?string
