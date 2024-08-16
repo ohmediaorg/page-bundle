@@ -39,7 +39,7 @@ class PageRepository extends ServiceEntityRepository
         }
     }
 
-    public function countBySlug(string $slug, int $id = null)
+    public function countBySlug(string $slug, ?int $id = null)
     {
         $params = [
             new Parameter('slug', $slug),
