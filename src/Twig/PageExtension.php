@@ -6,6 +6,7 @@ use OHMedia\BootstrapBundle\Component\Breadcrumb;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
 use OHMedia\PageBundle\Service\PageRenderer;
+use OHMedia\TimezoneBundle\Util\DateTimeUtil;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
@@ -112,32 +113,55 @@ class PageExtension extends AbstractExtension
             $maxNestingLevel = 0;
         }
 
-        $topLevelPages = $this->pageRepository->getTopLevel();
+        $this->setNavPages($maxNestingLevel);
 
-        // NOTE: we could do the isNavEligible checks in a query
-        // but that would duplicate the logic
-        $pages = array_filter($topLevelPages, function (Page $page) {
-            return $page->isNavEligible();
-        });
-
-        // NOTE: homepage is handled separately because a page's path property
-        // cannot be blank and the homepage blank path is a special case
-
-        $homepage = $this->pageRepository->getHomepage();
-
-        $homePath = $this->path('');
+        $nav = $this->getNav();
 
         $currentPath = $this->requestStack->getCurrentRequest()->getPathInfo();
 
         return $twig->render('@OHMediaPage/nav.html.twig', [
-            'pages' => $pages,
-            'home_path' => $homePath,
-            'show_home' => $homepage ? $homepage->isNavEligible() : false,
-            'homepage' => $homepage,
+            'nav' => $nav,
             'class_name' => $className,
             'current_path' => $currentPath,
-            'max_nesting_level' => $maxNestingLevel,
         ]);
+    }
+
+    private function setNavPages(int $maxNestingLevel): void
+    {
+        $this->navPages = $this->pageRepository->createQueryBuilder('p')
+            ->where('p.hidden = 0')
+            ->andWhere('p.nesting_level <= :max_nesting_level')
+            ->setParameter('max_nesting_level', $maxNestingLevel)
+            ->andWhere('p.published IS NOT NULL')
+            ->andWhere('p.published <= :now')
+            ->setParameter('now', DateTimeUtil::getDateTimeUtc())
+            ->andWhere('(
+                SELECT COUNT(pr)
+                FROM OHMedia\PageBundle\Entity\PageRevision pr
+                WHERE IDENTITY(pr.page) = p.id
+                AND pr.published = 1
+            ) > 0')
+            ->orderBy('p.order_global', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    private function getNav(?Page $parent = null): array
+    {
+        $nav = [];
+
+        foreach ($this->navPages as $page) {
+            if ($page->getParent() !== $parent) {
+                continue;
+            }
+
+            $nav[] = [
+                'page' => $page,
+                'children' => $this->getNav($page),
+            ];
+        }
+
+        return $nav;
     }
 
     private function getBreadcrumbs(Page $page): array
