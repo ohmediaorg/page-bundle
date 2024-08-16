@@ -365,7 +365,7 @@ class Page
         return $parentId.':'.$this->slug;
     }
 
-    public function setParentSlug(string $parent_slug = null): static
+    public function setParentSlug(?string $parent_slug = null): static
     {
         $this->parent_slug = $this->getParentSlug();
 
