@@ -126,6 +126,8 @@ class PageExtension extends AbstractExtension
         ]);
     }
 
+    private array $navPages = [];
+
     private function setNavPages(int $maxNestingLevel): void
     {
         $this->navPages = $this->pageRepository->createQueryBuilder('p')
