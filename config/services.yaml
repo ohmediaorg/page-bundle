@@ -144,4 +144,4 @@ services:
 
     OHMedia\PageBundle\Service\PageContentLinkProvider:
         autowire: true
-        tags: ["oh_media_backend.content_link_provider"]
+        tags: ["oh_media_wysiwyg.content_link_provider"]

@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\PageBundle\Repository\PageRevisionRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
-use OHMedia\WysiwygBundle\Util\Shortcode;
+use OHMedia\WysiwygBundle\Shortcodes\Shortcode;
 
 #[ORM\Entity(repositoryClass: PageRevisionRepository::class)]
 class PageRevision

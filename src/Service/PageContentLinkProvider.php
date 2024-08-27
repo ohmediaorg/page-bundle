@@ -2,9 +2,9 @@
 
 namespace OHMedia\PageBundle\Service;
 
-use OHMedia\BackendBundle\ContentLinks\AbstractContentLinkProvider;
-use OHMedia\BackendBundle\ContentLinks\ContentLink;
 use OHMedia\PageBundle\Repository\PageRepository;
+use OHMedia\WysiwygBundle\ContentLinks\AbstractContentLinkProvider;
+use OHMedia\WysiwygBundle\ContentLinks\ContentLink;
 
 class PageContentLinkProvider extends AbstractContentLinkProvider
 {

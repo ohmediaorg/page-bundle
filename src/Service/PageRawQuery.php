@@ -5,7 +5,7 @@ namespace OHMedia\PageBundle\Service;
 use Doctrine\DBAL\Connection;
 use OHMedia\PageBundle\Entity\PageContentRow;
 use OHMedia\PageBundle\Entity\PageContentText;
-use OHMedia\WysiwygBundle\Util\Shortcode;
+use OHMedia\WysiwygBundle\Shortcodes\Shortcode;
 
 class PageRawQuery
 {

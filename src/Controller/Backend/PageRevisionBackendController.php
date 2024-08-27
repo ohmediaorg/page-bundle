@@ -4,7 +4,6 @@ namespace OHMedia\PageBundle\Controller\Backend;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
-use OHMedia\BackendBundle\Shortcodes\ShortcodeManager;
 use OHMedia\PageBundle\Entity\AbstractPageContent;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Entity\PageRevision;
@@ -14,6 +13,7 @@ use OHMedia\PageBundle\Security\Voter\PageRevisionVoter;
 use OHMedia\PageBundle\Service\PageRawQuery;
 use OHMedia\PageBundle\Service\PageRenderer;
 use OHMedia\UtilityBundle\Form\DeleteType;
+use OHMedia\WysiwygBundle\Shortcodes\ShortcodeManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
