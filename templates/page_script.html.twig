@@ -1,8 +1,8 @@
 <script>
 (function () {
-  const LAYOUT_ONE_COLUMN = {{ LAYOUT_ONE_COLUMN|json_encode|raw }};
-  const LAYOUT_THREE_COLUMN = {{ LAYOUT_THREE_COLUMN|json_encode|raw }};
-  const DATA_ATTRIBUTE = {{ DATA_ATTRIBUTE|json_encode|raw }};
+  const LAYOUT_ONE_COLUMN = {{ LAYOUT_ONE_COLUMN|js }};
+  const LAYOUT_THREE_COLUMN = {{ LAYOUT_THREE_COLUMN|js }};
+  const DATA_ATTRIBUTE = {{ DATA_ATTRIBUTE|js }};
   const DATA_ATTRIBUTE_CAMEL = DATA_ATTRIBUTE.replace('data-', '').replace(/-./g, x=>x[1].toUpperCase());
 
   function initPageContentRows(parent) {

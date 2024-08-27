@@ -28,7 +28,7 @@
         '@type': 'Organization',
         'name': organization_name,
       } %}
-      <script type="application/ld+json">{{ schema|json_encode|raw }}</script>
+      <script type="application/ld+json">{{ schema|js }}</script>
     {% endif %}
 
     {% block body_scripts %}{% endblock %}

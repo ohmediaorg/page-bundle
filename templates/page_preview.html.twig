@@ -3,7 +3,7 @@
 <script>
 (function(currentScript) {
   const iframe = document.createElement('iframe');
-  iframe.src = {{ iframe_src|json_encode|raw }};
+  iframe.src = {{ iframe_src|js }};
 
   currentScript.after(iframe);
 

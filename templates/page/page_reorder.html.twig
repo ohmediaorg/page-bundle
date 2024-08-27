@@ -83,9 +83,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const submit = document.getElementById('page-tree-submit');
 
-  const csrfToken = {{ csrf_token(csrf_token_name)|json_encode|raw }};
+  const csrfToken = {{ csrf_token(csrf_token_name)|js }};
 
-  const postUrl = {{ path('page_reorder_post')|json_encode|raw }};
+  const postUrl = {{ path('page_reorder_post')|js }};
 
   let selectedItem = null;
   let undoStack = [];
@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const data = new FormData();
 
-    data.set({{ csrf_token_name|json_encode|raw }}, csrfToken);
+    data.set({{ csrf_token_name|js }}, csrfToken);
 
     parentItems.forEach((parentItem) => {
       let parent_id = parentItem.dataset.parent;
