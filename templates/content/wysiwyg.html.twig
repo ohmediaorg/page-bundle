@@ -1,7 +1,7 @@
-{% set contentWysiwyg = content ? content.text : '' %}
+{% set content_wysiwyg = content ? content.text : '' %}
 
 <div class="page-content page-content__wysiwyg">
-  {% if contentWysiwyg %}
-  {{ wysiwyg(contentWysiwyg, allowed_tags) }}
+  {% if content_wysiwyg %}
+  {{ wysiwyg(content_wysiwyg, allowed_tags, allow_shortcodes) }}
   {% endif %}
 </div>

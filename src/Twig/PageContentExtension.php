@@ -78,7 +78,7 @@ class PageContentExtension extends AbstractExtension
         return $this->queryBuilderHasResult($queryBuilder);
     }
 
-    public function renderContentImagePath(string $name, int $width = null, int $height = null): string
+    public function renderContentImagePath(string $name, ?int $width = null, ?int $height = null): string
     {
         $queryBuilder = $this->getContentImageQueryBuilder($name);
 
@@ -118,7 +118,7 @@ class PageContentExtension extends AbstractExtension
         return $this->queryBuilderHasResult($queryBuilder);
     }
 
-    public function renderContentRow(Environment $twig, string $name, array $allowedTags = null): string
+    public function renderContentRow(Environment $twig, string $name, ?array $allowedTags = null, bool $allowShortcodes = true): string
     {
         $queryBuilder = $this->getContentRowQueryBuilder($name);
 
@@ -132,6 +132,7 @@ class PageContentExtension extends AbstractExtension
             'name' => $name,
             'content' => $content,
             'allowed_tags' => $allowedTags,
+            'allow_shortcodes' => $allowShortcodes,
             'page_revision' => $this->pageRenderer->getCurrentPageRevision(),
         ]);
     }
@@ -193,7 +194,7 @@ class PageContentExtension extends AbstractExtension
         return $this->queryBuilderHasResult($queryBuilder);
     }
 
-    public function renderContentWysiwyg(Environment $twig, string $name, array $allowedTags = null): string
+    public function renderContentWysiwyg(Environment $twig, string $name, ?array $allowedTags = null, bool $allowShortcodes = true): string
     {
         $queryBuilder = $this->getContentTextQueryBuilder($name, PageContentText::TYPE_WYSIWYG);
 
@@ -203,6 +204,7 @@ class PageContentExtension extends AbstractExtension
             'name' => $name,
             'content' => $content,
             'allowed_tags' => $allowedTags,
+            'allow_shortcodes' => $allowShortcodes,
             'page_revision' => $this->pageRenderer->getCurrentPageRevision(),
         ]);
     }

@@ -1,18 +1,18 @@
 <div class="page-content page-content__row page-content__row--{{ content.layout }}">
   {% if content.layout %}
     <div class="page-content__col page-content__col--1">
-      {{ wysiwyg(content.column1, allowed_tags) }}
+      {{ wysiwyg(content.column1, allowed_tags, allow_shortcodes) }}
     </div>
 
     {% if content.layoutHasTwoColumns %}
     <div class="page-content__col page-content__col--2">
-      {{ wysiwyg(content.column2, allowed_tags) }}
+      {{ wysiwyg(content.column2, allowed_tags, allow_shortcodes) }}
     </div>
     {% endif %}
 
     {% if content.layoutHasThreeColumns %}
     <div class="page-content__col page-content__col--3">
-      {{ wysiwyg(content.column3, allowed_tags) }}
+      {{ wysiwyg(content.column3, allowed_tags, allow_shortcodes) }}
     </div>
     {% endif %}
   {% endif %}
