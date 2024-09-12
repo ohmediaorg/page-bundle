@@ -58,7 +58,7 @@ class PageExtension extends AbstractExtension
         }
 
         return $twig->render('@OHMediaPage/breadcrumbs.html.twig', [
-            'breadcrumbs' => $this->getBreadcrumbs($page),
+            'breadcrumbs' => $this->getBreadcrumbs($page, false),
         ]);
     }
 
@@ -74,7 +74,7 @@ class PageExtension extends AbstractExtension
 
         $canonicalPath = $this->pageRenderer->getCanonicalPath();
 
-        $breadcrumbs = $this->getBreadcrumbs($page);
+        $breadcrumbs = $this->getBreadcrumbs($page, true);
 
         $breadcrumbSchema = [
             '@context' => 'https://schema.org',
@@ -166,7 +166,7 @@ class PageExtension extends AbstractExtension
         return $nav;
     }
 
-    private function getBreadcrumbs(Page $page): array
+    private function getBreadcrumbs(Page $page, bool $schema): array
     {
         if ($page->isHomepage()) {
             return [$this->getHomepageBreadcrumb()];
@@ -177,9 +177,13 @@ class PageExtension extends AbstractExtension
         $curr = $page;
 
         do {
-            $meta = $curr->getMeta();
+            if ($schema) {
+                $meta = $curr->getMeta();
 
-            $text = $meta->getTitle() ?? $curr->getName();
+                $text = $meta && $meta->getTitle() ? $meta->getTitle() : $curr->getName();
+            } else {
+                $text = $curr->getNavText() ?: $curr->getName();
+            }
 
             array_unshift($breadcrumbs, $this->getBreadcrumb($text, $curr->getPath()));
         } while ($curr = $curr->getParent());
