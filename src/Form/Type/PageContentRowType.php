@@ -34,14 +34,20 @@ class PageContentRowType extends AbstractType
             ->add('column_1', WysiwygType::class, [
                 'data' => $row ? $row->getColumn1() : null,
                 'attr' => $options['wysiwyg_attr'],
+                'allowed_tags' => $options['allowed_tags'],
+                'allow_shortcodes' => $options['allow_shortcodes'],
             ])
             ->add('column_2', WysiwygType::class, [
                 'data' => $row ? $row->getColumn2() : null,
                 'attr' => $options['wysiwyg_attr'],
+                'allowed_tags' => $options['allowed_tags'],
+                'allow_shortcodes' => $options['allow_shortcodes'],
             ])
             ->add('column_3', WysiwygType::class, [
                 'data' => $row ? $row->getColumn3() : null,
                 'attr' => $options['wysiwyg_attr'],
+                'allowed_tags' => $options['allowed_tags'],
+                'allow_shortcodes' => $options['allow_shortcodes'],
             ])
             ->add('name', HiddenType::class, [
                 'data' => $builder->getName(),
@@ -57,6 +63,8 @@ class PageContentRowType extends AbstractType
             'attr' => [
                 self::DATA_ATTRIBUTE => '',
             ],
+            'allowed_tags' => null,
+            'allow_shortcodes' => true,
         ]);
     }
 }

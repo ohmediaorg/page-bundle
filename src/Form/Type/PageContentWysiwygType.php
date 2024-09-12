@@ -20,6 +20,8 @@ class PageContentWysiwygType extends AbstractType
                 'label' => false,
                 'data' => $content ? $content->getText() : null,
                 'attr' => $options['wysiwyg_attr'],
+                'allowed_tags' => $options['allowed_tags'],
+                'allow_shortcodes' => $options['allow_shortcodes'],
             ])
             ->add('name', HiddenType::class, [
                 'data' => $builder->getName(),
@@ -35,6 +37,8 @@ class PageContentWysiwygType extends AbstractType
         $resolver->setDefaults([
             'data_class' => PageContentText::class,
             'wysiwyg_attr' => [],
+            'allowed_tags' => null,
+            'allow_shortcodes' => true,
         ]);
     }
 }
