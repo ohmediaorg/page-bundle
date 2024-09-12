@@ -201,6 +201,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  const forms = document.querySelectorAll('form');
+
+  forms.forEach(function(form) {
+    for (let i = 0; i < form.elements.length; i++) {
+      const el = form.elements.item(i);
+
+      el.readOnly = true;
+      el.disabled = true;
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      return false;
+    });
+  });
+
   function postBodyHeight() {
     parent.postMessage({
       scrollHeight: document.body.scrollHeight,
