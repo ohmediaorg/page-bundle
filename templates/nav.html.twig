@@ -32,7 +32,7 @@
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
-        {{ text }}
+        {{ page.dropdownText ?: page.name }}
       </a>
       <ul class="dropdown-menu nav--level-{{ nesting_level }}">
         <li>

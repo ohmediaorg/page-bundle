@@ -27,7 +27,14 @@ class PageNavigationType extends AbstractType
             ->add('nav_text', TextType::class, [
                 'required' => false,
                 'label' => 'Link Text',
-                'help' => 'Default value: '.$page->getName(),
+                'help' => 'This text will be used in links to this page from the main nav and breadcrumbs.<br><b>Default value:</b> '.$page->getName(),
+                'help_html' => true,
+            ])
+            ->add('dropdown_text', TextType::class, [
+                'required' => false,
+                'label' => 'Dropdown Text',
+                'help' => 'If this page has children, this text will be used in the main nav dropdown.<br><b>Default value:</b> '.$page->getName(),
+                'help_html' => true,
             ])
             ->add('new_window', CheckboxType::class, [
                 'required' => false,

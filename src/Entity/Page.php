@@ -121,6 +121,9 @@ class Page
     #[ORM\Column(options: ['default' => true])]
     private ?bool $sitemap = true;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $dropdown_text = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -658,6 +661,18 @@ class Page
     public function setSitemap(bool $sitemap): static
     {
         $this->sitemap = $sitemap;
+
+        return $this;
+    }
+
+    public function getDropdownText(): ?string
+    {
+        return $this->dropdown_text;
+    }
+
+    public function setDropdownText(?string $dropdown_text): static
+    {
+        $this->dropdown_text = $dropdown_text;
 
         return $this;
     }
