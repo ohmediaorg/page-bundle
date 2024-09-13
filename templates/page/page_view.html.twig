@@ -132,12 +132,7 @@
       <li>
       {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
         {% block form_action %}{{ path('page_publish', {id: page.id}) }}{% endblock %}
-        {% block confirm_message %}{% apply spaceless %}
-          Are you sure you want to publish this page?
-          {% if page.published %}
-            This page will be published automatically on <i>{{ page.published|date('M j, Y') }}</i> at  <i>{{ page.published|date('g:ia') }}</i>.
-          {% endif %}
-        {% endapply %}{% endblock %}
+        {% block confirm_message %}Are you sure you want to publish this page?{% if page.published %} This page will be published automatically on <i>{{ page.published|date('M j, Y') }}</i> at <i>{{ page.published|date('g:ia') }}</i>.{% endif %}{% endblock %}
         {% block csrf_name %}publish_page_{{ page.id }}{% endblock %}
         {% block button_class %}dropdown-item text-bg-success{% endblock %}
         {% block button_html %}
