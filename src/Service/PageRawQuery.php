@@ -65,11 +65,9 @@ class PageRawQuery
 
         $sql = "UPDATE `page` SET $set WHERE `id` = :id";
 
-        $stmt = $this->connection->prepare($sql);
-
         $fields['id'] = $id;
 
-        $stmt->execute($fields);
+        $this->connection->executeQuery($sql, $fields);
     }
 
     public function getPathWithShortcode(string $shortcode): ?string
@@ -127,9 +125,7 @@ class PageRawQuery
             AND ('.implode(' OR ', $countOrs).')
         ';
 
-        $stmt = $this->connection->prepare($sql);
-
-        $results = $stmt->execute([
+        $results = $this->connection->executeQuery($sql, [
             'pct_type_wysiwyg' => PageContentText::TYPE_WYSIWYG,
             'pcr_one_column' => PageContentRow::LAYOUT_ONE_COLUMN,
             'pcr_two_column' => PageContentRow::LAYOUT_TWO_COLUMN,
@@ -139,7 +135,7 @@ class PageRawQuery
             'shortcode' => '%'.Shortcode::format($shortcode).'%',
         ]);
 
-        $result = $results->fetch();
+        $result = $results->fetchAssociative();
 
         return $result['path'] ?? null;
     }
