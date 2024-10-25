@@ -14,6 +14,7 @@ use OHMedia\PageBundle\Service\PageRawQuery;
 use OHMedia\PageBundle\Service\PageRenderer;
 use OHMedia\UtilityBundle\Form\DeleteType;
 use OHMedia\WysiwygBundle\Shortcodes\ShortcodeManager;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,7 +33,7 @@ class PageRevisionBackendController extends AbstractController
     #[Route('/page/{id}/revision/create', name: 'page_revision_create', methods: ['GET', 'POST'])]
     public function create(
         Request $request,
-        Page $page,
+        #[MapEntity(id: 'id')] Page $page,
     ): Response {
         $pageRevision = new PageRevision();
         $pageRevision->setPage($page);
@@ -47,8 +48,10 @@ class PageRevisionBackendController extends AbstractController
     }
 
     #[Route('/page/revision/{id}', name: 'page_revision_view', methods: ['GET'])]
-    public function view(PageRenderer $renderer, PageRevision $pageRevision): Response
-    {
+    public function view(
+        PageRenderer $renderer,
+        #[MapEntity(id: 'id')] PageRevision $pageRevision,
+    ): Response {
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::VIEW,
             $pageRevision,
@@ -63,7 +66,7 @@ class PageRevisionBackendController extends AbstractController
     #[Route('/page/revision/{id}/template', name: 'page_revision_template', methods: ['GET', 'POST'])]
     public function template(
         Request $request,
-        PageRevision $pageRevision,
+        #[MapEntity(id: 'id')] PageRevision $pageRevision,
     ): Response {
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::TEMPLATE,
@@ -131,7 +134,7 @@ class PageRevisionBackendController extends AbstractController
     #[Route('/page/revision/{id}/content', name: 'page_revision_content', methods: ['GET', 'POST'])]
     public function content(
         Request $request,
-        PageRevision $pageRevision,
+        #[MapEntity(id: 'id')] PageRevision $pageRevision,
     ) {
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::CONTENT,
@@ -194,7 +197,7 @@ class PageRevisionBackendController extends AbstractController
     public function publishAction(
         Request $request,
         PageRawQuery $pageRawQuery,
-        PageRevision $pageRevision,
+        #[MapEntity(id: 'id')] PageRevision $pageRevision,
         ShortcodeManager $shortcodeManager,
     ) {
         $this->denyAccessUnlessGranted(
@@ -280,7 +283,7 @@ class PageRevisionBackendController extends AbstractController
     #[Route('/page/revision/{id}/delete', name: 'page_revision_delete', methods: ['GET', 'POST'])]
     public function delete(
         Request $request,
-        PageRevision $pageRevision,
+        #[MapEntity(id: 'id')] PageRevision $pageRevision,
     ): Response {
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::DELETE,

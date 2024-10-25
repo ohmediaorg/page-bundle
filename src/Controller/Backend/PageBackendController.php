@@ -17,6 +17,7 @@ use OHMedia\PageBundle\Security\Voter\PageVoter;
 use OHMedia\PageBundle\Service\PageManager;
 use OHMedia\PageBundle\Service\PageRawQuery;
 use OHMedia\UtilityBundle\Form\DeleteType;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -171,8 +172,9 @@ class PageBackendController extends AbstractController
     }
 
     #[Route('/page/{id}', name: 'page_view', methods: ['GET'])]
-    public function view(Page $page): Response
-    {
+    public function view(
+        #[MapEntity(id: 'id')] Page $page,
+    ): Response {
         $this->denyAccessUnlessGranted(
             PageVoter::VIEW,
             $page,
@@ -199,7 +201,7 @@ class PageBackendController extends AbstractController
     #[Route('/page/{id}/edit', name: 'page_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,
-        Page $page,
+        #[MapEntity(id: 'id')] Page $page,
     ): Response {
         $this->denyAccessUnlessGranted(
             PageVoter::EDIT,
@@ -237,7 +239,7 @@ class PageBackendController extends AbstractController
     #[Route('/page/{id}/navigation', name: 'page_navigation', methods: ['GET', 'POST'])]
     public function navigation(
         Request $request,
-        Page $page,
+        #[MapEntity(id: 'id')] Page $page,
     ): Response {
         $this->denyAccessUnlessGranted(
             PageVoter::NAVIGATION,
@@ -273,7 +275,7 @@ class PageBackendController extends AbstractController
     #[Route('/page/{id}/seo', name: 'page_seo', methods: ['GET', 'POST'])]
     public function seo(
         Request $request,
-        Page $page,
+        #[MapEntity(id: 'id')] Page $page,
     ): Response {
         $this->denyAccessUnlessGranted(
             PageVoter::NAVIGATION,
@@ -337,7 +339,7 @@ class PageBackendController extends AbstractController
     #[Route('/page/{id}/homepage', name: 'page_homepage', methods: ['POST'])]
     public function homepageAction(
         Request $request,
-        Page $page,
+        #[MapEntity(id: 'id')] Page $page,
     ) {
         $this->denyAccessUnlessGranted(
             PageVoter::HOMEPAGE,
@@ -368,7 +370,7 @@ class PageBackendController extends AbstractController
     #[Route('/page/{id}/publish', name: 'page_publish', methods: ['POST'])]
     public function publishAction(
         Request $request,
-        Page $page,
+        #[MapEntity(id: 'id')] Page $page,
     ) {
         $this->denyAccessUnlessGranted(
             PageVoter::PUBLISH,
@@ -392,7 +394,7 @@ class PageBackendController extends AbstractController
     #[Route('/page/{id}/unpublish', name: 'page_unpublish', methods: ['POST'])]
     public function unpublishAction(
         Request $request,
-        Page $page,
+        #[MapEntity(id: 'id')] Page $page,
     ) {
         $this->denyAccessUnlessGranted(
             PageVoter::UNPUBLISH,
@@ -416,7 +418,7 @@ class PageBackendController extends AbstractController
     #[Route('/page/{id}/delete', name: 'page_delete', methods: ['GET', 'POST'])]
     public function delete(
         Request $request,
-        Page $page,
+        #[MapEntity(id: 'id')] Page $page,
     ): Response {
         $this->denyAccessUnlessGranted(
             PageVoter::DELETE,
