@@ -97,7 +97,7 @@ class PageFrontendController extends AbstractController
 
         $dynamicPage = $dynamicPage301->getPage();
 
-        if ($dynamicPage) {
+        if ($dynamicPage && $dynamicPage->isDynamic()) {
             return $dynamicPage->getPath().'/'.implode('/', $dynamicParts);
         }
 
