@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Persistence\Proxy;
 use OHMedia\MetaBundle\Entity\Meta;
 use OHMedia\PageBundle\Repository\PageRepository;
 use OHMedia\TimezoneBundle\Util\DateTimeUtil;
@@ -133,34 +134,41 @@ class Page
 
     public function __clone()
     {
-        $this->id = null;
-        $this->name = null;
-        $this->slug = null;
-        $this->order_local = self::ORDER_LOCAL_END;
-        $this->order_global = null;
-        $this->parent = null;
-        $this->pages = new ArrayCollection();
-        $this->published = null;
-        $this->nesting_level = null;
-        $this->path = null;
-        $this->parent_slug = null;
-        $this->homepage = false;
-        $this->page301s = new ArrayCollection();
-        $this->redirect_type = null;
-        $this->redirect_internal = null;
-        $this->redirect_external = null;
+        if ($this->id) {
+            if ($this instanceof Proxy && !$this->__isInitialized()) {
+                // Initialize the proxy to load all properties
+                $this->__load();
+            }
 
-        $currentPageRevision = $this->getCurrentPageRevision();
+            $this->id = null;
+            $this->name = null;
+            $this->slug = null;
+            $this->order_local = self::ORDER_LOCAL_END;
+            $this->order_global = null;
+            $this->parent = null;
+            $this->pages = new ArrayCollection();
+            $this->published = null;
+            $this->nesting_level = null;
+            $this->path = null;
+            $this->parent_slug = null;
+            $this->homepage = false;
+            $this->page301s = new ArrayCollection();
+            $this->redirect_type = null;
+            $this->redirect_internal = null;
+            $this->redirect_external = null;
 
-        $this->pageRevisions = new ArrayCollection();
+            $currentPageRevision = $this->getCurrentPageRevision();
 
-        if ($currentPageRevision) {
-            $cloned = clone $currentPageRevision;
+            $this->pageRevisions = new ArrayCollection();
 
-            $this->addPageRevision($cloned);
+            if ($currentPageRevision) {
+                $cloned = clone $currentPageRevision;
+
+                $this->addPageRevision($cloned);
+            }
+
+            $this->meta = null;
         }
-
-        $this->meta = null;
     }
 
     public function __toString(): string
