@@ -5,6 +5,7 @@ namespace OHMedia\PageBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Persistence\Proxy;
 use OHMedia\PageBundle\Repository\PageRevisionRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 use OHMedia\WysiwygBundle\Shortcodes\Shortcode;
@@ -60,21 +61,28 @@ class PageRevision
 
     public function __clone()
     {
-        $this->id = null;
+        if ($this->id) {
+            if ($this instanceof Proxy && !$this->__isInitialized()) {
+                // Initialize the proxy to load all properties
+                $this->__load();
+            }
 
-        $this->published = false;
+            $this->id = null;
 
-        $pageContents = $this->getPageContents();
+            $this->published = false;
 
-        $this->pageContentCheckboxes = new ArrayCollection();
-        $this->pageContentImages = new ArrayCollection();
-        $this->pageContentRows = new ArrayCollection();
-        $this->pageContentTexts = new ArrayCollection();
+            $pageContents = $this->getPageContents();
 
-        foreach ($pageContents as $pageContent) {
-            $clone = clone $pageContent;
+            $this->pageContentCheckboxes = new ArrayCollection();
+            $this->pageContentImages = new ArrayCollection();
+            $this->pageContentRows = new ArrayCollection();
+            $this->pageContentTexts = new ArrayCollection();
 
-            $this->addPageContent($clone);
+            foreach ($pageContents as $pageContent) {
+                $clone = clone $pageContent;
+
+                $this->addPageContent($clone);
+            }
         }
     }
 

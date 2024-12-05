@@ -2,6 +2,7 @@
 
 namespace OHMedia\PageBundle\Controller\Backend;
 
+use Doctrine\ORM\QueryBuilder;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\MetaBundle\Entity\Meta;
@@ -19,7 +20,11 @@ use OHMedia\PageBundle\Service\PageRawQuery;
 use OHMedia\UtilityBundle\Form\DeleteType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +41,7 @@ class PageBackendController extends AbstractController
     }
 
     #[Route('/pages', name: 'page_index', methods: ['GET'])]
-    public function index(Paginator $paginator): Response
+    public function index(Paginator $paginator, Request $request): Response
     {
         $this->denyAccessUnlessGranted(
             PageVoter::INDEX,
@@ -47,11 +52,84 @@ class PageBackendController extends AbstractController
         $queryBuilder = $this->pageRepository->createQueryBuilder('p')
             ->orderBy('p.order_global', 'asc');
 
+        $searchForm = $this->getSearchForm($request);
+
+        $this->applySearch($searchForm, $queryBuilder);
+
         return $this->render('@OHMediaPage/page/page_index.html.twig', [
             'pagination' => $paginator->paginate($queryBuilder, 20),
             'new_page' => new Page(),
             'attributes' => $this->getAttributes(),
+            'search_form' => $searchForm,
         ]);
+    }
+
+    private function getSearchForm(Request $request): FormInterface
+    {
+        $formBuilder = $this->container->get('form.factory')
+            ->createNamedBuilder('', FormType::class, null, [
+                'csrf_protection' => false,
+            ]);
+
+        $formBuilder->setMethod('GET');
+
+        $formBuilder->add('search', TextType::class, [
+            'required' => false,
+        ]);
+
+        $formBuilder->add('status', ChoiceType::class, [
+            'required' => false,
+            'choices' => [
+                'All' => '',
+                'Published' => 'published',
+                'Draft' => 'draft',
+            ],
+        ]);
+
+        $form = $formBuilder->getForm();
+
+        $form->handleRequest($request);
+
+        return $form;
+    }
+
+    private function applySearch(FormInterface $form, QueryBuilder $qb): void
+    {
+        $search = $form->get('search')->getData();
+
+        if ($search) {
+            $searchFields = [
+                'p.name',
+                'p.slug',
+            ];
+
+            $searchLikes = [];
+            foreach ($searchFields as $searchField) {
+                $searchLikes[] = "$searchField LIKE :search";
+            }
+
+            $qb->andWhere('('.implode(' OR ', $searchLikes).')')
+                ->setParameter('search', '%'.$search.'%');
+        }
+
+        $status = $form->get('status')->getData();
+
+        if ('published' === $status) {
+            $qb->andWhere('p.published IS NOT NULL');
+            $qb->andWhere('(
+                SELECT COUNT(pr.id)
+                FROM '.PageRevision::class.' pr
+                WHERE pr.published = 1
+                AND IDENTITY(pr.page) = p.id
+            ) > 0');
+        } elseif ('draft' === $status) {
+            $qb->andWhere('(p.published IS NULL OR (
+                SELECT COUNT(pr.id)
+                FROM '.PageRevision::class.' pr
+                WHERE pr.published = 1
+                AND IDENTITY(pr.page) = p.id
+            ) = 0)');
+        }
     }
 
     #[Route('/pages/reorder', name: 'page_reorder', methods: ['GET'])]
