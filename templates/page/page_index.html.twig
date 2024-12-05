@@ -37,6 +37,21 @@
       </div>
     </div>
 
+    {{ form_start(search_form) }}
+      <div class="row align-items-end">
+        <div class="col-lg-4 col-sm-6">
+          {{ form_row(search_form.search) }}
+        </div>
+        <div class="col-lg-4 col-sm-6">
+          {{ form_row(search_form.status) }}
+        </div>
+        <div class="col-lg-12 col-sm-6">
+          <button class="btn btn-primary mb-3" type="submit">Search</button>
+          <a class="btn btn-dark mb-3" href="{{ path('page_index') }}">Reset</a>
+        </div>
+      </div>
+    {{ form_end(search_form) }}
+
     {% if pagination.count %}
     <table class="table table-striped">
     <thead>
@@ -118,12 +133,7 @@
 
     <small>{{ bootstrap_pagination_info(pagination) }}</small>
     {% else %}
-      <p>
-        No pages found.
-        {% if can_create_page %}
-        <a href="{{ create_page_href }}">Click here to add a page.</a>
-        {% endif %}
-      </p>
+      <p>No pages found.</p>
     {% endif %}
   </div>
 </div>
