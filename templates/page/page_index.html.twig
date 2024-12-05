@@ -97,13 +97,13 @@
           <td>{{ page.updatedAt|datetime }}</td>
           <td>
             {% if is_granted(attributes.page.view, page) %}
-            <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-sm btn-primary" title="View">
+            <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="View">
               {{ bootstrap_icon('eye') }}
               <span class="visually-hidden">View</span>
             </a>
             {% endif %}
             {% if is_granted(attributes.page.edit, page) %}
-            <a href="{{ path('page_edit', {id: page.id}) }}" class="btn btn-sm btn-primary" title="Edit">
+            <a href="{{ path('page_edit', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
               <i class="bi-pencil"></i>
               <span class="visually-hidden">Edit</span>
             </a>
