@@ -100,12 +100,12 @@ class PageVoter extends AbstractEntityVoter
 
     protected function canPublish(Page $page, User $loggedIn): bool
     {
-        return !$page->isPublished();
+        return !$page->getPublished();
     }
 
     protected function canUnpublish(Page $page, User $loggedIn): bool
     {
-        return $page->isPublished() && !$page->isHomepage();
+        return $page->getPublished() && !$page->isHomepage();
     }
 
     protected function canDelete(Page $page, User $loggedIn): bool
