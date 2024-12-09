@@ -3,6 +3,7 @@
 namespace OHMedia\PageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Persistence\Proxy;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 
 #[ORM\MappedSuperclass]
@@ -20,7 +21,14 @@ abstract class AbstractPageContent
 
     public function __clone()
     {
-        $this->id = null;
+        if ($this->id) {
+            if ($this instanceof Proxy && !$this->__isInitialized()) {
+                // Initialize the proxy to load all properties
+                $this->__load();
+            }
+
+            $this->id = null;
+        }
     }
 
     public function getId(): ?int
