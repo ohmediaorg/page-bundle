@@ -51,7 +51,12 @@ class PageRevisionBackendController extends AbstractController
     public function view(
         PageRenderer $renderer,
         #[MapEntity(id: 'id')] PageRevision $pageRevision,
+        Request $request,
     ): Response {
+        // NOTE: hacky way to disable the profile bar
+        // which interferes with iframe height adjustment
+        $request->headers->set('X-Requested-With', 'XMLHttpRequest');
+
         $this->denyAccessUnlessGranted(
             PageRevisionVoter::VIEW,
             $pageRevision,
