@@ -688,12 +688,12 @@ class Page
         return $this;
     }
 
-    public function getLockedUserTypes(): array
+    public function getLockedUserTypes(): ?array
     {
         return $this->locked_user_types;
     }
 
-    public function setLockedUserTypes(array $locked_user_types): static
+    public function setLockedUserTypes(?array $locked_user_types): static
     {
         $this->locked_user_types = $locked_user_types;
 
