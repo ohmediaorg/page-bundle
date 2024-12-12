@@ -92,7 +92,7 @@ class PageEditType extends AbstractType
         }
 
         $choices = [
-            'All' => null,
+            'All Users' => null,
         ];
 
         foreach ($userTypes as $userType) {
@@ -112,7 +112,7 @@ class PageEditType extends AbstractType
         }
 
         $builder->add('locked_user_types', ChoiceType::class, [
-            'label' => 'Accessible by these logged-in user types:',
+            'label' => 'Accessible by these types of logged-in users:',
             'required' => false,
             'choices' => $choices,
             'multiple' => true,
