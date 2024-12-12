@@ -125,6 +125,9 @@ class Page
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $dropdown_text = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?array $locked_user_types = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -681,6 +684,18 @@ class Page
     public function setDropdownText(?string $dropdown_text): static
     {
         $this->dropdown_text = $dropdown_text;
+
+        return $this;
+    }
+
+    public function getLockedUserTypes(): array
+    {
+        return $this->locked_user_types;
+    }
+
+    public function setLockedUserTypes(array $locked_user_types): static
+    {
+        $this->locked_user_types = $locked_user_types;
 
         return $this;
     }
