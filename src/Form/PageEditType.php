@@ -8,7 +8,6 @@ use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Repository\UserRepository;
 use OHMedia\TimezoneBundle\Form\Type\DateTimeType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -93,9 +92,7 @@ class PageEditType extends AbstractType
             return;
         }
 
-        $choices = [
-            'All Users' => null,
-        ];
+        $choices = [];
 
         foreach ($userTypes as $userType) {
             $type = $userType['type'];
@@ -117,17 +114,6 @@ class PageEditType extends AbstractType
             ],
             'help' => 'Super Admins and Admins will always be able to view a page that requires login.',
         ]);
-
-        $builder->get('locked_user_types')
-            ->addModelTransformer(new CallbackTransformer(
-                function (?array $entityValue): array {
-                    return is_null($entityValue) ? [null] : $entityValue;
-                },
-                function (array $formValue): ?array {
-                    return !$formValue || in_array(null, $formValue) ? null : $formValue;
-                },
-            ))
-        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

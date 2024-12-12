@@ -56,8 +56,8 @@ class PageLockedVoter extends Voter
 
         $lockedUserTypes = $page->getLockedUserTypes();
 
-        if (null === $lockedUserTypes) {
-            return true;
+        if (!$lockedUserTypes) {
+            return false;
         }
 
         return in_array($loggedIn->getType(), $lockedUserTypes);

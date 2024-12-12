@@ -97,7 +97,7 @@
             {% if page.isLocked %}
             <span class="badge text-bg-dark" title="Locked">
               {{ bootstrap_icon('lock-fill') }}
-              <span class="visually-hidden">Locked</span>
+              <span class="visually-hidden">Login Required</span>
             </span>
             {% endif %}
 
@@ -119,8 +119,6 @@
                     {{ bootstrap_badge_secondary(readable_user_type) }}
                   {% endif %}
                 {% endfor %}
-              {% else %}
-                {{ bootstrap_badge_secondary('All') }}
               {% endif %}
             {% endif %}
           </td>
