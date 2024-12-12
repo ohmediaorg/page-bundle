@@ -60,6 +60,7 @@
         <th>Status</th>
         <th>Template</th>
         <th>Shortcode</th>
+        <th>User Types</th>
         <th>Last Updated</th>
         <th>&nbsp;</th>
       </tr>
@@ -109,6 +110,20 @@
           </td>
           <td>{{ page.getTemplateName }}</td>
           <td>{{ shortcode('page_href('~page.id~')') }}</td>
+          <td>
+            {% if page.locked %}
+              {% if page.lockedUserTypes %}
+                {% for user_type in page.lockedUserTypes %}
+                  {% set readable_user_type = page_user_type(user_type) %}
+                  {% if readable_user_type %}
+                    {{ bootstrap_badge_secondary(readable_user_type) }}
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                {{ bootstrap_badge_secondary('All') }}
+              {% endif %}
+            {% endif %}
+          </td>
           <td>{{ page.updatedAt|datetime }}</td>
           <td>
             {% if is_granted(attributes.page.view, page) %}

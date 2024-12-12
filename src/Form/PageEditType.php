@@ -3,6 +3,7 @@
 namespace OHMedia\PageBundle\Form;
 
 use OHMedia\PageBundle\Entity\Page;
+use OHMedia\PageBundle\Util\ReadableUserType;
 use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\SecurityBundle\Repository\UserRepository;
 use OHMedia\TimezoneBundle\Form\Type\DateTimeType;
@@ -13,8 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use function Symfony\Component\String\u;
 
 class PageEditType extends AbstractType
 {
@@ -101,16 +100,8 @@ class PageEditType extends AbstractType
         foreach ($userTypes as $userType) {
             $type = $userType['type'];
 
-            try {
-                $reflection = new \ReflectionClass($type);
-
-                $text = u($reflection->getShortName())
-                    ->snake()
-                    ->replace('_', ' ')
-                    ->title(true);
-
-                $choices[(string) $text] = $type;
-            } catch (\Exception $e) {
+            if ($text = ReadableUserType::get($type)) {
+                $choices[$text] = $type;
             }
         }
 
