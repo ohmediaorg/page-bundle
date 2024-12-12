@@ -37,12 +37,50 @@
         {% endset %}
 
         {{ form_start(form) }}
-            {{ form_row(form.name) }}
-            {{ form_path|raw }}
-            {{ form_rest(form) }}
+          {{ form_row(form.name) }}
+          {{ form_path|raw }}
+          {{ form_rest(form) }}
         {{ form_end(form) }}
       </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+  {% if form.locked_user_types is defined %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const locked = document.getElementById['{{ form.locked.vars.id }}'];
+
+      const lockedUserTypes = document.querySelectorAll('input[name="{{ form.locked_user_types.vars.full_name }}[]"]');
+
+      let allUserType = null, otherUserTypes = [];
+
+      lockedUserTypes.forEach(function(lockedUserType) {
+        if ('0' === lockedUserType.value) {
+          allUserType = lockedUserType;
+        } else {
+          otherUserTypes.push(lockedUserType);
+        }
+      });
+
+      allUserType.addEventListener('change', function() {
+        if (allUserType.checked) {
+          otherUserTypes.forEach(function(otherUserType) {
+            otherUserType.checked = false;
+          });
+        }
+      });
+
+      otherUserTypes.forEach(function(otherUserType) {
+        otherUserType.addEventListener('change', function() {
+          if (otherUserType.checked) {
+            allUserType.checked = false;
+          }
+        });
+      });
+    });
+    </script>
+  {% endif %}
 {% endblock %}
