@@ -1,0 +1,39 @@
+<div class="btn-group btn-group-sm" role="group" aria-label="Page actions">
+  {% if is_granted(attributes.page.view, page) %}
+  <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-outline-dark">
+    {{ bootstrap_icon('arrow-left') }}
+    Back to Page
+  </a>
+  {% endif %}
+  <div class="btn-group btn-group-sm" role="group">
+    <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Page Actions
+    </button>
+    <ul class="dropdown-menu">
+    {% if is_granted(attributes.page.edit, page) %}
+      <li>
+        <a href="{{ path('page_edit', {id: page.id}) }}" class="dropdown-item">
+          {{ bootstrap_icon('pencil-fill') }}
+          Edit
+        </a>
+      </li>
+    {% endif %}
+    {% if is_granted(attributes.page.navigation, page) %}
+      <li>
+        <a href="{{ path('page_navigation', {id: page.id}) }}" class="dropdown-item">
+          {{ bootstrap_icon('list') }}
+          Navigation
+        </a>
+      </li>
+    {% endif %}
+    {% if is_granted(attributes.page.seo, page) %}
+      <li>
+        <a href="{{ path('page_seo', {id: page.id}) }}" class="dropdown-item">
+          {{ bootstrap_icon('google') }}
+          SEO
+        </a>
+      </li>
+    {% endif %}
+    </ul>
+  </div>
+</div>

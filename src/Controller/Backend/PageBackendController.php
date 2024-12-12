@@ -311,6 +311,7 @@ class PageBackendController extends AbstractController
             'page' => $page,
             'form' => $form->createView(),
             'form_title' => 'Edit Page',
+            'attributes' => $this->getAttributes(),
         ]);
     }
 
@@ -347,6 +348,7 @@ class PageBackendController extends AbstractController
             'page' => $page,
             'form' => $form->createView(),
             'form_title' => 'Page Navigation',
+            'attributes' => $this->getAttributes(),
         ]);
     }
 
@@ -383,6 +385,7 @@ class PageBackendController extends AbstractController
             'page' => $page,
             'form' => $form->createView(),
             'form_title' => 'Page SEO',
+            'attributes' => $this->getAttributes(),
         ]);
     }
 
