@@ -3,15 +3,25 @@
 namespace OHMedia\PageBundle\Form;
 
 use OHMedia\PageBundle\Entity\Page;
+use OHMedia\SecurityBundle\Entity\User;
+use OHMedia\SecurityBundle\Repository\UserRepository;
 use OHMedia\TimezoneBundle\Form\Type\DateTimeType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use function Symfony\Component\String\u;
+
 class PageEditType extends AbstractType
 {
+    public function __construct(private UserRepository $userRepository)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $page = $options['data'];
@@ -20,6 +30,8 @@ class PageEditType extends AbstractType
             $lockedHelp = 'The homepage cannot be locked.';
 
             $publishedHelp = 'The homepage must remain published.';
+
+            $userTypes = [];
         } else {
             $lockedHelp = '<i><b>Note:</b> web crawlers will not be able to index a page behind a login form!</i>';
 
@@ -28,6 +40,19 @@ class PageEditType extends AbstractType
             if (!$page->isCurrentPageRevisionPublished()) {
                 $publishedHelp .= '<br /><i><b>Note:</b> this page will not be considered published until it has published content.</i>';
             }
+
+            $userTypes = $this->userRepository->createQueryBuilder('u')
+                ->select('u.type')
+                ->where('u.type NOT IN (:admin_types)')
+                ->setParameter('admin_types', [
+                    User::TYPE_DEVELOPER,
+                    User::TYPE_SUPER,
+                    User::TYPE_ADMIN,
+                ])
+                ->orderBy('u.type', 'ASC')
+                ->groupBy('u.type')
+                ->getQuery()
+                ->getResult();
         }
 
         $builder
@@ -44,6 +69,11 @@ class PageEditType extends AbstractType
                 'help_html' => true,
                 'disabled' => $page->isHomepage(),
             ])
+        ;
+
+        $this->addLockedUserTypes($builder, $userTypes);
+
+        $builder
             ->add('published', DateTimeType::class, [
                 'required' => false,
                 'widget' => 'single_text',
@@ -52,6 +82,56 @@ class PageEditType extends AbstractType
                 'help_html' => true,
                 'disabled' => $page->isHomepage(),
             ])
+        ;
+    }
+
+    private function addLockedUserTypes(FormBuilderInterface $builder, array $userTypes): void
+    {
+        if (!$userTypes) {
+            return;
+        }
+
+        $choices = [
+            'All' => null,
+        ];
+
+        foreach ($userTypes as $userType) {
+            $type = $userType['type'];
+
+            try {
+                $reflection = new \ReflectionClass($type);
+
+                $text = u($reflection->getShortName())
+                    ->snake()
+                    ->replace('_', ' ')
+                    ->title(true);
+
+                $choices[(string) $text] = $type;
+            } catch (\Exception $e) {
+            }
+        }
+
+        $builder->add('locked_user_types', ChoiceType::class, [
+            'label' => 'Accessible by these logged-in user types:',
+            'required' => false,
+            'choices' => $choices,
+            'multiple' => true,
+            'expanded' => true,
+            'row_attr' => [
+                'class' => 'fieldset-nostyle mb-3',
+            ],
+            'help' => 'Super Admins and Admins will always be able to view a page that requires login.',
+        ]);
+
+        $builder->get('locked_user_types')
+            ->addModelTransformer(new CallbackTransformer(
+                function (?array $entityValue): array {
+                    return is_null($entityValue) ? [null] : $entityValue;
+                },
+                function (array $formValue): ?array {
+                    return !$formValue || in_array(null, $formValue) ? null : $formValue;
+                },
+            ))
         ;
     }
 
