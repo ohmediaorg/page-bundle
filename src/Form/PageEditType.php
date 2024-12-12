@@ -39,6 +39,8 @@ class PageEditType extends AbstractType
                 $publishedHelp .= '<br /><i><b>Note:</b> this page will not be considered published until it has published content.</i>';
             }
 
+            // TODO: reuse this query for determining if the User Types column
+            // should be shown in the Page listing
             $userTypes = $this->userRepository->createQueryBuilder('u')
                 ->select('u.type')
                 ->where('u.type NOT IN (:admin_types)')
