@@ -66,34 +66,6 @@
       toggleLockedUserTypes();
 
       locked.addEventListener('change', toggleLockedUserTypes);
-
-      const lockedUserTypes = document.querySelectorAll('input[name="{{ form.locked_user_types.vars.full_name }}[]"]');
-
-      let allUserType = null, otherUserTypes = [];
-
-      lockedUserTypes.forEach(function(lockedUserType) {
-        if ('0' === lockedUserType.value) {
-          allUserType = lockedUserType;
-        } else {
-          otherUserTypes.push(lockedUserType);
-        }
-      });
-
-      allUserType.addEventListener('change', function() {
-        if (allUserType.checked) {
-          otherUserTypes.forEach(function(otherUserType) {
-            otherUserType.checked = false;
-          });
-        }
-      });
-
-      otherUserTypes.forEach(function(otherUserType) {
-        otherUserType.addEventListener('change', function() {
-          if (otherUserType.checked) {
-            allUserType.checked = false;
-          }
-        });
-      });
     });
     </script>
   {% endif %}
