@@ -301,7 +301,9 @@ class PageBackendController extends AbstractController
 
                 $this->addFlash('notice', 'Changes to the page were saved successfully.');
 
-                return $this->redirectToView($page);
+                return $this->redirectToRoute('page_edit', [
+                    'id' => $page->getId(),
+                ]);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -338,7 +340,9 @@ class PageBackendController extends AbstractController
 
                 $this->addFlash('notice', 'The page navigation was updated successfully.');
 
-                return $this->redirectToView($page);
+                return $this->redirectToRoute('page_navigation', [
+                    'id' => $page->getId(),
+                ]);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -375,7 +379,9 @@ class PageBackendController extends AbstractController
 
                 $this->addFlash('notice', 'The page SEO was updated successfully.');
 
-                return $this->redirectToView($page);
+                return $this->redirectToRoute('page_seo', [
+                    'id' => $page->getId(),
+                ]);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
