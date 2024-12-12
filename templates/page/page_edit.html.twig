@@ -51,7 +51,17 @@
   {% if form.locked_user_types is defined %}
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const locked = document.getElementById['{{ form.locked.vars.id }}'];
+      const locked = document.getElementById('{{ form.locked.vars.id }}');
+
+      const lockedUserTypesFieldset = document.getElementById('{{ form.locked_user_types.vars.id }}').parentNode;
+
+      function toggleLockedUserTypes() {
+        lockedUserTypesFieldset.style.display = locked.checked ? '' : 'none';
+      }
+
+      toggleLockedUserTypes();
+
+      locked.addEventListener('change', toggleLockedUserTypes);
 
       const lockedUserTypes = document.querySelectorAll('input[name="{{ form.locked_user_types.vars.full_name }}[]"]');
 

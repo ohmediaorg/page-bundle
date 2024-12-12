@@ -71,7 +71,7 @@ class PageEditType extends AbstractType
             ])
         ;
 
-        $this->addLockedUserTypes($builder, $userTypes);
+        $this->addLockedUserTypes($builder, $userTypes, $page);
 
         $builder
             ->add('published', DateTimeType::class, [
@@ -85,8 +85,11 @@ class PageEditType extends AbstractType
         ;
     }
 
-    private function addLockedUserTypes(FormBuilderInterface $builder, array $userTypes): void
-    {
+    private function addLockedUserTypes(
+        FormBuilderInterface $builder,
+        array $userTypes,
+        Page $page,
+    ): void {
         if (!$userTypes) {
             return;
         }
@@ -119,6 +122,7 @@ class PageEditType extends AbstractType
             'expanded' => true,
             'row_attr' => [
                 'class' => 'fieldset-nostyle mb-3',
+                'style' => $page->isLocked() ? '' : 'display:none',
             ],
             'help' => 'Super Admins and Admins will always be able to view a page that requires login.',
         ]);
