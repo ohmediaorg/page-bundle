@@ -21,6 +21,9 @@ services:
     OHMedia\PageBundle\Service\PageRawQuery:
         autowire: true
 
+    OHMedia\PageBundle\Service\PageUserTypes:
+        autowire: true
+
     oh_media_page.page_manager:
         alias: OHMedia\PageBundle\Service\PageManager
 
@@ -133,6 +136,9 @@ services:
         tags: ["security.voter"]
 
     OHMedia\PageBundle\Security\Voter\PageRevisionVoter:
+        tags: ["security.voter"]
+
+    OHMedia\PageBundle\Security\Voter\PageLockedVoter:
         tags: ["security.voter"]
 
     OHMedia\PageBundle\Service\PageNavItemProvider:

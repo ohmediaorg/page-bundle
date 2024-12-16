@@ -10,6 +10,10 @@
   ) }}
 {% endblock %}
 
+{% block actions %}
+{% include '@OHMediaPage/page/_page_actions_shared.html.twig' %}
+{% endblock %}
+
 {% block javascripts %}
 {% set page_class = 'OHMedia\\PageBundle\\Entity\\Page' %}
 {% set internal_constant = constant(page_class ~ '::REDIRECT_TYPE_INTERNAL') %}
