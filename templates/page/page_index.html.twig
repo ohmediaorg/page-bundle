@@ -53,103 +53,109 @@
     {{ form_end(search_form) }}
 
     {% if pagination.count %}
-    <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Template</th>
-        <th>Shortcode</th>
-        <th>User Types</th>
-        <th>Last Updated</th>
-        <th>&nbsp;</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for page in pagination.results %}
-        <tr>
-          <td>
-            {{ page.name }}
-            <br />
-            {{ bootstrap_badge_light('/' ~ page.path) }}
-          </td>
-          <td>
-            {% if page.isHomepage %}
-            <span class="badge text-bg-dark" title="Homepage">
-              {{ bootstrap_icon('house-fill') }}
-              <span class="visually-hidden">Homepage</span>
-            </span>
-            {% endif %}
+      {% set has_page_user_types = has_page_user_types() %}
 
-            {% if page.isPublished %}
-            {{ bootstrap_badge_success('Published') }}
-            {% else %}
-            {{ bootstrap_badge_warning('Draft') }}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Template</th>
+            <th>Shortcode</th>
+            {% if has_page_user_types %}
+              <th>User Types</th>
             {% endif %}
+            <th>Last Updated</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for page in pagination.results %}
+            <tr>
+              <td>
+                {{ page.name }}
+                <br />
+                {{ bootstrap_badge_light('/' ~ page.path) }}
+              </td>
+              <td>
+                {% if page.isHomepage %}
+                <span class="badge text-bg-dark" title="Homepage">
+                  {{ bootstrap_icon('house-fill') }}
+                  <span class="visually-hidden">Homepage</span>
+                </span>
+                {% endif %}
 
-            {% if page.isHidden %}
-            <span class="badge text-bg-dark" title="Hidden">
-              {{ bootstrap_icon('eye-slash-fill') }}
-              <span class="visually-hidden">Hidden</span>
-            </span>
-            {% endif %}
+                {% if page.isPublished %}
+                {{ bootstrap_badge_success('Published') }}
+                {% else %}
+                {{ bootstrap_badge_warning('Draft') }}
+                {% endif %}
 
-            {% if page.isLocked %}
-            <span class="badge text-bg-dark" title="Locked">
-              {{ bootstrap_icon('lock-fill') }}
-              <span class="visually-hidden">Login Required</span>
-            </span>
-            {% endif %}
+                {% if page.isHidden %}
+                <span class="badge text-bg-dark" title="Hidden">
+                  {{ bootstrap_icon('eye-slash-fill') }}
+                  <span class="visually-hidden">Hidden</span>
+                </span>
+                {% endif %}
 
-            {% if page.isNewWindow %}
-            <span class="badge text-bg-dark" title="New Window">
-              {{ bootstrap_icon('box-arrow-up-right') }}
-              <span class="visually-hidden">New Window</span>
-            </span>
-            {% endif %}
-          </td>
-          <td>{{ page.getTemplateName }}</td>
-          <td>{{ shortcode('page_href('~page.id~')') }}</td>
-          <td>
-            {% if page.locked %}
-              {% if page.lockedUserTypes %}
-                {% for user_type in page.lockedUserTypes %}
-                  {% set readable_user_type = page_user_type(user_type) %}
-                  {% if readable_user_type %}
-                    {{ bootstrap_badge_secondary(readable_user_type) }}
+                {% if page.isLocked %}
+                <span class="badge text-bg-dark" title="Locked">
+                  {{ bootstrap_icon('lock-fill') }}
+                  <span class="visually-hidden">Login Required</span>
+                </span>
+                {% endif %}
+
+                {% if page.isNewWindow %}
+                <span class="badge text-bg-dark" title="New Window">
+                  {{ bootstrap_icon('box-arrow-up-right') }}
+                  <span class="visually-hidden">New Window</span>
+                </span>
+                {% endif %}
+              </td>
+              <td>{{ page.getTemplateName }}</td>
+              <td>{{ shortcode('page_href('~page.id~')') }}</td>
+              {% if has_page_user_types %}
+                <td>
+                  {% if page.locked %}
+                    {% if page.lockedUserTypes %}
+                      {% for user_type in page.lockedUserTypes %}
+                        {% set readable_user_type = page_user_type(user_type) %}
+                        {% if readable_user_type %}
+                          {{ bootstrap_badge_secondary(readable_user_type) }}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
                   {% endif %}
-                {% endfor %}
+                </td>
               {% endif %}
-            {% endif %}
-          </td>
-          <td>{{ page.updatedAt|datetime }}</td>
-          <td>
-            {% if is_granted(attributes.page.view, page) %}
-            <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="View">
-              {{ bootstrap_icon('eye') }}
-              <span class="visually-hidden">View</span>
-            </a>
-            {% endif %}
-            {% if is_granted(attributes.page.edit, page) %}
-            <a href="{{ path('page_edit', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-              <i class="bi-pencil"></i>
-              <span class="visually-hidden">Edit</span>
-            </a>
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="100%">A page is considered {{ bootstrap_badge_success('Published') }} if both the page itself and at least one of its revisions are published.</td>
-      </tr>
-    </tfoot>
-    </table>
+              <td>{{ page.updatedAt|datetime }}</td>
+              <td>
+                {% if is_granted(attributes.page.view, page) %}
+                <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="View">
+                  {{ bootstrap_icon('eye') }}
+                  <span class="visually-hidden">View</span>
+                </a>
+                {% endif %}
+                {% if is_granted(attributes.page.edit, page) %}
+                <a href="{{ path('page_edit', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
+                  <i class="bi-pencil"></i>
+                  <span class="visually-hidden">Edit</span>
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="100%">A page is considered {{ bootstrap_badge_success('Published') }} if both the page itself and at least one of its revisions are published.</td>
+          </tr>
+        </tfoot>
+      </table>
 
-    {{ bootstrap_pagination(pagination) }}
+      {{ bootstrap_pagination(pagination) }}
 
-    <small>{{ bootstrap_pagination_info(pagination) }}</small>
+      <small>{{ bootstrap_pagination_info(pagination) }}</small>
     {% else %}
       <p>No pages found.</p>
     {% endif %}

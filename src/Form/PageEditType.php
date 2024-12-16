@@ -3,9 +3,8 @@
 namespace OHMedia\PageBundle\Form;
 
 use OHMedia\PageBundle\Entity\Page;
-use OHMedia\PageBundle\Util\ReadableUserType;
+use OHMedia\PageBundle\Service\PageUserTypes;
 use OHMedia\SecurityBundle\Entity\User;
-use OHMedia\SecurityBundle\Repository\UserRepository;
 use OHMedia\TimezoneBundle\Form\Type\DateTimeType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -16,7 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PageEditType extends AbstractType
 {
-    public function __construct(private UserRepository $userRepository)
+    public function __construct(private PageUserTypes $pageUserTypes)
     {
     }
 
@@ -41,18 +40,7 @@ class PageEditType extends AbstractType
 
             // TODO: reuse this query for determining if the User Types column
             // should be shown in the Page listing
-            $userTypes = $this->userRepository->createQueryBuilder('u')
-                ->select('u.type')
-                ->where('u.type NOT IN (:admin_types)')
-                ->setParameter('admin_types', [
-                    User::TYPE_DEVELOPER,
-                    User::TYPE_SUPER,
-                    User::TYPE_ADMIN,
-                ])
-                ->orderBy('u.type', 'ASC')
-                ->groupBy('u.type')
-                ->getQuery()
-                ->getResult();
+            $userTypes = $this->pageUserTypes->getUserTypes();
         }
 
         $builder
@@ -99,7 +87,7 @@ class PageEditType extends AbstractType
         foreach ($userTypes as $userType) {
             $type = $userType['type'];
 
-            if ($text = ReadableUserType::get($type)) {
+            if ($text = PageUserTypes::readable($type)) {
                 $choices[$text] = $type;
             }
         }
