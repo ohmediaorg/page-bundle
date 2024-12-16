@@ -4,7 +4,6 @@ namespace OHMedia\PageBundle\Form;
 
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Service\PageUserTypes;
-use OHMedia\SecurityBundle\Entity\User;
 use OHMedia\TimezoneBundle\Form\Type\DateTimeType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -38,8 +37,6 @@ class PageEditType extends AbstractType
                 $publishedHelp .= '<br /><i><b>Note:</b> this page will not be considered published until it has published content.</i>';
             }
 
-            // TODO: reuse this query for determining if the User Types column
-            // should be shown in the Page listing
             $userTypes = $this->pageUserTypes->getUserTypes();
         }
 
