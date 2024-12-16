@@ -82,12 +82,10 @@ class PageEditType extends AbstractType
         $choices = [];
 
         foreach ($userTypes as $userType) {
-            $type = $userType['type'];
-
-            if ($text = PageUserTypes::readable($type)) {
-                $choices[$text] = $type;
+            if ($text = PageUserTypes::readable($userType)) {
+                $choices[$text] = $userType;
             } else {
-                $choices[$type] = $type;
+                $choices[$userType] = $userType;
             }
         }
 
