@@ -86,6 +86,8 @@ class PageEditType extends AbstractType
 
             if ($text = PageUserTypes::readable($type)) {
                 $choices[$text] = $type;
+            } else {
+                $choices[$type] = $type;
             }
         }
 
