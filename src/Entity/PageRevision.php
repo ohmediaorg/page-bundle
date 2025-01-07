@@ -133,6 +133,15 @@ class PageRevision
             : false;
     }
 
+    public function isTemplate(string $template): bool
+    {
+        $callable = $this->template.'::getTemplate';
+
+        return is_callable($callable)
+            ? $template === call_user_func($callable)
+            : false;
+    }
+
     public function getPage(): ?Page
     {
         return $this->page;
@@ -351,7 +360,7 @@ class PageRevision
         return null;
     }
 
-    public function containsShortcode(string $shortcode)
+    public function containsShortcode(string $shortcode): bool
     {
         $shortcode = Shortcode::format($shortcode);
 
