@@ -70,8 +70,44 @@ class PageRawQuery
         $this->connection->executeQuery($sql, $fields);
     }
 
-    public function getPathWithShortcode(string $shortcode): ?string
-    {
+    public function getPathWithShortcodeOrTemplate(
+        string $shortcode,
+        ?string $template = null
+    ): ?string {
+        $baseSql = '
+            SELECT p.path
+            FROM `page_revision` pr
+            JOIN `page` p on p.id = pr.page_id
+            WHERE p.published IS NOT NULL
+            AND p.published < UTC_TIMESTAMP()
+            AND p.dynamic = 1
+            AND (p.homepage IS NULL OR p.homepage = 0)
+            AND (
+                SELECT pr_sub.id
+                FROM `page_revision` pr_sub
+                WHERE pr_sub.page_id = p.id
+                AND pr_sub.published = 1
+                ORDER BY pr_sub.updated_at DESC
+                LIMIT 1
+            ) = pr.id
+        ';
+
+        if ($template) {
+            $sql = $baseSql.' AND pr.template = :pr_template';
+
+            $results = $this->connection->executeQuery($sql, [
+                'pr_template' => $template,
+            ]);
+
+            $result = $results->fetchAssociative();
+
+            $path = $result['path'] ?? null;
+
+            if ($path) {
+                return $path;
+            }
+        }
+
         // shortcodes can only be in PageContentText::TYPE_WYSIWYG
         $pctCount = '
             SELECT COUNT(pct.id)
@@ -106,24 +142,7 @@ class PageRawQuery
 
         // the subselect in the WHERE clauses ensures we are dealing with the
         // most-recent (ie. Live) revision
-        $sql = '
-            SELECT p.path
-            FROM `page_revision` pr
-            JOIN `page` p on p.id = pr.page_id
-            WHERE p.published IS NOT NULL
-            AND p.published < UTC_TIMESTAMP()
-            AND p.dynamic = 1
-            AND (p.homepage IS NULL OR p.homepage = 0)
-            AND (
-                SELECT pr_sub.id
-                FROM `page_revision` pr_sub
-                WHERE pr_sub.page_id = p.id
-                AND pr_sub.published = 1
-                ORDER BY pr_sub.updated_at DESC
-                LIMIT 1
-            ) = pr.id
-            AND ('.implode(' OR ', $countOrs).')
-        ';
+        $sql = $baseSql.' AND ('.implode(' OR ', $countOrs).')';
 
         $results = $this->connection->executeQuery($sql, [
             'pct_type_wysiwyg' => PageContentText::TYPE_WYSIWYG,
