@@ -135,11 +135,7 @@ class PageRevision
 
     public function isTemplate(string $template): bool
     {
-        $callable = $this->template.'::getTemplate';
-
-        return is_callable($callable)
-            ? $template === call_user_func($callable)
-            : false;
+        return $this->template === $template;
     }
 
     public function getPage(): ?Page
