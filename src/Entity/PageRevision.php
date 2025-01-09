@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Persistence\Proxy;
+use OHMedia\PageBundle\Form\Type\AbstractDynamicPageTemplateType;
 use OHMedia\PageBundle\Repository\PageRevisionRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 use OHMedia\WysiwygBundle\Shortcodes\Shortcode;
@@ -126,11 +127,7 @@ class PageRevision
 
     public function isTemplateDynamic(): bool
     {
-        $callable = $this->template.'::isDynamic';
-
-        return is_callable($callable)
-            ? call_user_func($callable)
-            : false;
+        return is_subclass_of($this->template, AbstractDynamicPageTemplateType::class);
     }
 
     public function isTemplate(string $template): bool
