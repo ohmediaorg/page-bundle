@@ -62,6 +62,9 @@ class PageRevisionType extends AbstractType
         $builder->add('template', ChoiceType::class, [
             'choices' => $templates,
             'expanded' => true,
+            'row_attr' => [
+                'class' => 'fieldset-nostyle mb-3',
+            ],
         ]);
     }
 
