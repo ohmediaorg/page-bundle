@@ -313,39 +313,21 @@ You can also check that the content exists before outputting it:
 Only dynamic pages can "catch" URLs. Pages will be flagged as dynamic or not
 when a `PageRevision` is published.
 
-This can happen in two ways.
+A dynamic page can be freely moved around the page hierarchy. The dynamic
+content doesn't care about the parent portion of the URL (eg. "/blog"), just the
+section after it. In other words, the functionality would still work if the
+dynamic page path was updated to "/about-us/blog".
 
-### Dynamic Template
+To indicate a page is dynamic, its page template should extend
+`AbstractDynamicPageTemplateType` instead. The Twig template corresponding with
+this class should contain a dynamic Twig function.
 
-Sometimes there may dynamic content baked directly into the template that sits
-outside of the content areas. In this case, the `AbstractPageTemplateType` has a
-function called `isDynamic` that can be overridden. This function will be checked
-first when a `PageRevision` is published.
+### Dynamic Twig Function
 
-### Dynamic Content
-
-You can create an `AbstractWysiwygExtension` extension from the Wysiwyg Bundle
-to handle your dynamic content.
-
-See [WysiwygExtension](https://github.com/ohmediaorg/event-bundle/blob/main/src/Twig/WysiwygExtension.php)
-in the event-bundle. This class is also listening for the `DynamicPageEvent` in
+See [EventsExtension](https://github.com/ohmediaorg/event-bundle/blob/main/src/Twig/EventsExtension.php)
+in the event-bundle. This class is listening for the `DynamicPageEvent` in
 order to query for the dynamic `Event` entity and populate the dynamic `Meta`
 and `Breadcrumb` data before the page is rendered.
-
-Next you will need to implement an
-[AbstractShortcodeProvider](https://github.com/ohmediaorg/backend-bundle?tab=readme-ov-file#shortcodes),
-making sure to flag the `Shortcode` as dynamic:
-
-See [EventShortcodeProvider](https://github.com/ohmediaorg/event-bundle/blob/main/src/Service/EventShortcodeProvider.php),
-again in the event-bundle.
-
-Using the TinyMCE plugin, place the shortcode in a content area. Once the
-`PageRevision` is published, the `Page` entity will be flagged as dynamic.
-
-This blog page can be freely moved around the page hierarchy. The dynamic
-content doesn't care about the "/blog" portion of the URL, just the section
-after it. In other words, the functionality would still work if the dynamic page
-path was updated to "/about-us/blog".
 
 ## Linking to the Parent Page
 
@@ -358,11 +340,13 @@ $page = $this->pageRenderer->getCurrentPage();
 $path = $page->getPath();
 ```
 
-If you are not in the context of the page you want, you must know the shortcode
+If you are not in the context of the page you want, you must know the template
 you want to find. Then you can use the `PageRawQuery` service:
 
 ```php
-$pagePath = $this->pageRawQuery->getPathWithShortcode('blog()');
+use App\Form\Type\BlogPageType;
+
+$pagePath = $this->pageRawQuery->getPathWithTemplate(BlogPageType::class);
 ```
 
 ## Sitemap URLs
