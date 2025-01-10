@@ -22,7 +22,7 @@ class PageRevisionType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $page = $options['data'];
+        $pageRevision = $options['data'];
 
         $pageTemplateTypes = $this->pageManager->getPageTemplateTypes();
 
@@ -53,7 +53,9 @@ class PageRevisionType extends AbstractType
 
         $user = $this->security->getUser();
 
-        if ($user->isTypeDeveloper()) {
+        $allowDynamicTemplates = $user->isTypeDeveloper() && !$pageRevision->getPage()->isHomepage();
+
+        if ($allowDynamicTemplates) {
             // dynamic templates are only available to a developer user
             // append them to the selection
             $templates = array_merge($templates, $dynamicTemplates);
