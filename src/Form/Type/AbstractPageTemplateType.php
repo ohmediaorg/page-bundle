@@ -89,9 +89,9 @@ abstract class AbstractPageTemplateType extends AbstractType
 
     protected function addPageContentImage(string $name, array $options = []): self
     {
-        $imageLabel = !empty($options['label']) ? $options['label'] : $name;
-
-        $options['image_label'] = $this->generateLabel($imageLabel);
+        $options['image_label'] = !empty($options['label'])
+            ? $options['label']
+            : $this->generateLabel($name);
 
         $options['label'] = false;
 
