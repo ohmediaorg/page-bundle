@@ -7,7 +7,6 @@ use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
 use OHMedia\PageBundle\Service\PageRenderer;
 use OHMedia\TimezoneBundle\Util\DateTimeUtil;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
@@ -18,7 +17,6 @@ class PageExtension extends AbstractExtension
     public function __construct(
         private PageRenderer $pageRenderer,
         private PageRepository $pageRepository,
-        private RequestStack $requestStack,
         private UrlGeneratorInterface $urlGenerator
     ) {
     }
@@ -117,12 +115,9 @@ class PageExtension extends AbstractExtension
 
         $nav = $this->getNav();
 
-        $currentPath = $this->requestStack->getCurrentRequest()->getPathInfo();
-
         return $twig->render('@OHMediaPage/nav.html.twig', [
             'nav' => $nav,
             'class_name' => $className,
-            'current_path' => $currentPath,
         ]);
     }
 
