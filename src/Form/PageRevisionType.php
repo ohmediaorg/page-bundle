@@ -31,7 +31,7 @@ class PageRevisionType extends AbstractType
             $aLabel = call_user_func([$a, 'getTemplateName']);
             $bLabel = call_user_func([$b, 'getTemplateName']);
 
-            return $a <=> $b;
+            return $aLabel <=> $bLabel;
         });
 
         // distinguish between dynamic and non-dynamic
