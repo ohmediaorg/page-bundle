@@ -16,7 +16,7 @@
 
     {% set text = page.navText ?: page.name %}
 
-    {% set current_path = app.request.requestUri %}
+    {% set current_path = app.request.baseUrl ~ app.request.pathInfo %}
 
     {% set active = page_path == current_path %}
     {% set active_path = page_path == current_path starts with page_path %}
