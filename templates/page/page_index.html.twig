@@ -71,11 +71,17 @@
         </thead>
         <tbody>
           {% for page in pagination.results %}
+            {% set path_parts = page.path|split('/') %}
+
             <tr>
               <td>
                 {{ page.name }}
                 <br />
-                {{ bootstrap_badge_light('/' ~ page.path) }}
+                <div class="badge text-bg-light text-start">
+                  {% for part in path_parts %}
+                    <div style="padding-left:{{ loop.index0 * 0.5 }}em">/{{ part }}</div>
+                  {% endfor %}
+                </div>
               </td>
               <td>
                 {% if page.isHomepage %}
