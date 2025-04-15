@@ -37,6 +37,7 @@ class PageExtension extends AbstractExtension
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
+            new TwigFunction('get_page_nav', [$this, 'getPageNav']),
         ];
     }
 
@@ -111,9 +112,7 @@ class PageExtension extends AbstractExtension
             $maxNestingLevel = 0;
         }
 
-        $this->setNavPages($maxNestingLevel);
-
-        $nav = $this->getNav();
+        $nav = $this->getPageNav($maxNestingLevel);
 
         return $twig->render('@OHMediaPage/nav.html.twig', [
             'nav' => $nav,
@@ -121,11 +120,20 @@ class PageExtension extends AbstractExtension
         ]);
     }
 
-    private array $navPages = [];
-
-    private function setNavPages(int $maxNestingLevel): void
+    public function getPageNav(int $maxNestingLevel): array
     {
-        $this->navPages = $this->pageRepository->createQueryBuilder('p')
+        if ($maxNestingLevel < 0) {
+            $maxNestingLevel = 0;
+        }
+
+        $navPages = $this->getNavPages($maxNestingLevel);
+
+        return $this->getNav($navPages);
+    }
+
+    private function getNavPages(int $maxNestingLevel): array
+    {
+        return $this->pageRepository->createQueryBuilder('p')
             ->where('p.hidden = 0')
             ->andWhere('p.nesting_level <= :max_nesting_level')
             ->setParameter('max_nesting_level', $maxNestingLevel)
@@ -143,18 +151,18 @@ class PageExtension extends AbstractExtension
             ->getResult();
     }
 
-    private function getNav(?Page $parent = null): array
+    private function getNav(array $navPages, ?Page $parent = null): array
     {
         $nav = [];
 
-        foreach ($this->navPages as $page) {
+        foreach ($navPages as $page) {
             if ($page->getParent() !== $parent) {
                 continue;
             }
 
             $nav[] = [
                 'page' => $page,
-                'children' => $this->getNav($page),
+                'children' => $this->getNav($navPages, $page),
             ];
         }
 
