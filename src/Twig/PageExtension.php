@@ -120,7 +120,7 @@ class PageExtension extends AbstractExtension
         ]);
     }
 
-    public function getPageNav(int $maxNestingLevel): array
+    public function getPageNav(int $maxNestingLevel = 1): array
     {
         if ($maxNestingLevel < 0) {
             $maxNestingLevel = 0;
