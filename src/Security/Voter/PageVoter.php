@@ -83,6 +83,10 @@ class PageVoter extends AbstractEntityVoter
             return false;
         }
 
+        if ($page->isDynamic()) {
+            return false;
+        }
+
         if (!$page->isVisibleToPublic()) {
             return false;
         }

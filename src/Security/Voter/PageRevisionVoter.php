@@ -51,6 +51,10 @@ class PageRevisionVoter extends AbstractEntityVoter
 
     protected function canTemplate(PageRevision $pageRevision, User $loggedIn): bool
     {
+        if ($pageRevision->isTemplateDynamic()) {
+            return $loggedIn->isTypeDeveloper();
+        }
+
         return true;
     }
 
