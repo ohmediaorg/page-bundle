@@ -6,7 +6,6 @@ use OHMedia\BootstrapBundle\Component\Breadcrumb;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
 use OHMedia\PageBundle\Service\PageRenderer;
-use OHMedia\TimezoneBundle\Util\DateTimeUtil;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
@@ -17,14 +16,13 @@ class PageExtension extends AbstractExtension
     public function __construct(
         private PageRenderer $pageRenderer,
         private PageRepository $pageRepository,
-        private UrlGeneratorInterface $urlGenerator
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('page_path', [$this, 'path']),
             new TwigFunction('page_breadcrumbs', [$this, 'breadcrumbs'], [
                 'needs_environment' => true,
                 'is_safe' => ['html'],
@@ -33,18 +31,7 @@ class PageExtension extends AbstractExtension
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
-            new TwigFunction('page_nav', [$this, 'nav'], [
-                'needs_environment' => true,
-                'is_safe' => ['html'],
-            ]),
         ];
-    }
-
-    public function path(string $path): string
-    {
-        return $this->urlGenerator->generate('oh_media_page_frontend', [
-            'path' => $path,
-        ]);
     }
 
     public function breadcrumbs(Environment $twig)
@@ -99,66 +86,6 @@ class PageExtension extends AbstractExtension
             'canonical_path' => $canonicalPath,
             'breadcrumb_schema' => $breadcrumbSchema,
         ]);
-    }
-
-    public function nav(Environment $twig, string $className = 'nav', int $maxNestingLevel = 1)
-    {
-        // NOTE: Bootstrap only supports 1 level of dropdown out of the box
-        // still figuring out what we want to do with the navigation
-        $maxNestingLevel = 1;
-
-        if ($maxNestingLevel < 0) {
-            $maxNestingLevel = 0;
-        }
-
-        $this->setNavPages($maxNestingLevel);
-
-        $nav = $this->getNav();
-
-        return $twig->render('@OHMediaPage/nav.html.twig', [
-            'nav' => $nav,
-            'class_name' => $className,
-        ]);
-    }
-
-    private array $navPages = [];
-
-    private function setNavPages(int $maxNestingLevel): void
-    {
-        $this->navPages = $this->pageRepository->createQueryBuilder('p')
-            ->where('p.hidden = 0')
-            ->andWhere('p.nesting_level <= :max_nesting_level')
-            ->setParameter('max_nesting_level', $maxNestingLevel)
-            ->andWhere('p.published IS NOT NULL')
-            ->andWhere('p.published <= :now')
-            ->setParameter('now', DateTimeUtil::getDateTimeUtc())
-            ->andWhere('(
-                SELECT COUNT(pr)
-                FROM OHMedia\PageBundle\Entity\PageRevision pr
-                WHERE IDENTITY(pr.page) = p.id
-                AND pr.published = 1
-            ) > 0')
-            ->orderBy('p.order_global', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    private function getNav(?Page $parent = null): array
-    {
-        $nav = [];
-
-        foreach ($this->navPages as $page) {
-            if ($page->getParent() !== $parent) {
-                continue;
-            }
-
-            $nav[] = [
-                'page' => $page,
-                'children' => $this->getNav($page),
-            ];
-        }
-
-        return $nav;
     }
 
     private function getBreadcrumbs(Page $page, bool $schema): array

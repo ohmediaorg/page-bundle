@@ -1,46 +1,27 @@
 {% macro page_nav(nav_item, nesting_level) %}
   {% set page = nav_item.page %}
 
-  {% set page_locked_attribute = constant('OHMedia\\PageBundle\\Security\\Voter\\PageLockedVoter::LOCKED') %}
-
-  {% if is_granted(page_locked_attribute, page) %}
-    {% if page.isHomepage %}
-      {% set page_path = page_path('') %}
-    {% elseif page.isRedirectTypeInternal %}
-      {% set page_path = page_path(page.redirectInternal.path) %}
-    {% elseif page.isRedirectTypeExternal %}
-      {% set page_path = page.redirectExternal %}
-    {% else %}
-      {% set page_path = page_path(page.path) %}
-    {% endif %}
-
-    {% set text = page.navText ?: page.name %}
-
-    {% set current_path = app.request.baseUrl ~ app.request.pathInfo %}
-
-    {% set active = page_path == current_path %}
-    {% set active_path = page_path == current_path starts with page_path %}
-
-    {% if nav_item.children|length %}
-    <li class="nav-item dropdown {{ active_path ? 'active-path' : '' }}">
+  {% if nav_item.children|length %}
+    <li class="nav-item dropdown {{ nav_item.active_path ? 'active-path' : '' }}">
       <a
         href="#"
         class="nav-link dropdown-toggle"
         role="button"
         data-bs-toggle="dropdown"
+        data-bs-auto-close="outside"
         aria-expanded="false"
       >
-        {{ page.dropdownText ?: page.name }}
+        {{ nav_item.dropdown_text }}
       </a>
       <ul class="dropdown-menu nav--level-{{ nesting_level }}">
         <li>
           <a
-            href="{{ page_path }}"
+            href="{{ nav_item.href }}"
             {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
-            class="dropdown-item {{ active ? 'active' : '' }}"
-            {% if active %}aria-current{% endif %}
+            class="dropdown-item {{ nav_item.active ? 'active' : '' }}"
+            {% if nav_item.active %}aria-current{% endif %}
           >
-            {{ text }}
+            {{ nav_item.text }}
           </a>
         </li>
         {% for child_nav_item in nav_item.children %}
@@ -48,18 +29,17 @@
         {% endfor %}
       </ul>
     </li>
-    {% else %}
+  {% else %}
     <li class="{{ nesting_level > 1 ? '' : 'nav-item' }}">
       <a
-        href="{{ page_path }}"
+        href="{{ nav_item.href }}"
         {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
-        class="{{ nesting_level > 1 ? 'dropdown-item' : 'nav-link' }} {{ active ? 'active' : '' }}"
-        {% if active %}aria-current{% endif %}
+        class="{{ nesting_level > 1 ? 'dropdown-item' : 'nav-link' }} {{ nav_item.active ? 'active' : '' }}"
+        {% if nav_item.active %}aria-current{% endif %}
       >
-        {{ text }}
+        {{ nav_item.text }}
       </a>
     </li>
-    {% endif %}
   {% endif %}
 {% endmacro %}
 

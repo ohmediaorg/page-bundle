@@ -3,6 +3,10 @@ services:
         autowire: true
         tags: ["twig.extension"]
 
+    OHMedia\PageBundle\Twig\PageNavExtension:
+        autowire: true
+        tags: ["twig.extension"]
+
     OHMedia\PageBundle\Twig\PageBackendExtension:
         autowire: true
         tags: ["twig.extension"]
