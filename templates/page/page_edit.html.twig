@@ -10,6 +10,10 @@
   ) }}
 {% endblock %}
 
+{% block actions %}
+{% include '@OHMediaPage/page/_page_actions_shared.html.twig' %}
+{% endblock %}
+
 {% block main %}
 <div class="row">
   <div class="col-xl-8">
@@ -37,12 +41,32 @@
         {% endset %}
 
         {{ form_start(form) }}
-            {{ form_row(form.name) }}
-            {{ form_path|raw }}
-            {{ form_rest(form) }}
+          {{ form_row(form.name) }}
+          {{ form_path|raw }}
+          {{ form_rest(form) }}
         {{ form_end(form) }}
       </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+  {% if form.locked_user_types is defined %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const locked = document.getElementById('{{ form.locked.vars.id }}');
+
+      const lockedUserTypesFieldset = document.getElementById('{{ form.locked_user_types.vars.id }}').parentNode;
+
+      function toggleLockedUserTypes() {
+        lockedUserTypesFieldset.style.display = locked.checked ? '' : 'none';
+      }
+
+      toggleLockedUserTypes();
+
+      locked.addEventListener('change', toggleLockedUserTypes);
+    });
+    </script>
+  {% endif %}
 {% endblock %}

@@ -3,6 +3,7 @@
 namespace OHMedia\PageBundle\Controller;
 
 use OHMedia\PageBundle\Repository\Page301Repository;
+use OHMedia\PageBundle\Security\Voter\PageLockedVoter;
 use OHMedia\PageBundle\Service\PageRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -41,13 +42,11 @@ class PageFrontendController extends AbstractController
             throw $this->createNotFoundException('Page not found.');
         }
 
-        if ($page->isLocked()) {
-            $this->denyAccessUnlessGranted(
-                'IS_AUTHENTICATED_FULLY',
-                null,
-                'You must log in to view this page.'
-            );
-        }
+        $this->denyAccessUnlessGranted(
+            PageLockedVoter::LOCKED,
+            $page,
+            'You must log in to view this page.'
+        );
 
         if ($page->isRedirectTypeInternal()) {
             return $this->redirectToRoute('oh_media_page_frontend', [

@@ -1,13 +1,9 @@
 {% macro page_nav(nav_item, current_path, nesting_level) %}
   {% set page = nav_item.page %}
 
-  {% if page.locked %}
-    {% set show_page_link = is_granted('IS_AUTHENTICATED_FULLY') %}
-  {% else %}
-    {% set show_page_link = true %}
-  {% endif %}
+  {% set page_locked_attribute = constant('OHMedia\\PageBundle\\Security\\Voter\\PageLockedVoter::LOCKED') %}
 
-  {% if show_page_link %}
+  {% if is_granted(page_locked_attribute, page) %}
     {% if page.isHomepage %}
       {% set page_path = page_path('') %}
     {% elseif page.isRedirectTypeInternal %}

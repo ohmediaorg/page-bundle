@@ -5,7 +5,7 @@ namespace OHMedia\PageBundle\Twig;
 use OHMedia\PageBundle\Entity\PageContentRow;
 use OHMedia\PageBundle\Entity\PageRevision;
 use OHMedia\PageBundle\Form\Type\PageContentRowType;
-use Symfony\Component\Form\FormFactoryInterface;
+use OHMedia\PageBundle\Service\PageUserTypes;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -14,7 +14,7 @@ class PageBackendExtension extends AbstractExtension
 {
     private bool $rendered = false;
 
-    public function __construct(private FormFactoryInterface $formFactory)
+    public function __construct(private PageUserTypes $pageUserTypes)
     {
     }
 
@@ -29,6 +29,8 @@ class PageBackendExtension extends AbstractExtension
                 'is_safe' => ['html'],
                 'needs_environment' => 'true',
             ]),
+            new TwigFunction('has_page_user_types', [$this, 'hasUserTypes']),
+            new TwigFunction('page_user_type', [$this, 'userType']),
         ];
     }
 
@@ -52,5 +54,15 @@ class PageBackendExtension extends AbstractExtension
             'LAYOUT_THREE_COLUMN' => PageContentRow::LAYOUT_THREE_COLUMN,
             'DATA_ATTRIBUTE' => PageContentRowType::DATA_ATTRIBUTE,
         ]);
+    }
+
+    public function hasUserTypes(): bool
+    {
+        return count($this->pageUserTypes->getUserTypes()) > 0;
+    }
+
+    public function userType(string $type): string
+    {
+        return PageUserTypes::readable($type);
     }
 }
