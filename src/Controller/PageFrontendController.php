@@ -48,6 +48,18 @@ class PageFrontendController extends AbstractController
             'You must log in to view this page.'
         );
 
+        if ($page->isDropdownOnly()) {
+            $children = $page->getPages();
+
+            foreach ($children as $child) {
+                if ($child->isPublished()) {
+                    return $this->redirectToRoute('oh_media_page_frontend', [
+                        'path' => $child->getPath(),
+                    ], 301);
+                }
+            }
+        }
+
         if ($page->isRedirectTypeInternal()) {
             return $this->redirectToRoute('oh_media_page_frontend', [
                 'path' => $page->getRedirectInternal()->getPath(),
