@@ -714,4 +714,33 @@ class Page
 
         return $this;
     }
+
+    public function getDropdownOnlyRedirect(): ?Page
+    {
+        if (!$this->isDropdownOnly()) {
+            return null;
+        }
+
+        $children = $this->getPages();
+
+        if ($this->isLocked()) {
+            // if $this parent page is locked
+            // then we only care about the first published child
+            foreach ($children as $child) {
+                if ($child->isPublished()) {
+                    return $child;
+                }
+            }
+        } else {
+            // if $this parent page is not locked
+            // then we only care about the first publicly accessible child
+            foreach ($children as $child) {
+                if ($child->isVisibleToPublic()) {
+                    return $child;
+                }
+            }
+        }
+
+        return null;
+    }
 }
