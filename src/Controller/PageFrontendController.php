@@ -48,7 +48,7 @@ class PageFrontendController extends AbstractController
             'You must log in to view this page.'
         );
 
-        if ($redirectPage = $this->getDropdownOnlyRedirect()) {
+        if ($redirectPage = $page->getDropdownOnlyRedirect()) {
             return $this->redirectToRoute('oh_media_page_frontend', [
                 'path' => $redirectPage->getPath(),
             ], 301);
