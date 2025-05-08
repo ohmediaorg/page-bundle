@@ -39,7 +39,7 @@ class SitemapController extends AbstractController
                 continue;
             }
 
-            if ($this->getDropdownOnlyRedirect()) {
+            if ($page->getDropdownOnlyRedirect()) {
                 continue;
             }
 
