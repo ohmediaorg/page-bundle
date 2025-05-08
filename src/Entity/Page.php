@@ -128,6 +128,9 @@ class Page
     #[ORM\Column(nullable: true)]
     private ?array $locked_user_types = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $dropdown_only = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -696,6 +699,18 @@ class Page
     public function setLockedUserTypes(?array $locked_user_types): static
     {
         $this->locked_user_types = $locked_user_types;
+
+        return $this;
+    }
+
+    public function isDropdownOnly(): ?bool
+    {
+        return $this->dropdown_only;
+    }
+
+    public function setDropdownOnly(?bool $dropdown_only): static
+    {
+        $this->dropdown_only = $dropdown_only;
 
         return $this;
     }

@@ -36,6 +36,11 @@ class PageNavigationType extends AbstractType
                 'help' => 'If this page has children, this text will be used in the main nav dropdown.<br><b>Default value:</b> '.$page->getName(),
                 'help_html' => true,
             ])
+            ->add('dropdown_only', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Use as dropdown only',
+                'help' => 'If this page has children and this option is checked, the navigation will not contain a link to this page and if a user tries to navigate to this page, they will be redirected to the first available child page.',
+            ])
             ->add('new_window', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Open in a new window in navigation menu',
@@ -43,6 +48,7 @@ class PageNavigationType extends AbstractType
             ->add('hidden', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Exclude from navigation',
+                'help' => 'Child pages will also be excluded from navigation.',
             ])
             ->add('redirect_type', ChoiceType::class, [
                 'choices' => [
