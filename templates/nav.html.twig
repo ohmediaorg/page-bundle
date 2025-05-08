@@ -14,18 +14,21 @@
         {{ nav_item.dropdown_text }}
       </a>
       <ul class="dropdown-menu nav--level-{{ nesting_level }}">
-        <li>
-          <a
-            href="{{ nav_item.href }}"
-            {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
-            class="dropdown-item {{ nav_item.active ? 'active' : '' }}"
-            {% if nav_item.active %}aria-current{% endif %}
-          >
-            {{ nav_item.text }}
-          </a>
-        </li>
+        {% if not page.dropdownOnly %}
+          <li>
+            <a
+              href="{{ nav_item.href }}"
+              {% if page.isNewWindow %}target="_blank" rel="noopener"{% endif %}
+              class="dropdown-item {{ nav_item.active ? 'active' : '' }}"
+              {% if nav_item.active %}aria-current{% endif %}
+            >
+              {{ nav_item.text }}
+            </a>
+          </li>
+        {% endif %}
+
         {% for child_nav_item in nav_item.children %}
-        {{ _self.page_nav(child_nav_item, nesting_level + 1) }}
+          {{ _self.page_nav(child_nav_item, nesting_level + 1) }}
         {% endfor %}
       </ul>
     </li>
