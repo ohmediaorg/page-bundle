@@ -39,6 +39,10 @@ class SitemapController extends AbstractController
                 continue;
             }
 
+            if ($page->getDropdownOnlyRedirect()) {
+                continue;
+            }
+
             $pageRevision = $page->getCurrentPageRevision();
 
             $path = $page->isHomepage() ? '' : $page->getPath();

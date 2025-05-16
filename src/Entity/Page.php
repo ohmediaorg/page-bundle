@@ -128,6 +128,9 @@ class Page
     #[ORM\Column(nullable: true)]
     private ?array $locked_user_types = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $dropdown_only = null;
+
     public function __construct()
     {
         $this->pages = new ArrayCollection();
@@ -698,5 +701,46 @@ class Page
         $this->locked_user_types = $locked_user_types;
 
         return $this;
+    }
+
+    public function isDropdownOnly(): ?bool
+    {
+        return $this->dropdown_only;
+    }
+
+    public function setDropdownOnly(?bool $dropdown_only): static
+    {
+        $this->dropdown_only = $dropdown_only;
+
+        return $this;
+    }
+
+    public function getDropdownOnlyRedirect(): ?Page
+    {
+        if (!$this->isDropdownOnly()) {
+            return null;
+        }
+
+        $children = $this->getPages();
+
+        if ($this->isLocked()) {
+            // if $this parent page is locked
+            // then we only care about the first published child
+            foreach ($children as $child) {
+                if ($child->isPublished()) {
+                    return $child;
+                }
+            }
+        } else {
+            // if $this parent page is not locked
+            // then we only care about the first publicly accessible child
+            foreach ($children as $child) {
+                if ($child->isVisibleToPublic()) {
+                    return $child;
+                }
+            }
+        }
+
+        return null;
     }
 }
