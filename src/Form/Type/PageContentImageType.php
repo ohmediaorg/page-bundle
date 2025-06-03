@@ -13,13 +13,10 @@ class PageContentImageType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $image = isset($options['data']) ? $options['data'] : null;
-
         $builder
             ->add('image', FileEntityType::class, [
                 'label' => $options['image_label'],
                 'required' => $options['required'],
-                'data' => $image ? $image->getImage() : null,
                 'attr' => $options['image_attr'],
                 'image' => true,
             ])
