@@ -15,6 +15,7 @@ class PageContentImage extends AbstractPageContent
     protected ?PageRevision $pageRevision = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[Assert\Valid]
     private ?File $image = null;
 
     public function __clone()
