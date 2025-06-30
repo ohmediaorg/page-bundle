@@ -10,6 +10,7 @@ use OHMedia\PageBundle\Form\Type\AbstractDynamicPageTemplateType;
 use OHMedia\PageBundle\Repository\PageRevisionRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
 use OHMedia\WysiwygBundle\Shortcodes\Shortcode;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PageRevisionRepository::class)]
 class PageRevision
@@ -32,15 +33,19 @@ class PageRevision
     protected ?Page $page = null;
 
     #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentCheckbox::class, cascade: ['persist', 'remove'])]
+    #[Assert\Valid]
     private Collection $pageContentCheckboxes;
 
     #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentImage::class, cascade: ['persist', 'remove'])]
+    #[Assert\Valid]
     private Collection $pageContentImages;
 
     #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentRow::class, cascade: ['persist', 'remove'])]
+    #[Assert\Valid]
     private Collection $pageContentRows;
 
     #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentText::class, cascade: ['persist', 'remove'])]
+    #[Assert\Valid]
     private Collection $pageContentTexts;
 
     public function __construct()

@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Persistence\Proxy;
 use OHMedia\FileBundle\Entity\File;
 use OHMedia\PageBundle\Repository\PageContentImageRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PageContentImageRepository::class)]
 class PageContentImage extends AbstractPageContent
