@@ -112,9 +112,11 @@ class Page
     private ?self $redirect_internal = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $redirect_external = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $nav_text = null;
 
     #[ORM\Column(nullable: true)]
@@ -124,6 +126,7 @@ class Page
     private ?bool $sitemap = true;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private ?string $dropdown_text = null;
 
     #[ORM\Column(nullable: true)]
