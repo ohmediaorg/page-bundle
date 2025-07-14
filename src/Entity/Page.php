@@ -41,14 +41,14 @@ class Page
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(max: 50)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
     #[Assert\Regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')]
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(max: 50)]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::SMALLINT, options: ['unsigned' => true])]
@@ -117,8 +117,8 @@ class Page
     #[Assert\Length(max: 255)]
     private ?string $redirect_external = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(max: 255)]
+    #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $nav_text = null;
 
     #[ORM\Column(nullable: true)]
@@ -127,8 +127,8 @@ class Page
     #[ORM\Column(options: ['default' => true])]
     private ?bool $sitemap = true;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(max: 255)]
+    #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(max: 50)]
     private ?string $dropdown_text = null;
 
     #[ORM\Column(nullable: true)]
