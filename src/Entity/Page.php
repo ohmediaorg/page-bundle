@@ -43,10 +43,12 @@ class Page
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')]
+    #[Assert\Length(max: 255)]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::SMALLINT, options: ['unsigned' => true])]
