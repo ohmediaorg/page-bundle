@@ -113,8 +113,8 @@ class Page
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?self $redirect_internal = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(max: 255)]
+    #[ORM\Column(length: 180, nullable: true)]
+    #[Assert\Length(max: 180)]
     private ?string $redirect_external = null;
 
     #[ORM\Column(length: 50, nullable: true)]
