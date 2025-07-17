@@ -212,7 +212,7 @@ class PageBackendController extends AbstractController
 
         $form = $this->createForm(PageCreateType::class, $page);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -289,7 +289,7 @@ class PageBackendController extends AbstractController
 
         $form = $this->createForm(PageEditType::class, $page);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -330,7 +330,7 @@ class PageBackendController extends AbstractController
 
         $form = $this->createForm(PageNavigationType::class, $page);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -369,7 +369,7 @@ class PageBackendController extends AbstractController
 
         $form = $this->createForm(PageSEOType::class, $page);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 

@@ -102,7 +102,7 @@ class PageRevisionBackendController extends AbstractController
 
         $form = $this->createForm(PageRevisionType::class, $pageRevision);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
@@ -159,7 +159,7 @@ class PageRevisionBackendController extends AbstractController
 
         $form = $this->createForm($pageRevision->getTemplate(), $pageRevision);
 
-        $form->add('submit', SubmitType::class);
+        $form->add('save', SubmitType::class);
 
         $form->handleRequest($request);
 
