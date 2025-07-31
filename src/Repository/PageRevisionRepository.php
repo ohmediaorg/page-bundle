@@ -41,33 +41,7 @@ class PageRevisionRepository extends ServiceEntityRepository implements WysiwygR
         }
     }
 
-    public function containing(string $string): array
-    {
-        return $this->getContainsQueryBuilder($string)
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function containsWysiwygShortcodes(string ...$shortcodes): bool
-    {
-        foreach ($shortcodes as $shortcode) {
-            if ($this->contains($shortcode)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function contains(string $string): bool
-    {
-        return $this->getContainsQueryBuilder($string)
-            ->select('COUNT(pr.id)')
-            ->getQuery()
-            ->getSingleScalarResult() > 0;
-    }
-
-    private function getContainsQueryBuilder(string $string): QueryBuilder
+    public function getShortcodeQueryBuilder(string $shortcode): QueryBuilder
     {
         $qb = $this->createQueryBuilder('pr');
 
@@ -96,8 +70,26 @@ class PageRevisionRepository extends ServiceEntityRepository implements WysiwygR
         return $qb
             ->where('('.$ors.')')
             ->setParameters(new ArrayCollection([
-                new Parameter('wysiwyg_like', '%'.$string.'%'),
+                new Parameter('wysiwyg_like', '%'.$shortcode.'%'),
             ]))
         ;
+    }
+
+    public function getEntityRoute(): string
+    {
+        return 'page_view';
+    }
+
+    public function getEntityRouteParams(mixed $entity): array
+    {
+        return [
+            'id' => $entity->getPage()->getId(),
+            'revision' => $entity->getId(),
+        ];
+    }
+
+    public function getEntityName(): string
+    {
+        return 'Page Revision';
     }
 }
