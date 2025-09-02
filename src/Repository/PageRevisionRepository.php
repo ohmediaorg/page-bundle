@@ -75,12 +75,12 @@ class PageRevisionRepository extends ServiceEntityRepository implements WysiwygR
         ;
     }
 
-    public function getEntityRoute(): string
+    public function getShortcodeRoute(): string
     {
         return 'page_view';
     }
 
-    public function getEntityRouteParams(mixed $entity): array
+    public function getShortcodeRouteParams(mixed $entity): array
     {
         return [
             'id' => $entity->getPage()->getId(),
@@ -88,8 +88,17 @@ class PageRevisionRepository extends ServiceEntityRepository implements WysiwygR
         ];
     }
 
-    public function getEntityName(): string
+    public function getShortcodeHeading(): string
     {
-        return 'Page Revision';
+        return 'Pages';
+    }
+
+    public function getShortcodeLinkText(mixed $entity): string
+    {
+        return sprintf(
+            '%s - Page Revision (ID:%s)',
+            (string) $entity->getPage(),
+            $entity->getId(),
+        );
     }
 }
