@@ -2,6 +2,7 @@
 
 namespace OHMedia\PageBundle\Service;
 
+use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
 use OHMedia\WysiwygBundle\ContentLinks\AbstractContentLinkProvider;
 use OHMedia\WysiwygBundle\ContentLinks\ContentLink;
@@ -19,27 +20,53 @@ class PageContentLinkProvider extends AbstractContentLinkProvider
 
     public function buildContentLinks(): void
     {
-        $pages = $this->pageRepository->createQueryBuilder('p')
-            ->orderBy('p.order_global')
+        $contentLinks = $this->createContentLinks();
+
+        foreach ($contentLinks as $contentLink) {
+            $this->addContentLink($contentLink);
+        }
+    }
+
+    private function createContentLinks(?Page $parent = null): array
+    {
+        $queryBuilder = $this->pageRepository->createQueryBuilder('p');
+
+        if ($parent) {
+            $queryBuilder->where('p.parent = :parent');
+            $queryBuilder->setParameter('parent', $parent);
+        } else {
+            $queryBuilder->where('p.parent IS NULL');
+        }
+
+        $pages = $queryBuilder
+            ->orderBy('p.order_local')
             ->getQuery()
             ->getResult();
 
-        foreach ($pages as $page) {
-            if (!$page->isPublished()) {
-                continue;
-            }
+        $contentLinks = [];
 
+        foreach ($pages as $page) {
             $id = $page->getId();
 
-            $prefix = str_repeat('- ', $page->getNestingLevel());
+            $title = sprintf('%s (ID:%s)', $page, $id);
 
-            $contentLink = new ContentLink(
-                sprintf('%s%s (ID:%s)', $prefix, $page, $id),
-                (string) $page
-            );
-            $contentLink->setShortcode('page_href('.$id.')');
+            $pageContentLink = new ContentLink($title);
+            $pageContentLink->setShortcode('page_href('.$id.')');
 
-            $this->addContentLink($contentLink);
+            $children = $this->createContentLinks($page);
+
+            if ($children) {
+                array_unshift($children, $pageContentLink);
+
+                $contentLink = new ContentLink((string) $page.' & Child Pages');
+                $contentLink->setChildren(...$children);
+
+                $contentLinks[] = $contentLink;
+            } else {
+                $contentLinks[] = $pageContentLink;
+            }
         }
+
+        return $contentLinks;
     }
 }
