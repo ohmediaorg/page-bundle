@@ -50,7 +50,7 @@ class PageContentLinkProvider extends AbstractContentLinkProvider
 
             $title = sprintf('%s (ID:%s)', $page, $id);
 
-            $pageContentLink = new ContentLink($title);
+            $pageContentLink = new ContentLink($title, (string) $page);
             $pageContentLink->setShortcode('page_href('.$id.')');
 
             $children = $this->createContentLinks($page);
