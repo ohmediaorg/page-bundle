@@ -16,6 +16,8 @@ class PageFrontendController extends AbstractController
         PageRenderer $pageRenderer,
         string $path
     ) {
+        $path = rtrim($path, '/');
+
         $pageRenderer->setCurrentPageFromPath($path);
 
         $page = $pageRenderer->getCurrentPage();
