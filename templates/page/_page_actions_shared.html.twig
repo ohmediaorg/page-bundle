@@ -13,7 +13,7 @@
     {% if is_granted(attributes.page.edit, page) %}
       <li>
         <a href="{{ path('page_edit', {id: page.id}) }}" class="dropdown-item">
-          {{ bootstrap_icon('pencil-fill') }}
+          {{ bootstrap_icon('pencil') }}
           Edit
         </a>
       </li>

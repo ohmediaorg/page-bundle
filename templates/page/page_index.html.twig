@@ -16,7 +16,7 @@
 <div class="btn-group btn-group-sm">
 {% if can_create_page %}
   <a href="{{ create_page_href }}" class="btn btn-primary">
-    {{ bootstrap_icon('plus') }} Add Page
+    {{ bootstrap_icon('plus-lg') }} Add Page
   </a>
 {% endif %}
 {% if is_granted(attributes.page.reorder, new_page) %}
@@ -86,7 +86,7 @@
               <td>
                 {% if page.isHomepage %}
                 <span class="badge text-bg-dark" title="Homepage">
-                  {{ bootstrap_icon('house-fill') }}
+                  {{ bootstrap_icon('house') }}
                   <span class="visually-hidden">Homepage</span>
                 </span>
                 {% endif %}
@@ -99,14 +99,14 @@
 
                 {% if page.isHidden %}
                 <span class="badge text-bg-dark" title="Hidden">
-                  {{ bootstrap_icon('eye-slash-fill') }}
+                  {{ bootstrap_icon('eye-slash') }}
                   <span class="visually-hidden">Hidden</span>
                 </span>
                 {% endif %}
 
                 {% if page.isLocked %}
                 <span class="badge text-bg-dark" title="Login Required">
-                  {{ bootstrap_icon('lock-fill') }}
+                  {{ bootstrap_icon('lock') }}
                   <span class="visually-hidden">Login Required</span>
                 </span>
                 {% endif %}
@@ -144,7 +144,7 @@
                 {% endif %}
                 {% if is_granted(attributes.page.edit, page) %}
                 <a href="{{ path('page_edit', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-                  <i class="bi-pencil"></i>
+                  {{ bootstrap_icon('pencil') }}
                   <span class="visually-hidden">Edit</span>
                 </a>
                 {% endif %}
