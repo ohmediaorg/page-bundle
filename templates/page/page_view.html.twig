@@ -6,7 +6,7 @@
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
-      <a href="{{ path('page_index') }}">{{ bootstrap_icon('files') }} Pages</a>
+      <a href="{{ path('page_index') }}">{{ bootstrap_icon('window-stack') }} Pages</a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
       {% if page.isHomepage %}
@@ -109,7 +109,7 @@
     {% if is_granted(attributes.page.seo, page) %}
       <li>
         <a href="{{ path('page_seo', {id: page.id}) }}" class="dropdown-item">
-          {{ bootstrap_icon('google') }}
+          {{ bootstrap_icon('graph-up') }}
           SEO
         </a>
       </li>

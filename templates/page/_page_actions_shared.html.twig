@@ -29,7 +29,7 @@
     {% if is_granted(attributes.page.seo, page) %}
       <li>
         <a href="{{ path('page_seo', {id: page.id}) }}" class="dropdown-item">
-          {{ bootstrap_icon('google') }}
+          {{ bootstrap_icon('graph-up') }}
           SEO
         </a>
       </li>
