@@ -80,9 +80,10 @@
 
 {% block actions %}
   {% if page.isPublished %}
-  <a href="{{ page_path(page.path) }}" class="btn btn-outline-dark" target="_blank" rel="noopener">
-    Live Page
-  </a>
+    <a href="{{ page_path(page.path) }}" class="btn btn-outline-dark" target="_blank" rel="noopener" data-bypass>
+      {{ bootstrap_icon('box-arrow-up-right') }}
+      Live Page
+    </a>
   {% endif %}
 
   {% include '@OHMediaPage/page/_page_actions_shared.html.twig' with {
@@ -91,7 +92,7 @@
 {% endblock %}
 
 {% block main %}
-  <div id="select_revision_label" class="fw-bold">Choose Revision</div>
+  <div id="select_revision_label" class="fw-bold">Choose Revision:</div>
   <div class="dropdown d-inline-block mb-4" role="group" aria-labelledby="select_revision">
     <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
       {{ _self.page_revision_icon(preview_page_revision, current_page_revision) }}
