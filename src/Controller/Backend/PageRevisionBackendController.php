@@ -102,7 +102,9 @@ class PageRevisionBackendController extends AbstractController
 
         $form = $this->createForm(PageRevisionType::class, $pageRevision);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', SubmitType::class, [
+            'label' => 'Save and Edit Content',
+        ]);
 
         $form->handleRequest($request);
 
@@ -117,7 +119,9 @@ class PageRevisionBackendController extends AbstractController
                     $this->addFlash('notice', 'The page template was updated successfully.');
                 }
 
-                return $this->redirectToParentPage($pageRevision);
+                return $this->redirectToRoute('page_revision_content', [
+                    'id' => $pageRevision->getId(),
+                ]);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');

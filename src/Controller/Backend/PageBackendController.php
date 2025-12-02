@@ -212,7 +212,9 @@ class PageBackendController extends AbstractController
 
         $form = $this->createForm(PageCreateType::class, $page);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', SubmitType::class, [
+            'label' => 'Save and Choose Template',
+        ]);
 
         $form->handleRequest($request);
 
