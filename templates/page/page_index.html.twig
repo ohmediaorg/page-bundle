@@ -70,85 +70,7 @@
           </thead>
           <tbody>
             {% for page in pagination.results %}
-              {% set path_parts = page.path|split('/') %}
-
-              <tr>
-                <td>
-                  {{ page.name }}
-                  <br />
-                  <div class="badge text-bg-light text-start">
-                    {% for part in path_parts %}
-                      <div style="padding-left:{{ loop.index0 * 0.5 }}em">/{{ part }}</div>
-                    {% endfor %}
-                  </div>
-                </td>
-                <td>
-                  {% if page.isHomepage %}
-                  <span class="badge text-bg-dark" title="Homepage">
-                    {{ bootstrap_icon('house') }}
-                    <span class="visually-hidden">Homepage</span>
-                  </span>
-                  {% endif %}
-
-                  {% if page.isPublished %}
-                  {{ bootstrap_badge_success('Published') }}
-                  {% else %}
-                  {{ bootstrap_badge_warning('Draft') }}
-                  {% endif %}
-
-                  {% if page.isHidden %}
-                  <span class="badge text-bg-dark" title="Hidden">
-                    {{ bootstrap_icon('eye-slash') }}
-                    <span class="visually-hidden">Hidden</span>
-                  </span>
-                  {% endif %}
-
-                  {% if page.isLocked %}
-                  <span class="badge text-bg-dark" title="Login Required">
-                    {{ bootstrap_icon('lock') }}
-                    <span class="visually-hidden">Login Required</span>
-                  </span>
-                  {% endif %}
-
-                  {% if page.isNewWindow %}
-                  <span class="badge text-bg-dark" title="New Window">
-                    {{ bootstrap_icon('box-arrow-up-right') }}
-                    <span class="visually-hidden">New Window</span>
-                  </span>
-                  {% endif %}
-                </td>
-                <td>{{ page.getTemplateName }}</td>
-                <td>{{ shortcode('page_href('~page.id~')') }}</td>
-                {% if has_page_user_types %}
-                  <td>
-                    {% if page.locked %}
-                      {% if page.lockedUserTypes %}
-                        {% for user_type in page.lockedUserTypes %}
-                          {% set readable_user_type = page_user_type(user_type) %}
-                          {% if readable_user_type %}
-                            {{ bootstrap_badge_secondary(readable_user_type) }}
-                          {% endif %}
-                        {% endfor %}
-                      {% endif %}
-                    {% endif %}
-                  </td>
-                {% endif %}
-                <td>{{ page.updatedAt|datetime }}</td>
-                <td>
-                  {% if is_granted(attributes.page.view, page) %}
-                  <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="View">
-                    {{ bootstrap_icon('eye') }}
-                    <span class="visually-hidden">View</span>
-                  </a>
-                  {% endif %}
-                  {% if is_granted(attributes.page.edit, page) %}
-                  <a href="{{ path('page_edit', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-                    {{ bootstrap_icon('pencil') }}
-                    <span class="visually-hidden">Edit</span>
-                  </a>
-                  {% endif %}
-                </td>
-              </tr>
+              {{ _self.table_row(page, attributes, has_page_user_types) }}
             {% endfor %}
           </tbody>
           <tfoot>
@@ -167,3 +89,88 @@
     </div>
   </div>
 {% endblock %}
+
+{% macro table_row(page, attributes, has_page_user_types) %}
+  {% set path_parts = page.path|split('/') %}
+
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.page.view, page) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'page_view',
+      route_params: {id: page.id},
+      icon: 'eye',
+      color: 'outline-dark',
+      text: 'View Page',
+    }]) %}
+  {% endif %}
+
+  <tr>
+    <td>
+      {{ page.name }}
+      <br />
+      <div class="badge text-bg-light text-start">
+        {% for part in path_parts %}
+          <div style="padding-left:{{ loop.index0 * 0.5 }}em">/{{ part }}</div>
+        {% endfor %}
+      </div>
+    </td>
+    <td>
+      {% if page.isHomepage %}
+        <span class="badge text-bg-dark" title="Homepage">
+          {{ bootstrap_icon('house') }}
+          <span class="visually-hidden">Homepage</span>
+        </span>
+      {% endif %}
+
+      {% if page.isPublished %}
+        {{ bootstrap_badge_success('Published') }}
+      {% else %}
+        {{ bootstrap_badge_warning('Draft') }}
+      {% endif %}
+
+      {% if page.isHidden %}
+        <span class="badge text-bg-dark" title="Hidden">
+          {{ bootstrap_icon('eye-slash') }}
+          <span class="visually-hidden">Hidden</span>
+        </span>
+      {% endif %}
+
+      {% if page.isLocked %}
+        <span class="badge text-bg-dark" title="Login Required">
+          {{ bootstrap_icon('lock') }}
+          <span class="visually-hidden">Login Required</span>
+        </span>
+      {% endif %}
+
+      {% if page.isNewWindow %}
+        <span class="badge text-bg-dark" title="New Window">
+          {{ bootstrap_icon('box-arrow-up-right') }}
+          <span class="visually-hidden">New Window</span>
+        </span>
+      {% endif %}
+    </td>
+    <td>{{ page.getTemplateName }}</td>
+    <td>{{ shortcode('page_href('~page.id~')') }}</td>
+    {% if has_page_user_types %}
+      <td>
+        {% if page.locked %}
+          {% if page.lockedUserTypes %}
+            {% for user_type in page.lockedUserTypes %}
+              {% set readable_user_type = page_user_type(user_type) %}
+              {% if readable_user_type %}
+                {{ bootstrap_badge_secondary(readable_user_type) }}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endif %}
+      </td>
+    {% endif %}
+    <td>{{ page.updatedAt|datetime }}</td>
+    <td>
+      {% include '@OHMediaBackend/widget/row_actions.html.twig' with {
+        row_actions: row_actions,
+      } only %}
+    </td>
+  </tr>
+{% endmacro %}
