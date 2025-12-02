@@ -3,6 +3,7 @@
 namespace OHMedia\PageBundle\Controller\Backend;
 
 use Doctrine\ORM\EntityManagerInterface;
+use OHMedia\BackendBundle\Form\MultiSaveType;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\PageBundle\Entity\AbstractPageContent;
 use OHMedia\PageBundle\Entity\Page;
@@ -17,6 +18,7 @@ use OHMedia\WysiwygBundle\Shortcodes\ShortcodeManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -163,7 +165,9 @@ class PageRevisionBackendController extends AbstractController
 
         $form = $this->createForm($pageRevision->getTemplate(), $pageRevision);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class, [
+            'add_another' => false,
+        ]);
 
         $form->handleRequest($request);
 
@@ -185,7 +189,7 @@ class PageRevisionBackendController extends AbstractController
 
                 $this->addFlash('notice', 'The page revision content was updated.');
 
-                return $this->redirectToParentPage($pageRevision);
+                return $this->redirectContent($pageRevision, $form);
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -200,6 +204,19 @@ class PageRevisionBackendController extends AbstractController
             'form_title' => 'Edit Page Content',
             'page_revision' => $pageRevision,
         ]);
+    }
+
+    private function redirectContent(PageRevision $pageRevision, FormInterface $form): Response
+    {
+        $clickedButtonName = $form->getClickedButton()->getName() ?? null;
+
+        if ('keep_editing' === $clickedButtonName) {
+            return $this->redirectToRoute('page_revision_content', [
+                'id' => $pageRevision->getId(),
+            ]);
+        } else {
+            return $this->redirectToParentPage($pageRevision);
+        }
     }
 
     #[Route('/page/revision/{id}/publish', name: 'page_revision_publish', methods: ['POST'])]
