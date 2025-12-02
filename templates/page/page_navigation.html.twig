@@ -11,51 +11,51 @@
 {% endblock %}
 
 {% block actions %}
-{% include '@OHMediaPage/page/_page_actions_shared.html.twig' %}
+  {% include '@OHMediaPage/page/_page_actions_shared.html.twig' %}
 {% endblock %}
 
 {% block javascripts %}
-{% set page_class = 'OHMedia\\PageBundle\\Entity\\Page' %}
-{% set internal_constant = constant(page_class ~ '::REDIRECT_TYPE_INTERNAL') %}
-{% set external_constant = constant(page_class ~ '::REDIRECT_TYPE_EXTERNAL') %}
-<script>
-const form = document.querySelector('form[name={{ form.vars.name }}]');
+  {% set page_class = 'OHMedia\\PageBundle\\Entity\\Page' %}
+  {% set internal_constant = constant(page_class ~ '::REDIRECT_TYPE_INTERNAL') %}
+  {% set external_constant = constant(page_class ~ '::REDIRECT_TYPE_EXTERNAL') %}
+  <script>
+    const form = document.querySelector('form[name={{ form.vars.name }}]');
 
-const redirectType = form.elements['{{ form.redirect_type.vars.full_name }}'];
+    const redirectType = form.elements['{{ form.redirect_type.vars.full_name }}'];
 
-const redirectInternal = form.elements['{{ form.redirect_internal.vars.full_name }}'];
-const redirectInternalParent = redirectInternal.parentNode;
-const redirectInternalLabel = redirectInternalParent.querySelector('label');
-redirectInternalLabel.classList.add('required');
+    const redirectInternal = form.elements['{{ form.redirect_internal.vars.full_name }}'];
+    const redirectInternalParent = redirectInternal.parentNode;
+    const redirectInternalLabel = redirectInternalParent.querySelector('label');
+    redirectInternalLabel.classList.add('required');
 
-const redirectExternal = form.elements['{{ form.redirect_external.vars.full_name }}'];
-const redirectExternalParent = redirectExternal.parentNode;
-const redirectExternalLabel = redirectExternalParent.querySelector('label');
-redirectExternalLabel.classList.add('required');
+    const redirectExternal = form.elements['{{ form.redirect_external.vars.full_name }}'];
+    const redirectExternalParent = redirectExternal.parentNode;
+    const redirectExternalLabel = redirectExternalParent.querySelector('label');
+    redirectExternalLabel.classList.add('required');
 
-function toggleRedirect() {
-  let internalDisplay = 'none';
-  let externalDisplay = 'none';
+    function toggleRedirect() {
+      let internalDisplay = 'none';
+      let externalDisplay = 'none';
 
-  redirectInternal.required = false;
-  redirectExternal.required = false;
+      redirectInternal.required = false;
+      redirectExternal.required = false;
 
-  if ('{{ internal_constant }}' === redirectType.value) {
-    internalDisplay = '';
-    redirectInternal.required = true;
-  } else if ('{{ external_constant }}' === redirectType.value) {
-    externalDisplay = '';
-    redirectExternal.required = true;
-  }
+      if ('{{ internal_constant }}' === redirectType.value) {
+        internalDisplay = '';
+        redirectInternal.required = true;
+      } else if ('{{ external_constant }}' === redirectType.value) {
+        externalDisplay = '';
+        redirectExternal.required = true;
+      }
 
-  redirectInternalParent.style.display = internalDisplay;
-  redirectExternalParent.style.display = externalDisplay;
-}
+      redirectInternalParent.style.display = internalDisplay;
+      redirectExternalParent.style.display = externalDisplay;
+    }
 
-redirectType.forEach((radio) => {
-  radio.addEventListener('change', toggleRedirect);
-});
+    redirectType.forEach((radio) => {
+      radio.addEventListener('change', toggleRedirect);
+    });
 
-toggleRedirect();
-</script>
+    toggleRedirect();
+  </script>
 {% endblock %}

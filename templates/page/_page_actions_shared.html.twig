@@ -1,9 +1,9 @@
 <div class="btn-group btn-group-sm" role="group" aria-label="Page actions">
   {% if is_granted(attributes.page.view, page) %}
-  <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-outline-dark">
-    {{ bootstrap_icon('arrow-left') }}
-    Back to Page
-  </a>
+    <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-outline-dark">
+      {{ bootstrap_icon('arrow-left') }}
+      Back to Page
+    </a>
   {% endif %}
   <div class="btn-group btn-group-sm" role="group">
     <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

@@ -3,52 +3,52 @@
 {% block meta_title %}{{ page.name }} | Pages{% endblock %}
 
 {% block breadcrumbs %}
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item">
-      <a href="{{ path('page_index') }}">{{ bootstrap_icon('window-stack') }} Pages</a>
-    </li>
-    <li class="breadcrumb-item active" aria-current="page">
-      {% if page.isHomepage %}
-      <span class="badge text-bg-dark" title="Homepage">
-        {{ bootstrap_icon('house') }}
-        <span class="visually-hidden">Homepage</span>
-      </span>
-      {% endif %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{{ path('page_index') }}">{{ bootstrap_icon('window-stack') }} Pages</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {% if page.isHomepage %}
+        <span class="badge text-bg-dark" title="Homepage">
+          {{ bootstrap_icon('house') }}
+          <span class="visually-hidden">Homepage</span>
+        </span>
+        {% endif %}
 
-      {% if page.isPublished %}
-      <span class="badge text-bg-success" title="Published">
-        {{ page.name }}
-      </span>
-      {% else %}
-      <span class="badge text-bg-warning" title="Draft">
-        {{ page.name }}
-      </span>
-      {% endif %}
+        {% if page.isPublished %}
+        <span class="badge text-bg-success" title="Published">
+          {{ page.name }}
+        </span>
+        {% else %}
+        <span class="badge text-bg-warning" title="Draft">
+          {{ page.name }}
+        </span>
+        {% endif %}
 
-      {% if page.isHidden %}
-      <span class="badge text-bg-dark" title="Hidden">
-        {{ bootstrap_icon('eye-slash') }}
-        <span class="visually-hidden">Hidden</span>
-      </span>
-      {% endif %}
+        {% if page.isHidden %}
+        <span class="badge text-bg-dark" title="Hidden">
+          {{ bootstrap_icon('eye-slash') }}
+          <span class="visually-hidden">Hidden</span>
+        </span>
+        {% endif %}
 
-      {% if page.isLocked %}
-      <span class="badge text-bg-dark" title="Locked">
-        {{ bootstrap_icon('lock') }}
-        <span class="visually-hidden">Locked</span>
-      </span>
-      {% endif %}
+        {% if page.isLocked %}
+        <span class="badge text-bg-dark" title="Locked">
+          {{ bootstrap_icon('lock') }}
+          <span class="visually-hidden">Locked</span>
+        </span>
+        {% endif %}
 
-      {% if page.isNewWindow %}
-      <span class="badge text-bg-dark" title="New Window">
-        {{ bootstrap_icon('box-arrow-up-right') }}
-        <span class="visually-hidden">New Window</span>
-      </span>
-      {% endif %}
-    </li>
-  </ol>
-</nav>
+        {% if page.isNewWindow %}
+        <span class="badge text-bg-dark" title="New Window">
+          {{ bootstrap_icon('box-arrow-up-right') }}
+          <span class="visually-hidden">New Window</span>
+        </span>
+        {% endif %}
+      </li>
+    </ol>
+  </nav>
 {% endblock %}
 
 {% set preview_page_revision = null %}
@@ -79,162 +79,162 @@
 {% endmacro %}
 
 {% block actions %}
-<div class="btn-group btn-group-sm" role="group" aria-label="Page actions">
-  {% if page.isPublished %}
-  <a href="{{ page_path(page.path) }}" class="btn btn-outline-dark" target="_blank" rel="noopener">
-    Live Page
-  </a>
-  {% endif %}
-  <div class="btn-group btn-group-sm" role="group">
-    <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      Page Actions
-    </button>
-    <ul class="dropdown-menu">
-    {% if is_granted(attributes.page.edit, page) %}
-      <li>
-        <a href="{{ path('page_edit', {id: page.id}) }}" class="dropdown-item">
-          {{ bootstrap_icon('pencil') }}
-          Edit
-        </a>
-      </li>
+  <div class="btn-group btn-group-sm" role="group" aria-label="Page actions">
+    {% if page.isPublished %}
+    <a href="{{ page_path(page.path) }}" class="btn btn-outline-dark" target="_blank" rel="noopener">
+      Live Page
+    </a>
     {% endif %}
-    {% if is_granted(attributes.page.navigation, page) %}
-      <li>
-        <a href="{{ path('page_navigation', {id: page.id}) }}" class="dropdown-item">
-          {{ bootstrap_icon('list') }}
-          Navigation
-        </a>
-      </li>
-    {% endif %}
-    {% if is_granted(attributes.page.seo, page) %}
-      <li>
-        <a href="{{ path('page_seo', {id: page.id}) }}" class="dropdown-item">
-          {{ bootstrap_icon('graph-up') }}
-          SEO
-        </a>
-      </li>
-    {% endif %}
-    {% if is_granted(attributes.page.homepage, page) %}
-      <li>
-      {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-        {% block form_action %}{{ path('page_homepage', {id: page.id}) }}{% endblock %}
-        {% block confirm_message %}Are you sure you want to make this page the homepage?{% endblock %}
-        {% block csrf_name %}homepage_page_{{ page.id }}{% endblock %}
-        {% block button_class %}dropdown-item text-bg-success{% endblock %}
-        {% block button_html %}
-          {{ bootstrap_icon('house') }}
-          Set as Homepage
-        {% endblock %}
-      {% endembed %}
-      </li>
-    {% endif %}
-    {% if is_granted(attributes.page.publish, page) %}
-      <li>
-      {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-        {% block form_action %}{{ path('page_publish', {id: page.id}) }}{% endblock %}
-        {% block confirm_message %}Are you sure you want to publish this page?{% if page.published %} This page will be published automatically on <i>{{ page.published|date('M j, Y') }}</i> at <i>{{ page.published|date('g:ia') }}</i>.{% endif %}{% endblock %}
-        {% block csrf_name %}publish_page_{{ page.id }}{% endblock %}
-        {% block button_class %}dropdown-item text-bg-success{% endblock %}
-        {% block button_html %}
-          {{ bootstrap_icon('check') }}
-          Publish
-        {% endblock %}
-      {% endembed %}
-      </li>
-    {% endif %}
-    {% if is_granted(attributes.page.unpublish, page) %}
-      <li>
-      {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-        {% block form_action %}{{ path('page_unpublish', {id: page.id}) }}{% endblock %}
-        {% block confirm_message %}Are you sure you want to unpublish this page?{% endblock %}
-        {% block csrf_name %}unpublish_page_{{ page.id }}{% endblock %}
-        {% block button_class %}dropdown-item text-bg-warning{% endblock %}
-        {% block button_html %}
-          {{ bootstrap_icon('arrow-counterclockwise') }}
-          Unpublish
-        {% endblock %}
-      {% endembed %}
-      </li>
-    {% endif %}
-    {% if is_granted(attributes.page.delete, page) %}
-      <li>
-        <a href="{{ path('page_delete', {id: page.id}) }}" class="dropdown-item text-bg-danger" data-confirm="Are you sure you want to delete this page?">
-          {{ bootstrap_icon('trash') }}
-          Delete Page
-        </a>
-      </li>
-    {% endif %}
-    </ul>
+    <div class="btn-group btn-group-sm" role="group">
+      <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Page Actions
+      </button>
+      <ul class="dropdown-menu">
+      {% if is_granted(attributes.page.edit, page) %}
+        <li>
+          <a href="{{ path('page_edit', {id: page.id}) }}" class="dropdown-item">
+            {{ bootstrap_icon('pencil') }}
+            Edit
+          </a>
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.page.navigation, page) %}
+        <li>
+          <a href="{{ path('page_navigation', {id: page.id}) }}" class="dropdown-item">
+            {{ bootstrap_icon('list') }}
+            Navigation
+          </a>
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.page.seo, page) %}
+        <li>
+          <a href="{{ path('page_seo', {id: page.id}) }}" class="dropdown-item">
+            {{ bootstrap_icon('graph-up') }}
+            SEO
+          </a>
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.page.homepage, page) %}
+        <li>
+        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+          {% block form_action %}{{ path('page_homepage', {id: page.id}) }}{% endblock %}
+          {% block confirm_message %}Are you sure you want to make this page the homepage?{% endblock %}
+          {% block csrf_name %}homepage_page_{{ page.id }}{% endblock %}
+          {% block button_class %}dropdown-item text-bg-success{% endblock %}
+          {% block button_html %}
+            {{ bootstrap_icon('house') }}
+            Set as Homepage
+          {% endblock %}
+        {% endembed %}
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.page.publish, page) %}
+        <li>
+        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+          {% block form_action %}{{ path('page_publish', {id: page.id}) }}{% endblock %}
+          {% block confirm_message %}Are you sure you want to publish this page?{% if page.published %} This page will be published automatically on <i>{{ page.published|date('M j, Y') }}</i> at <i>{{ page.published|date('g:ia') }}</i>.{% endif %}{% endblock %}
+          {% block csrf_name %}publish_page_{{ page.id }}{% endblock %}
+          {% block button_class %}dropdown-item text-bg-success{% endblock %}
+          {% block button_html %}
+            {{ bootstrap_icon('check') }}
+            Publish
+          {% endblock %}
+        {% endembed %}
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.page.unpublish, page) %}
+        <li>
+        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+          {% block form_action %}{{ path('page_unpublish', {id: page.id}) }}{% endblock %}
+          {% block confirm_message %}Are you sure you want to unpublish this page?{% endblock %}
+          {% block csrf_name %}unpublish_page_{{ page.id }}{% endblock %}
+          {% block button_class %}dropdown-item text-bg-warning{% endblock %}
+          {% block button_html %}
+            {{ bootstrap_icon('arrow-counterclockwise') }}
+            Unpublish
+          {% endblock %}
+        {% endembed %}
+        </li>
+      {% endif %}
+      {% if is_granted(attributes.page.delete, page) %}
+        <li>
+          <a href="{{ path('page_delete', {id: page.id}) }}" class="dropdown-item text-bg-danger" data-confirm="Are you sure you want to delete this page?">
+            {{ bootstrap_icon('trash') }}
+            Delete Page
+          </a>
+        </li>
+      {% endif %}
+      </ul>
+    </div>
   </div>
-</div>
 {% endblock %}
 
 {% block main %}
-<div class="btn-group btn-group-sm mb-4" role="group" aria-label="Page revision actions">
-  <div class="btn-group btn-group-sm" role="group">
-    <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      {{ _self.page_revision_icon(preview_page_revision, current_page_revision) }}
-      {{ preview_page_revision }}
-    </button>
-    <ul class="dropdown-menu">
-    {# TODO: put limitations on the length of this list? #}
-    {% for page_revision in page.pageRevisions %}
-      <li>
-        <a class="dropdown-item {{ page_revision == preview_page_revision ? 'disabled' : '' }}" href="{{ path('page_view', {id: page.id, revision: page_revision.id}) }}">
-          {{ _self.page_revision_icon(page_revision, current_page_revision) }}
-          {{ page_revision }}
+  <div class="btn-group btn-group-sm mb-4" role="group" aria-label="Page revision actions">
+    <div class="btn-group btn-group-sm" role="group">
+      <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ _self.page_revision_icon(preview_page_revision, current_page_revision) }}
+        {{ preview_page_revision }}
+      </button>
+      <ul class="dropdown-menu">
+      {# TODO: put limitations on the length of this list? #}
+      {% for page_revision in page.pageRevisions %}
+        <li>
+          <a class="dropdown-item {{ page_revision == preview_page_revision ? 'disabled' : '' }}" href="{{ path('page_view', {id: page.id, revision: page_revision.id}) }}">
+            {{ _self.page_revision_icon(page_revision, current_page_revision) }}
+            {{ page_revision }}
+          </a>
+        </li>
+      {% endfor %}
+      </ul>
+    </div>
+
+    {% set show_publish = (not preview_page_revision.isPublished or current_page_revision != preview_page_revision) and is_granted(attributes.page_revision.publish, preview_page_revision) %}
+
+    {% set show_content = is_granted(attributes.page_revision.content, preview_page_revision) %}
+    <div class="btn-group btn-group-sm" role="group">
+      {% if is_granted(attributes.page_revision.template, preview_page_revision) %}
+        <a href="{{ path('page_revision_template', {id: preview_page_revision.id}) }}" class="btn btn-outline-dark">
+          {{ bootstrap_icon('columns') }}
+          Template
         </a>
-      </li>
-    {% endfor %}
-    </ul>
+      {% endif %}
+      {% if show_content %}
+        <a href="{{ path('page_revision_content', {id: preview_page_revision.id}) }}" class="btn btn-outline-dark">
+          {{ bootstrap_icon('layout-text-sidebar-reverse') }}
+          Content
+        </a>
+      {% endif %}
+      {% if show_publish %}
+        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+          {% block form_action %}{{ path('page_revision_publish', {id: preview_page_revision.id}) }}{% endblock %}
+          {% block form_class %}btn-group btn-group-sm{% endblock %}
+          {% block confirm_message %}Are you sure you want to publish this revision? It will become the new live page!{% endblock %}
+          {% block csrf_name %}publish_page_revision_{{ preview_page_revision.id }}{% endblock %}
+          {% block button_class %}btn btn-success{% endblock %}
+          {% block button_html %}
+            {{ bootstrap_icon('check') }}
+            {{ preview_page_revision.isPublished ? 'Re-Publish' : 'Publish' }}
+          {% endblock %}
+        {% endembed %}
+      {% endif %}
+      {% if is_granted(attributes.page_revision.delete, preview_page_revision) %}
+        <a href="{{ path('page_revision_delete', {id: preview_page_revision.id}) }}" class="btn btn-danger" data-confirm="Are you sure you want to delete this revision?">
+          {{ bootstrap_icon('trash') }}
+          Delete
+        </a>
+      {% endif %}
+    </div>
   </div>
 
-  {% set show_publish = (not preview_page_revision.isPublished or current_page_revision != preview_page_revision) and is_granted(attributes.page_revision.publish, preview_page_revision) %}
+  <style>
+    iframe {
+      width: 100%;
+      height: 500px;
+      display: block;
+      border: 5px inset var(--bs-primary);
+    }
+  </style>
 
-  {% set show_content = is_granted(attributes.page_revision.content, preview_page_revision) %}
-  <div class="btn-group btn-group-sm" role="group">
-    {% if is_granted(attributes.page_revision.template, preview_page_revision) %}
-      <a href="{{ path('page_revision_template', {id: preview_page_revision.id}) }}" class="btn btn-outline-dark">
-        {{ bootstrap_icon('columns') }}
-        Template
-      </a>
-    {% endif %}
-    {% if show_content %}
-      <a href="{{ path('page_revision_content', {id: preview_page_revision.id}) }}" class="btn btn-outline-dark">
-        {{ bootstrap_icon('layout-text-sidebar-reverse') }}
-        Content
-      </a>
-    {% endif %}
-    {% if show_publish %}
-      {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-        {% block form_action %}{{ path('page_revision_publish', {id: preview_page_revision.id}) }}{% endblock %}
-        {% block form_class %}btn-group btn-group-sm{% endblock %}
-        {% block confirm_message %}Are you sure you want to publish this revision? It will become the new live page!{% endblock %}
-        {% block csrf_name %}publish_page_revision_{{ preview_page_revision.id }}{% endblock %}
-        {% block button_class %}btn btn-success{% endblock %}
-        {% block button_html %}
-          {{ bootstrap_icon('check') }}
-          {{ preview_page_revision.isPublished ? 'Re-Publish' : 'Publish' }}
-        {% endblock %}
-      {% endembed %}
-    {% endif %}
-    {% if is_granted(attributes.page_revision.delete, preview_page_revision) %}
-      <a href="{{ path('page_revision_delete', {id: preview_page_revision.id}) }}" class="btn btn-danger" data-confirm="Are you sure you want to delete this revision?">
-        {{ bootstrap_icon('trash') }}
-        Delete
-      </a>
-    {% endif %}
-  </div>
-</div>
-
-<style>
-  iframe {
-    width: 100%;
-    height: 500px;
-    display: block;
-    border: 5px inset var(--bs-primary);
-  }
-</style>
-
-{{ page_preview(preview_page_revision) }}
+  {{ page_preview(preview_page_revision) }}
 {% endblock %}

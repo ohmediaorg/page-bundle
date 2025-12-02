@@ -1,5 +1,5 @@
 {% set image = content ? content.image : null %}
 
 {% if image %}
-{{ image_tag(image, attributes) }}
+  {{ image_tag(image, attributes) }}
 {% endif %}

@@ -1,9 +1,9 @@
 {% extends '@OHMediaBackend/form.html.twig' %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('window-stack') ~ ' Pages', 'page_index'),
-  bootstrap_breadcrumb(page.name, 'page_view', {id: page.id}),
-  bootstrap_breadcrumb('Delete'),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('window-stack') ~ ' Pages', 'page_index'),
+    bootstrap_breadcrumb(page.name, 'page_view', {id: page.id}),
+    bootstrap_breadcrumb('Delete'),
+  ) }}
 {% endblock %}

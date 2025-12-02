@@ -3,10 +3,10 @@
 {% block meta_title %}Reorder | Pages{% endblock %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('window-stack') ~ ' Pages', 'page_index'),
-  bootstrap_breadcrumb('Reorder'),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('window-stack') ~ ' Pages', 'page_index'),
+    bootstrap_breadcrumb('Reorder'),
+  ) }}
 {% endblock %}
 
 {% macro page_tree(pages, parent_id) %}
@@ -37,348 +37,348 @@
 {% endmacro %}
 
 {% block main %}
-<style>
-  #page-tree .list-group-item {
-    position: relative;
-  }
+  <style>
+    #page-tree .list-group-item {
+      position: relative;
+    }
 
-  #page-tree .list-group-item > .page-tree-actions {
-    position: absolute;
-    top: -1px;
-    right: -1px;
-  }
-</style>
+    #page-tree .list-group-item > .page-tree-actions {
+      position: absolute;
+      top: -1px;
+      right: -1px;
+    }
+  </style>
 
-<div class="card">
-  <div class="card-body">
-    <h1 class="card-title">Reorder Pages</h1>
+  <div class="card">
+    <div class="card-body">
+      <h1 class="card-title">Reorder Pages</h1>
 
-    <ol>
-      <li>Select a page.</li>
-      <li>Use the {{ bootstrap_icon('box-arrow-down-left') }} {{ bootstrap_icon('box-arrow-in-up-right') }} {{ bootstrap_icon('arrow-up') }} {{ bootstrap_icon('arrow-down') }} buttons or the LEFT/RIGHT/UP/DOWN keys to move the page around.</li>
-      <li>Use the {{ bootstrap_icon('arrow-counterclockwise') }} button or the BACKSPACE/DELETE keys to undo one movement of the page at a time.</li>
-      <li>Press ESCAPE to undo all movements of the page.</li>
-      <li>De-select or press ENTER to finish moving the page.</li>
-    </ol>
+      <ol>
+        <li>Select a page.</li>
+        <li>Use the {{ bootstrap_icon('box-arrow-down-left') }} {{ bootstrap_icon('box-arrow-in-up-right') }} {{ bootstrap_icon('arrow-up') }} {{ bootstrap_icon('arrow-down') }} buttons or the LEFT/RIGHT/UP/DOWN keys to move the page around.</li>
+        <li>Use the {{ bootstrap_icon('arrow-counterclockwise') }} button or the BACKSPACE/DELETE keys to undo one movement of the page at a time.</li>
+        <li>Press ESCAPE to undo all movements of the page.</li>
+        <li>De-select or press ENTER to finish moving the page.</li>
+      </ol>
 
-    <div id="page-tree" class="mb-3">
-      {{ _self.page_tree(top_level_pages, null, true) }}
-    </div>
+      <div id="page-tree" class="mb-3">
+        {{ _self.page_tree(top_level_pages, null, true) }}
+      </div>
 
-    <div>
-      <button id="page-tree-submit" class="btn btn-primary" type="button">Update Order</button>
+      <div>
+        <button id="page-tree-submit" class="btn btn-primary" type="button">Update Order</button>
+      </div>
     </div>
   </div>
-</div>
 {% endblock %}
 
 {% block javascripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const container = document.getElementById('page-tree');
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.getElementById('page-tree');
 
-  const parentItems = container.querySelectorAll('[data-parent]');
+      const parentItems = container.querySelectorAll('[data-parent]');
 
-  const childItems = container.querySelectorAll('[data-id]');
+      const childItems = container.querySelectorAll('[data-id]');
 
-  const submit = document.getElementById('page-tree-submit');
+      const submit = document.getElementById('page-tree-submit');
 
-  const csrfToken = {{ csrf_token(csrf_token_name)|js }};
+      const csrfToken = {{ csrf_token(csrf_token_name)|js }};
 
-  const postUrl = {{ path('page_reorder_post')|js }};
+      const postUrl = {{ path('page_reorder_post')|js }};
 
-  let selectedItem = null;
-  let undoStack = [];
+      let selectedItem = null;
+      let undoStack = [];
 
-  let reordering = false;
+      let reordering = false;
 
-  function setReordering(r) {
-    reordering = r;
+      function setReordering(r) {
+        reordering = r;
 
-    submit.disabled = reordering;
-  }
-
-  let submitting = false;
-
-  function setSubmitting(s) {
-    submitting = s;
-
-    submit.disabled = submitting;
-
-    submit.textContent = submitting ? 'Updating...' : 'Update Order';
-  }
-
-  const pageTreeActions = document.createElement('div');
-  pageTreeActions.className = 'btn-group btn-group-sm page-tree-actions';
-
-  function addPageTreeAction(icon, callback) {
-    const button = document.createElement('button');
-    button.className = 'btn btn-primary';
-    button.type = 'button';
-
-    const i = document.createElement('i');
-    i.className = 'bi bi-' + icon;
-
-    button.appendChild(i);
-
-    button.addEventListener('click', callback);
-
-    pageTreeActions.appendChild(button);
-
-    return button;
-  }
-
-  const buttonUnnest = addPageTreeAction('box-arrow-down-left', () => {
-    unnest();
-  });
-
-  const buttonNest = addPageTreeAction('box-arrow-in-up-right', () => {
-    nest();
-  });
-
-  const buttonUp = addPageTreeAction('arrow-up', () => {
-    up();
-  });
-
-  const buttonDown = addPageTreeAction('arrow-down', () => {
-    down();
-  });
-
-  const buttonUndo = addPageTreeAction('arrow-counterclockwise', () => {
-    undo();
-  });
-
-  function canUnnest() {
-    return selectedItem && selectedItem.parentNode.parentNode !== container;
-  }
-
-  function canNest() {
-    return selectedItem && selectedItem.previousElementSibling;
-  }
-
-  function canUp() {
-    return selectedItem && selectedItem.previousElementSibling;
-  }
-
-  function canDown() {
-    return selectedItem && selectedItem.nextElementSibling;
-  }
-
-  function canUndo() {
-    return selectedItem && undoStack.length;
-  }
-
-  function updateState() {
-    buttonUnnest.disabled = !canUnnest();
-    buttonNest.disabled = !canNest();
-    buttonUp.disabled = !canUp();
-    buttonDown.disabled = !canDown();
-    buttonUndo.disabled = !canUndo();
-  }
-
-  function unnest(undo = false) {
-    if (!canUnnest()) {
-      return;
-    }
-
-    let position = null;
-
-    for (let i = 0; i < selectedItem.parentNode.children.length; i++) {
-      if (selectedItem.parentNode.children[i] === selectedItem) {
-        position = i;
+        submit.disabled = reordering;
       }
-    }
 
-    // first parent is ul, we want the li
-    selectedItem.parentNode.parentNode.after(selectedItem);
+      let submitting = false;
 
-    if (!undo) {
-      undoStack.unshift(nest.bind(null, true, position));
-    }
+      function setSubmitting(s) {
+        submitting = s;
 
-    updateState();
-  }
+        submit.disabled = submitting;
 
-  function nest(undo = false, position = null) {
-    if (!canNest()) {
-      return;
-    }
+        submit.textContent = submitting ? 'Updating...' : 'Update Order';
+      }
 
-    const ul = selectedItem.previousElementSibling.querySelector(':scope > ul');
+      const pageTreeActions = document.createElement('div');
+      pageTreeActions.className = 'btn-group btn-group-sm page-tree-actions';
 
-    if (position) {
-      ul.children[position - 1].after(selectedItem);
-    } else if (0 === position) {
-      ul.prepend(selectedItem);
-    } else {
-      ul.appendChild(selectedItem);
-    }
+      function addPageTreeAction(icon, callback) {
+        const button = document.createElement('button');
+        button.className = 'btn btn-primary';
+        button.type = 'button';
 
-    if (!undo) {
-      undoStack.unshift(unnest.bind(null, true));
-    }
+        const i = document.createElement('i');
+        i.className = 'bi bi-' + icon;
 
-    updateState();
-  }
+        button.appendChild(i);
 
-  function up(undo = false) {
-    if (!canUp()) {
-      return;
-    }
+        button.addEventListener('click', callback);
 
-    selectedItem.previousElementSibling.before(selectedItem);
+        pageTreeActions.appendChild(button);
 
-    if (!undo) {
-      undoStack.unshift(down.bind(null, true));
-    }
+        return button;
+      }
 
-    updateState();
-  }
+      const buttonUnnest = addPageTreeAction('box-arrow-down-left', () => {
+        unnest();
+      });
 
-  function down(undo = false) {
-    if (!canDown()) {
-      return;
-    }
+      const buttonNest = addPageTreeAction('box-arrow-in-up-right', () => {
+        nest();
+      });
 
-    selectedItem.nextElementSibling.after(selectedItem);
+      const buttonUp = addPageTreeAction('arrow-up', () => {
+        up();
+      });
 
-    if (!undo) {
-      undoStack.unshift(up.bind(null, true));
-    }
+      const buttonDown = addPageTreeAction('arrow-down', () => {
+        down();
+      });
 
-    updateState();
-  }
-
-  function undo() {
-    if (!canUndo()) {
-      return;
-    }
-
-    const callback = undoStack.shift();
-
-    callback();
-
-    updateState();
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (selectedItem) {
-      e.preventDefault();
-    }
-  });
-
-  document.addEventListener('keyup', (e) => {
-    if (selectedItem) {
-      e.preventDefault();
-    }
-
-    if ('ArrowLeft' === e.key) {
-      unnest();
-    } else if ('ArrowUp' === e.key) {
-      up();
-    } else if ('ArrowRight' === e.key) {
-      nest();
-    } else if ('ArrowDown' === e.key) {
-      down();
-    } else if ('Backspace' === e.key) {
-      undo();
-    } else if ('Delete' === e.key) {
-      undo();
-    } else if ('Escape' === e.key) {
-      while (canUndo()) {
+      const buttonUndo = addPageTreeAction('arrow-counterclockwise', () => {
         undo();
-      }
-    } else if ('Enter' === e.key) {
-      const checkbox = selectedItem.querySelector('input[type=checkbox]');
-      checkbox.checked = false;
-      checkbox.dispatchEvent(new Event('change'));
-    }
-  });
+      });
 
-  childItems.forEach(function(childItem) {
-    const checkbox = childItem.querySelector('input[type=checkbox]');
-
-    checkbox.addEventListener('change', (e) => {
-      e.stopPropagation();
-
-      if (submitting) {
-        checkbox.checked = false;
-
-        return;
+      function canUnnest() {
+        return selectedItem && selectedItem.parentNode.parentNode !== container;
       }
 
-      if (selectedItem) {
-        selectedItem.classList.remove('list-group-item-primary');
-
-        selectedItem.querySelector('input[type=checkbox]').checked = false;
+      function canNest() {
+        return selectedItem && selectedItem.previousElementSibling;
       }
 
-      setReordering(checkbox.checked);
-
-      if (checkbox.checked) {
-        selectedItem = childItem;
-
-        selectedItem.classList.add('list-group-item-primary');
-
-        selectedItem.appendChild(pageTreeActions);
-      } else {
-        selectedItem = null;
-        undoStack = [];
-        pageTreeActions.remove();
+      function canUp() {
+        return selectedItem && selectedItem.previousElementSibling;
       }
 
-      updateState();
+      function canDown() {
+        return selectedItem && selectedItem.nextElementSibling;
+      }
+
+      function canUndo() {
+        return selectedItem && undoStack.length;
+      }
+
+      function updateState() {
+        buttonUnnest.disabled = !canUnnest();
+        buttonNest.disabled = !canNest();
+        buttonUp.disabled = !canUp();
+        buttonDown.disabled = !canDown();
+        buttonUndo.disabled = !canUndo();
+      }
+
+      function unnest(undo = false) {
+        if (!canUnnest()) {
+          return;
+        }
+
+        let position = null;
+
+        for (let i = 0; i < selectedItem.parentNode.children.length; i++) {
+          if (selectedItem.parentNode.children[i] === selectedItem) {
+            position = i;
+          }
+        }
+
+        // first parent is ul, we want the li
+        selectedItem.parentNode.parentNode.after(selectedItem);
+
+        if (!undo) {
+          undoStack.unshift(nest.bind(null, true, position));
+        }
+
+        updateState();
+      }
+
+      function nest(undo = false, position = null) {
+        if (!canNest()) {
+          return;
+        }
+
+        const ul = selectedItem.previousElementSibling.querySelector(':scope > ul');
+
+        if (position) {
+          ul.children[position - 1].after(selectedItem);
+        } else if (0 === position) {
+          ul.prepend(selectedItem);
+        } else {
+          ul.appendChild(selectedItem);
+        }
+
+        if (!undo) {
+          undoStack.unshift(unnest.bind(null, true));
+        }
+
+        updateState();
+      }
+
+      function up(undo = false) {
+        if (!canUp()) {
+          return;
+        }
+
+        selectedItem.previousElementSibling.before(selectedItem);
+
+        if (!undo) {
+          undoStack.unshift(down.bind(null, true));
+        }
+
+        updateState();
+      }
+
+      function down(undo = false) {
+        if (!canDown()) {
+          return;
+        }
+
+        selectedItem.nextElementSibling.after(selectedItem);
+
+        if (!undo) {
+          undoStack.unshift(up.bind(null, true));
+        }
+
+        updateState();
+      }
+
+      function undo() {
+        if (!canUndo()) {
+          return;
+        }
+
+        const callback = undoStack.shift();
+
+        callback();
+
+        updateState();
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (selectedItem) {
+          e.preventDefault();
+        }
+      });
+
+      document.addEventListener('keyup', (e) => {
+        if (selectedItem) {
+          e.preventDefault();
+        }
+
+        if ('ArrowLeft' === e.key) {
+          unnest();
+        } else if ('ArrowUp' === e.key) {
+          up();
+        } else if ('ArrowRight' === e.key) {
+          nest();
+        } else if ('ArrowDown' === e.key) {
+          down();
+        } else if ('Backspace' === e.key) {
+          undo();
+        } else if ('Delete' === e.key) {
+          undo();
+        } else if ('Escape' === e.key) {
+          while (canUndo()) {
+            undo();
+          }
+        } else if ('Enter' === e.key) {
+          const checkbox = selectedItem.querySelector('input[type=checkbox]');
+          checkbox.checked = false;
+          checkbox.dispatchEvent(new Event('change'));
+        }
+      });
+
+      childItems.forEach(function(childItem) {
+        const checkbox = childItem.querySelector('input[type=checkbox]');
+
+        checkbox.addEventListener('change', (e) => {
+          e.stopPropagation();
+
+          if (submitting) {
+            checkbox.checked = false;
+
+            return;
+          }
+
+          if (selectedItem) {
+            selectedItem.classList.remove('list-group-item-primary');
+
+            selectedItem.querySelector('input[type=checkbox]').checked = false;
+          }
+
+          setReordering(checkbox.checked);
+
+          if (checkbox.checked) {
+            selectedItem = childItem;
+
+            selectedItem.classList.add('list-group-item-primary');
+
+            selectedItem.appendChild(pageTreeActions);
+          } else {
+            selectedItem = null;
+            undoStack = [];
+            pageTreeActions.remove();
+          }
+
+          updateState();
+        });
+      });
+
+      submit.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        if (reordering) {
+          return;
+        }
+
+        if (submitting) {
+          return;
+        }
+
+        setSubmitting(true);
+
+        let index = 0;
+
+        const data = new FormData();
+
+        data.set({{ csrf_token_name|js }}, csrfToken);
+
+        parentItems.forEach((parentItem) => {
+          let parent_id = parentItem.dataset.parent;
+
+          for (let i = 0; parentItem.children.length > i; i++) {
+            const childItem = parentItem.children.item(i);
+
+            data.set(`pages[${index}][id]`, childItem.dataset.id);
+            data.set(`pages[${index}][parent_id]`, parent_id);
+            data.set(`pages[${index}][order_local]`, i);
+
+            index++;
+          }
+        });
+
+        fetch(postUrl, {
+          method: 'POST',
+          body: data,
+        })
+        .then(r => r.json())
+        .then((result) => {
+          bootstrapToast('Order updated!', 'success');
+        })
+        .catch((error) => {
+          bootstrapToast(error, 'danger');
+        })
+        .finally(() => {
+          setSubmitting(false);
+        });
+      });
     });
-  });
-
-  submit.addEventListener('click', (e) => {
-    e.preventDefault();
-
-    if (reordering) {
-      return;
-    }
-
-    if (submitting) {
-      return;
-    }
-
-    setSubmitting(true);
-
-    let index = 0;
-
-    const data = new FormData();
-
-    data.set({{ csrf_token_name|js }}, csrfToken);
-
-    parentItems.forEach((parentItem) => {
-      let parent_id = parentItem.dataset.parent;
-
-      for (let i = 0; parentItem.children.length > i; i++) {
-        const childItem = parentItem.children.item(i);
-
-        data.set(`pages[${index}][id]`, childItem.dataset.id);
-        data.set(`pages[${index}][parent_id]`, parent_id);
-        data.set(`pages[${index}][order_local]`, i);
-
-        index++;
-      }
-    });
-
-    fetch(postUrl, {
-      method: 'POST',
-      body: data,
-    })
-    .then(r => r.json())
-    .then((result) => {
-      bootstrapToast('Order updated!', 'success');
-    })
-    .catch((error) => {
-      bootstrapToast(error, 'danger');
-    })
-    .finally(() => {
-      setSubmitting(false);
-    });
-  });
-});
-</script>
+  </script>
 {% endblock %}
