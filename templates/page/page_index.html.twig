@@ -13,18 +13,17 @@
 {% set create_page_href = path('page_create') %}
 
 {% block actions %}
-  <div class="btn-group btn-group-sm">
-    {% if can_create_page %}
-      <a href="{{ create_page_href }}" class="btn btn-primary">
-        {{ bootstrap_icon('plus-lg') }} Add Page
-      </a>
-    {% endif %}
-    {% if is_granted(attributes.page.reorder, new_page) %}
-      <a href="{{ path('page_reorder') }}" class="btn btn-primary">
-        {{ bootstrap_icon('arrows-move') }} Reorder
-      </a>
-    {% endif %}
-  </div>
+  {% if can_create_page %}
+    <a href="{{ create_page_href }}" class="btn btn-primary">
+      {{ bootstrap_icon('plus-lg') }} Add Page
+    </a>
+  {% endif %}
+
+  {% if is_granted(attributes.page.reorder, new_page) %}
+    <a href="{{ path('page_reorder') }}" class="btn btn-secondary">
+      {{ bootstrap_icon('arrows-move') }} Reorder Pages
+    </a>
+  {% endif %}
 {% endblock %}
 
 {% block main %}

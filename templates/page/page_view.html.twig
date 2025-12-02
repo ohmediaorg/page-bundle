@@ -79,94 +79,15 @@
 {% endmacro %}
 
 {% block actions %}
-  <div class="btn-group btn-group-sm" role="group" aria-label="Page actions">
-    {% if page.isPublished %}
-    <a href="{{ page_path(page.path) }}" class="btn btn-outline-dark" target="_blank" rel="noopener">
-      Live Page
-    </a>
-    {% endif %}
-    <div class="btn-group btn-group-sm" role="group">
-      <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Page Actions
-      </button>
-      <ul class="dropdown-menu">
-      {% if is_granted(attributes.page.edit, page) %}
-        <li>
-          <a href="{{ path('page_edit', {id: page.id}) }}" class="dropdown-item">
-            {{ bootstrap_icon('pencil') }}
-            Edit
-          </a>
-        </li>
-      {% endif %}
-      {% if is_granted(attributes.page.navigation, page) %}
-        <li>
-          <a href="{{ path('page_navigation', {id: page.id}) }}" class="dropdown-item">
-            {{ bootstrap_icon('list') }}
-            Navigation
-          </a>
-        </li>
-      {% endif %}
-      {% if is_granted(attributes.page.seo, page) %}
-        <li>
-          <a href="{{ path('page_seo', {id: page.id}) }}" class="dropdown-item">
-            {{ bootstrap_icon('graph-up') }}
-            SEO
-          </a>
-        </li>
-      {% endif %}
-      {% if is_granted(attributes.page.homepage, page) %}
-        <li>
-        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-          {% block form_action %}{{ path('page_homepage', {id: page.id}) }}{% endblock %}
-          {% block confirm_message %}Are you sure you want to make this page the homepage?{% endblock %}
-          {% block csrf_name %}homepage_page_{{ page.id }}{% endblock %}
-          {% block button_class %}dropdown-item text-bg-success{% endblock %}
-          {% block button_html %}
-            {{ bootstrap_icon('house') }}
-            Set as Homepage
-          {% endblock %}
-        {% endembed %}
-        </li>
-      {% endif %}
-      {% if is_granted(attributes.page.publish, page) %}
-        <li>
-        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-          {% block form_action %}{{ path('page_publish', {id: page.id}) }}{% endblock %}
-          {% block confirm_message %}Are you sure you want to publish this page?{% if page.published %} This page will be published automatically on <i>{{ page.published|date('M j, Y') }}</i> at <i>{{ page.published|date('g:ia') }}</i>.{% endif %}{% endblock %}
-          {% block csrf_name %}publish_page_{{ page.id }}{% endblock %}
-          {% block button_class %}dropdown-item text-bg-success{% endblock %}
-          {% block button_html %}
-            {{ bootstrap_icon('check') }}
-            Publish
-          {% endblock %}
-        {% endembed %}
-        </li>
-      {% endif %}
-      {% if is_granted(attributes.page.unpublish, page) %}
-        <li>
-        {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-          {% block form_action %}{{ path('page_unpublish', {id: page.id}) }}{% endblock %}
-          {% block confirm_message %}Are you sure you want to unpublish this page?{% endblock %}
-          {% block csrf_name %}unpublish_page_{{ page.id }}{% endblock %}
-          {% block button_class %}dropdown-item text-bg-warning{% endblock %}
-          {% block button_html %}
-            {{ bootstrap_icon('arrow-counterclockwise') }}
-            Unpublish
-          {% endblock %}
-        {% endembed %}
-        </li>
-      {% endif %}
-      {% if is_granted(attributes.page.delete, page) %}
-        <li>
-          <a href="{{ path('page_delete', {id: page.id}) }}" class="dropdown-item text-bg-danger" data-confirm="Are you sure you want to delete this page?">
-            {{ bootstrap_icon('trash') }}
-            Delete Page
-          </a>
-        </li>
-      {% endif %}
-      </ul>
-    </div>
-  </div>
+  {% if page.isPublished %}
+  <a href="{{ page_path(page.path) }}" class="btn btn-outline-dark" target="_blank" rel="noopener">
+    Live Page
+  </a>
+  {% endif %}
+
+  {% include '@OHMediaPage/page/_page_actions_shared.html.twig' with {
+    simple: false,
+  } %}
 {% endblock %}
 
 {% block main %}

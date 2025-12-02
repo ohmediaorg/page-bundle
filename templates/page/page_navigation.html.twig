@@ -11,7 +11,9 @@
 {% endblock %}
 
 {% block actions %}
-  {% include '@OHMediaPage/page/_page_actions_shared.html.twig' %}
+  {% include '@OHMediaPage/page/_page_actions_shared.html.twig' with {
+    simple: true,
+  } %}
 {% endblock %}
 
 {% block javascripts %}
