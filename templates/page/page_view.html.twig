@@ -92,6 +92,8 @@
 {% endblock %}
 
 {% block main %}
+  <h1 class="visually-hidden">{{ page.name }} {{ preview_page_revision }}</h1>
+
   <div id="select_revision_label" class="fw-bold">Choose Revision:</div>
   <div class="dropdown d-inline-block mb-4" role="group" aria-labelledby="select_revision">
     <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
