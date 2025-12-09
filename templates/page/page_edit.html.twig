@@ -30,9 +30,13 @@
                 <span class="input-group-text">
                   {{ page.parent ? page.parent.path : '' }}/
                 </span>
-                {{ form_widget(form.slug) }}
+                {{ form_widget(form.slug, {
+                  attr: {
+                    'aria-description': 'Leave this input blank to auto-generate a value.',
+                  },
+                }) }}
               </div>
-              <p class="form-text mb-0 help-text">
+              <p class="form-text mb-0 help-text" aria-hidden="true">
                 Leave this blank to auto-generate a value.
                 {% if page.isHomepage %}
                   <br /><i><b>Note:</b> changing the path of the homepage has no effect.</i>
