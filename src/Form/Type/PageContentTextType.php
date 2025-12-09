@@ -17,7 +17,7 @@ class PageContentTextType extends AbstractType
 
         $builder
             ->add('text', TextType::class, [
-                'label' => false,
+                'label' => $options['text_label'],
                 'required' => $options['required'],
                 'data' => $content ? $content->getText() : null,
                 'attr' => $options['text_attr'],
@@ -36,6 +36,7 @@ class PageContentTextType extends AbstractType
         $resolver->setDefaults([
             'data_class' => PageContentText::class,
             'text_attr' => [],
+            'text_label' => null,
         ]);
     }
 }

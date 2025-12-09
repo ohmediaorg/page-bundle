@@ -79,6 +79,12 @@ abstract class AbstractPageTemplateType extends AbstractType
             'class' => 'fieldset-nostyle',
         ];
 
+        $options['choice_label'] = !empty($options['label'])
+            ? $options['label']
+            : $this->generateLabel($name);
+
+        $options['label'] = false;
+
         return $this->addPageContent(
             $name,
             PageContentChoiceType::class,
@@ -123,6 +129,12 @@ abstract class AbstractPageTemplateType extends AbstractType
             'class' => 'fieldset-nostyle',
         ];
 
+        $options['text_label'] = !empty($options['label'])
+            ? $options['label']
+            : $this->generateLabel($name);
+
+        $options['label'] = false;
+
         return $this->addPageContent(
             $name,
             PageContentTextType::class,
@@ -137,6 +149,12 @@ abstract class AbstractPageTemplateType extends AbstractType
             'class' => 'fieldset-nostyle',
         ];
 
+        $options['textarea_label'] = !empty($options['label'])
+            ? $options['label']
+            : $this->generateLabel($name);
+
+        $options['label'] = false;
+
         return $this->addPageContent(
             $name,
             PageContentTextareaType::class,
@@ -150,6 +168,12 @@ abstract class AbstractPageTemplateType extends AbstractType
         $options['row_attr'] = [
             'class' => 'fieldset-nostyle',
         ];
+
+        $options['wysiwyg_label'] = !empty($options['label'])
+            ? $options['label']
+            : $this->generateLabel($name);
+
+        $options['label'] = false;
 
         return $this->addPageContent(
             $name,
