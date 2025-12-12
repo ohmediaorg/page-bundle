@@ -82,6 +82,19 @@
     </a>
   {% endif %}
 
+  {% if is_granted(attributes.page.publish, page) %}
+    {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+      {% block form_action %}{{ path('page_publish', {id: page.id}) }}{% endblock %}
+      {% block confirm_message %}Are you sure you want to publish this page?{% if page.published %} This page will be published automatically on <i>{{ page.published|date('M j, Y') }}</i> at <i>{{ page.published|date('g:ia') }}</i>.{% endif %}{% endblock %}
+      {% block csrf_name %}publish_page_{{ page.id }}{% endblock %}
+      {% block button_class %}btn btn-success{% endblock %}
+      {% block button_html %}
+        {{ bootstrap_icon('check') }}
+        Publish Page
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+
   {% include '@OHMediaPage/page/_page_actions_shared.html.twig' with {
     simple: false,
   } %}
