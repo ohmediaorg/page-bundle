@@ -1,0 +1,98 @@
+{% macro page_revision_icon(page_revision, current_page_revision) %}
+  {% if page_revision.isPublished %}
+    {% if current_page_revision == page_revision %}
+    {{ bootstrap_badge_primary('Live') }}
+    {% else %}
+    {{ bootstrap_badge_success('Published') }}
+    {% endif %}
+  {% else %}
+    {{ bootstrap_badge_warning('Draft') }}
+  {% endif %}
+{% endmacro %}
+
+<div id="select_revision_label" class="fw-bold">Choose Revision:</div>
+
+<div class="d-flex flex-wrap gap-1 mb-4">
+  <div class="dropdown" role="group" aria-labelledby="select_revision_label">
+    <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      {{ _self.page_revision_icon(preview_page_revision, current_page_revision) }}
+      {{ preview_page_revision }}
+    </button>
+    <ul class="dropdown-menu">
+      {% for page_revision in page.pageRevisions %}
+        <li>
+          <a class="dropdown-item {{ page_revision == preview_page_revision ? 'disabled' : '' }}" href="{{ path('page_view', {id: page.id, revision: page_revision.id}) }}">
+            {{ _self.page_revision_icon(page_revision, current_page_revision) }}
+            {{ page_revision }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {% set show_publish = (not preview_page_revision.isPublished or current_page_revision != preview_page_revision) and is_granted(attributes.page_revision.publish, preview_page_revision) %}
+
+  {% set show_content = is_granted(attributes.page_revision.content, preview_page_revision) %}
+
+  <div class="dropdown" role="group">
+    <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Revision Actions
+    </button>
+    <ul class="dropdown-menu">
+      {% if is_granted(attributes.page_revision.template, preview_page_revision) %}
+        <li>
+          <a href="{{ path('page_revision_template', {id: preview_page_revision.id}) }}" class="dropdown-item">
+            {{ bootstrap_icon('columns') }}
+            Template
+          </a>
+        </li>
+      {% endif %}
+
+      {% if show_content %}
+        <li>
+          <a href="{{ path('page_revision_content', {id: preview_page_revision.id}) }}" class="dropdown-item">
+            {{ bootstrap_icon('layout-text-sidebar-reverse') }}
+            Content
+          </a>
+        </li>
+      {% endif %}
+
+      {% if show_publish and preview_page_revision.isPublished %}
+        <li>
+          {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+            {% block form_action %}{{ path('page_revision_publish', {id: preview_page_revision.id}) }}{% endblock %}
+            {% block confirm_message %}Are you sure you want to re-publish this revision? It will become the new live page!{% endblock %}
+            {% block csrf_name %}publish_page_revision_{{ preview_page_revision.id }}{% endblock %}
+            {% block button_class %}dropdown-item text-bg-success{% endblock %}
+            {% block button_html %}
+              {{ bootstrap_icon('check') }}
+              Re-Publish
+            {% endblock %}
+          {% endembed %}
+        </li>
+      {% endif %}
+
+      {% if is_granted(attributes.page_revision.delete, preview_page_revision) %}
+        <li>
+          <a href="{{ path('page_revision_delete', {id: preview_page_revision.id}) }}" class="dropdown-item text-bg-danger" data-confirm="Are you sure you want to delete this revision?">
+            {{ bootstrap_icon('trash') }}
+            Delete
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+
+  {% if show_publish and not preview_page_revision.isPublished %}
+    {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+      {% block form_action %}{{ path('page_revision_publish', {id: preview_page_revision.id}) }}{% endblock %}
+      {% block confirm_message %}Are you sure you want to publish this revision? It will become the new live page!{% endblock %}
+      {% block csrf_name %}publish_page_revision_{{ preview_page_revision.id }}{% endblock %}
+      {% block button_class %}btn btn-success btn-sm{% endblock %}
+      {% block button_html %}
+        {{ bootstrap_icon('check') }}
+        Publish Revision
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+</div>
