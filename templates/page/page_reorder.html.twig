@@ -18,14 +18,17 @@
         <input type="checkbox" class="form-check-input" id="page-tree-checkbox-{{ page.id }}" />
         <label class="form-check-label" for="page-tree-checkbox-{{ page.id }}">
           {{ page.name }}
+
           {% if page.isHidden %}
-          {{ bootstrap_icon('eye-slash') }}
+            {{ bootstrap_icon('eye-slash') }}
           {% endif %}
+
           {% if page.isLocked %}
-          {{ bootstrap_icon('lock') }}
+            {{ bootstrap_icon('lock') }}
           {% endif %}
+
           {% if page.isNewWindow %}
-          {{ bootstrap_icon('box-arrow-up-right') }}
+            {{ bootstrap_icon('box-arrow-up-right') }}
           {% endif %}
         </label>
       </div>

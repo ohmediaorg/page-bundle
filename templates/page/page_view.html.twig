@@ -10,41 +10,37 @@
       </li>
       <li class="breadcrumb-item active" aria-current="page">
         {% if page.isHomepage %}
-        <span class="badge text-bg-dark" title="Homepage">
-          {{ bootstrap_icon('house') }}
-          <span class="visually-hidden">Homepage</span>
-        </span>
+          <span class="badge text-bg-dark" title="Homepage" aria-label="This is the homepage.">
+            {{ bootstrap_icon('house') }}
+          </span>
         {% endif %}
 
         {% if page.isPublished %}
-        <span class="badge text-bg-success" title="Published">
-          {{ page.name }}
-        </span>
+          <span class="badge text-bg-success" title="Published">
+            {{ page.name }}
+          </span>
         {% else %}
-        <span class="badge text-bg-warning" title="Draft">
-          {{ page.name }}
-        </span>
+          <span class="badge text-bg-warning" title="Draft">
+            {{ page.name }}
+          </span>
         {% endif %}
 
         {% if page.isHidden %}
-        <span class="badge text-bg-dark" title="Hidden">
-          {{ bootstrap_icon('eye-slash') }}
-          <span class="visually-hidden">Hidden</span>
-        </span>
+          <span class="badge text-bg-dark" title="Hidden" aria-label="This page is hidden from navigation.">
+            {{ bootstrap_icon('eye-slash') }}
+          </span>
         {% endif %}
 
         {% if page.isLocked %}
-        <span class="badge text-bg-dark" title="Locked">
-          {{ bootstrap_icon('lock') }}
-          <span class="visually-hidden">Locked</span>
-        </span>
+          <span class="badge text-bg-dark" title="Login Required" aria-label="This page requires login.">
+            {{ bootstrap_icon('lock') }}
+          </span>
         {% endif %}
 
         {% if page.isNewWindow %}
-        <span class="badge text-bg-dark" title="New Window">
-          {{ bootstrap_icon('box-arrow-up-right') }}
-          <span class="visually-hidden">New Window</span>
-        </span>
+          <span class="badge text-bg-dark" title="New Window" aria-label="This page opens in a new window from navigation.">
+            {{ bootstrap_icon('box-arrow-up-right') }}
+          </span>
         {% endif %}
       </li>
     </ol>

@@ -117,9 +117,8 @@
     </td>
     <td>
       {% if page.isHomepage %}
-        <span class="badge text-bg-dark" title="Homepage">
+        <span class="badge text-bg-dark" title="Homepage" aria-label="This is the homepage.">
           {{ bootstrap_icon('house') }}
-          <span class="visually-hidden">Homepage</span>
         </span>
       {% endif %}
 
@@ -130,23 +129,20 @@
       {% endif %}
 
       {% if page.isHidden %}
-        <span class="badge text-bg-dark" title="Hidden">
+        <span class="badge text-bg-dark" title="Hidden" aria-label="This page is hidden from navigation.">
           {{ bootstrap_icon('eye-slash') }}
-          <span class="visually-hidden">Hidden</span>
         </span>
       {% endif %}
 
       {% if page.isLocked %}
-        <span class="badge text-bg-dark" title="Login Required">
+        <span class="badge text-bg-dark" title="Login Required" aria-label="This page requires login.">
           {{ bootstrap_icon('lock') }}
-          <span class="visually-hidden">Login Required</span>
         </span>
       {% endif %}
 
       {% if page.isNewWindow %}
-        <span class="badge text-bg-dark" title="New Window">
+        <span class="badge text-bg-dark" title="New Window" aria-label="This page opens in a new window from navigation.">
           {{ bootstrap_icon('box-arrow-up-right') }}
-          <span class="visually-hidden">New Window</span>
         </span>
       {% endif %}
     </td>
