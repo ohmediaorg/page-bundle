@@ -39,20 +39,20 @@
       Revision Actions
     </button>
     <ul class="dropdown-menu">
-      {% if is_granted(attributes.page_revision.template, preview_page_revision) %}
-        <li>
-          <a href="{{ path('page_revision_template', {id: preview_page_revision.id}) }}" class="dropdown-item">
-            {{ bootstrap_icon('columns') }}
-            Template
-          </a>
-        </li>
-      {% endif %}
-
       {% if show_content %}
         <li>
           <a href="{{ path('page_revision_content', {id: preview_page_revision.id}) }}" class="dropdown-item">
             {{ bootstrap_icon('layout-text-sidebar-reverse') }}
-            Content
+            Edit Content
+          </a>
+        </li>
+      {% endif %}
+
+      {% if is_granted(attributes.page_revision.template, preview_page_revision) %}
+        <li>
+          <a href="{{ path('page_revision_template', {id: preview_page_revision.id}) }}" class="dropdown-item">
+            {{ bootstrap_icon('columns') }}
+            Change Template
           </a>
         </li>
       {% endif %}
