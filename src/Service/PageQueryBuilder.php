@@ -5,6 +5,7 @@ namespace OHMedia\PageBundle\Service;
 use Doctrine\ORM\QueryBuilder;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
+use OHMedia\TimezoneBundle\Util\DateTimeUtil;
 
 class PageQueryBuilder
 {
@@ -125,13 +126,13 @@ class PageQueryBuilder
         if ($this->published) {
             $this->queryBuilder
                 ->andWhere("$field IS NOT NULL")
-                ->andWhere("$field >= :publishedSince")
-                ->setParameter('publishedSince', new \DateTime())
+                ->andWhere("$field <= :now")
+                ->setParameter('now', DateTimeUtil::getDateTimeUtc())
             ;
         } else {
             $this->queryBuilder
-                ->andWhere("($field IS NULL OR $field < :publishedSince)")
-                ->setParameter('publishedSince', new \DateTime())
+                ->andWhere("($field IS NULL OR $field > :now)")
+                ->setParameter('now', DateTimeUtil::getDateTimeUtc())
             ;
         }
     }

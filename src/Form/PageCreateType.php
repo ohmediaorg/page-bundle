@@ -24,6 +24,9 @@ class PageCreateType extends AbstractType
                 'required' => false,
                 'help' => 'Leave this blank to auto-generate based on the Name.',
                 'empty_data' => '',
+                'attr' => [
+                    'aria-label' => 'Page Slug',
+                ],
             ])
             ->add('parent', EntityType::class, [
                 'label' => 'Parent Page',
@@ -40,6 +43,7 @@ class PageCreateType extends AbstractType
                     ->orderBy('p.order_global', 'ASC'),
                 'attr' => [
                     'style' => 'direction:rtl',
+                    'aria-label' => 'Parent Page',
                 ],
             ])
         ;

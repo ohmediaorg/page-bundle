@@ -10,41 +10,37 @@
       </li>
       <li class="breadcrumb-item active" aria-current="page">
         {% if page.isHomepage %}
-        <span class="badge text-bg-dark" title="Homepage">
-          {{ bootstrap_icon('house') }}
-          <span class="visually-hidden">Homepage</span>
-        </span>
+          <span class="badge text-bg-dark" title="Homepage" aria-label="This is the homepage.">
+            {{ bootstrap_icon('house') }}
+          </span>
         {% endif %}
 
         {% if page.isPublished %}
-        <span class="badge text-bg-success" title="Published">
-          {{ page.name }}
-        </span>
+          <span class="badge text-bg-success" title="Published">
+            {{ page.name }}
+          </span>
         {% else %}
-        <span class="badge text-bg-warning" title="Draft">
-          {{ page.name }}
-        </span>
+          <span class="badge text-bg-warning" title="Draft">
+            {{ page.name }}
+          </span>
         {% endif %}
 
         {% if page.isHidden %}
-        <span class="badge text-bg-dark" title="Hidden">
-          {{ bootstrap_icon('eye-slash') }}
-          <span class="visually-hidden">Hidden</span>
-        </span>
+          <span class="badge text-bg-dark" title="Hidden" aria-label="This page is hidden from navigation.">
+            {{ bootstrap_icon('eye-slash') }}
+          </span>
         {% endif %}
 
         {% if page.isLocked %}
-        <span class="badge text-bg-dark" title="Locked">
-          {{ bootstrap_icon('lock') }}
-          <span class="visually-hidden">Locked</span>
-        </span>
+          <span class="badge text-bg-dark" title="Login Required" aria-label="This page requires login.">
+            {{ bootstrap_icon('lock') }}
+          </span>
         {% endif %}
 
         {% if page.isNewWindow %}
-        <span class="badge text-bg-dark" title="New Window">
-          {{ bootstrap_icon('box-arrow-up-right') }}
-          <span class="visually-hidden">New Window</span>
-        </span>
+          <span class="badge text-bg-dark" title="New Window" aria-label="This page opens in a new window from navigation.">
+            {{ bootstrap_icon('box-arrow-up-right') }}
+          </span>
         {% endif %}
       </li>
     </ol>
@@ -66,18 +62,6 @@
   {% set preview_page_revision = current_page_revision %}
 {% endif %}
 
-{% macro page_revision_icon(page_revision, current_page_revision) %}
-  {% if page_revision.isPublished %}
-    {% if current_page_revision == page_revision %}
-    {{ bootstrap_badge_primary('Live') }}
-    {% else %}
-    {{ bootstrap_badge_success('Published') }}
-    {% endif %}
-  {% else %}
-    {{ bootstrap_badge_warning('Draft') }}
-  {% endif %}
-{% endmacro %}
-
 {% block actions %}
   {% if page.isPublished %}
     <a href="{{ page_path(page.path) }}" class="btn btn-outline-dark" target="_blank" rel="noopener" data-bypass>
@@ -86,82 +70,28 @@
     </a>
   {% endif %}
 
+  {% if is_granted(attributes.page.publish, page) %}
+    {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
+      {% block form_action %}{{ path('page_publish', {id: page.id}) }}{% endblock %}
+      {% block confirm_message %}Are you sure you want to publish this page?{% if page.published %} This page will be published automatically on <i>{{ page.published|date('M j, Y') }}</i> at <i>{{ page.published|date('g:ia') }}</i>.{% endif %}{% endblock %}
+      {% block csrf_name %}publish_page_{{ page.id }}{% endblock %}
+      {% block button_class %}btn btn-success{% endblock %}
+      {% block button_html %}
+        {{ bootstrap_icon('check') }}
+        Publish Page
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+
   {% include '@OHMediaPage/page/_page_actions_shared.html.twig' with {
     simple: false,
   } %}
 {% endblock %}
 
 {% block main %}
-  <div id="select_revision_label" class="fw-bold">Choose Revision:</div>
-  <div class="dropdown d-inline-block mb-4" role="group" aria-labelledby="select_revision">
-    <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      {{ _self.page_revision_icon(preview_page_revision, current_page_revision) }}
-      {{ preview_page_revision }}
-    </button>
-    <ul class="dropdown-menu">
-      {% for page_revision in page.pageRevisions %}
-        <li>
-          <a class="dropdown-item {{ page_revision == preview_page_revision ? 'disabled' : '' }}" href="{{ path('page_view', {id: page.id, revision: page_revision.id}) }}">
-            {{ _self.page_revision_icon(page_revision, current_page_revision) }}
-            {{ page_revision }}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
-  </div>
+  <h1 class="visually-hidden">{{ page.name }} {{ preview_page_revision }}</h1>
 
-  {% set show_publish = (not preview_page_revision.isPublished or current_page_revision != preview_page_revision) and is_granted(attributes.page_revision.publish, preview_page_revision) %}
-
-  {% set show_content = is_granted(attributes.page_revision.content, preview_page_revision) %}
-
-  <div class="dropdown d-inline-block mb-4" role="group">
-    <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      Revision Actions
-    </button>
-    <ul class="dropdown-menu">
-      {% if is_granted(attributes.page_revision.template, preview_page_revision) %}
-        <li>
-          <a href="{{ path('page_revision_template', {id: preview_page_revision.id}) }}" class="dropdown-item">
-            {{ bootstrap_icon('columns') }}
-            Template
-          </a>
-        </li>
-      {% endif %}
-
-      {% if show_content %}
-        <li>
-          <a href="{{ path('page_revision_content', {id: preview_page_revision.id}) }}" class="dropdown-item">
-            {{ bootstrap_icon('layout-text-sidebar-reverse') }}
-            Content
-          </a>
-        </li>
-      {% endif %}
-
-      {% if show_publish %}
-        <li>
-          {% embed '@OHMediaBackend/embed/form_post_confirm.html.twig' %}
-            {% block form_action %}{{ path('page_revision_publish', {id: preview_page_revision.id}) }}{% endblock %}
-            {% block confirm_message %}Are you sure you want to publish this revision? It will become the new live page!{% endblock %}
-            {% block csrf_name %}publish_page_revision_{{ preview_page_revision.id }}{% endblock %}
-            {% block button_class %}dropdown-item text-bg-success{% endblock %}
-            {% block button_html %}
-              {{ bootstrap_icon('check') }}
-              {{ preview_page_revision.isPublished ? 'Re-Publish' : 'Publish' }}
-            {% endblock %}
-          {% endembed %}
-        </li>
-      {% endif %}
-
-      {% if is_granted(attributes.page_revision.delete, preview_page_revision) %}
-        <li>
-          <a href="{{ path('page_revision_delete', {id: preview_page_revision.id}) }}" class="dropdown-item text-bg-danger" data-confirm="Are you sure you want to delete this revision?">
-            {{ bootstrap_icon('trash') }}
-            Delete
-          </a>
-        </li>
-      {% endif %}
-    </ul>
-  </div>
+  {% include '@OHMediaPage/page/_page_revision_actions.html.twig' %}
 
   <style>
     iframe {

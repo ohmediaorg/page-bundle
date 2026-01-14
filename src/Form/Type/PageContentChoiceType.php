@@ -17,7 +17,7 @@ class PageContentChoiceType extends AbstractType
 
         $builder
             ->add('text', ChoiceType::class, [
-                'label' => false,
+                'label' => $options['choice_label'],
                 'required' => $options['required'],
                 'data' => $content ? $content->getText() : null,
                 'attr' => $options['choice_attr'],
@@ -43,6 +43,7 @@ class PageContentChoiceType extends AbstractType
             'choice_attr' => [],
             'choice_choices' => [],
             'choice_expanded' => false,
+            'choice_label' => null,
         ]);
     }
 }

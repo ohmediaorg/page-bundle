@@ -46,6 +46,9 @@ class PageEditType extends AbstractType
                 'required' => false,
                 'help' => 'Leave this blank to auto-generate based on the Name.',
                 'empty_data' => '',
+                'attr' => [
+                    'aria-label' => 'Page Slug',
+                ],
             ])
             ->add('locked', CheckboxType::class, [
                 'required' => false,

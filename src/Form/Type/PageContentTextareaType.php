@@ -17,7 +17,7 @@ class PageContentTextareaType extends AbstractType
 
         $builder
             ->add('text', TextareaType::class, [
-                'label' => false,
+                'label' => $options['textarea_label'],
                 'required' => $options['required'],
                 'data' => $content ? $content->getText() : null,
                 'attr' => $options['textarea_attr'],
@@ -36,6 +36,7 @@ class PageContentTextareaType extends AbstractType
         $resolver->setDefaults([
             'data_class' => PageContentText::class,
             'textarea_attr' => [],
+            'textarea_label' => null,
         ]);
     }
 }
