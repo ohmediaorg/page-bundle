@@ -14,7 +14,7 @@ class PageNavItemProvider extends AbstractNavItemProvider
     {
         if ($this->isGranted(PageVoter::INDEX, new Page())) {
             return (new NavLink('Pages', 'page_index'))
-                ->setIcon('files');
+                ->setIcon('window-stack');
         }
 
         return null;

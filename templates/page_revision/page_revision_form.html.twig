@@ -5,12 +5,12 @@
 {% set page = page_revision.page %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('files') ~ ' Pages', 'page_index'),
-  bootstrap_breadcrumb(page.name ~ ' - ' ~ page_revision, 'page_view', {
-    id: page.id,
-    revision: page_revision.id,
-  }),
-  bootstrap_breadcrumb('Template'),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('window-stack') ~ ' Pages', 'page_index'),
+    bootstrap_breadcrumb(page.name ~ ' - ' ~ page_revision, 'page_view', {
+      id: page.id,
+      revision: page_revision.id,
+    }),
+    bootstrap_breadcrumb('Template'),
+  ) }}
 {% endblock %}

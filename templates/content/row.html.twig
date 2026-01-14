@@ -5,15 +5,15 @@
     </div>
 
     {% if content.layoutHasTwoColumns %}
-    <div class="page-content__col page-content__col--2">
-      {{ wysiwyg(content.column2, allowed_tags, allow_shortcodes) }}
-    </div>
+      <div class="page-content__col page-content__col--2">
+        {{ wysiwyg(content.column2, allowed_tags, allow_shortcodes) }}
+      </div>
     {% endif %}
 
     {% if content.layoutHasThreeColumns %}
-    <div class="page-content__col page-content__col--3">
-      {{ wysiwyg(content.column3, allowed_tags, allow_shortcodes) }}
-    </div>
+      <div class="page-content__col page-content__col--3">
+        {{ wysiwyg(content.column3, allowed_tags, allow_shortcodes) }}
+      </div>
     {% endif %}
   {% endif %}
 </div>

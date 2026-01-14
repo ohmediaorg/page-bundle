@@ -4,35 +4,37 @@
 
 {% block breadcrumbs %}
   {{ bootstrap_breadcrumbs(
-    bootstrap_breadcrumb(bootstrap_icon('files') ~ ' Pages', 'page_index'),
+    bootstrap_breadcrumb(bootstrap_icon('window-stack') ~ ' Pages', 'page_index'),
     bootstrap_breadcrumb(page.name, 'page_view', {id: page.id}),
     bootstrap_breadcrumb('SEO'),
   ) }}
 {% endblock %}
 
 {% block actions %}
-{% include '@OHMediaPage/page/_page_actions_shared.html.twig' %}
+  {% include '@OHMediaPage/page/_page_actions_shared.html.twig' with {
+    simple: true,
+  } %}
 {% endblock %}
 
 {% block main %}
-<div class="card">
-  <div class="card-body">
-    <h1 class="card-title">{{ form_title }}</h1>
+  <div class="card">
+    <div class="card-body">
+      <h1 class="card-title">{{ form_title }}</h1>
 
-    {% set form_meta %}
-      {{ form_row(form.meta) }}
-    {% endset %}
+      {% set form_meta %}
+        {{ form_row(form.meta) }}
+      {% endset %}
 
-    {{ form_start(form) }}
-    <div class="row">
-      <div class="col-md-6">
-        {{ form_rest(form) }}
+      {{ form_start(form) }}
+      <div class="row">
+        <div class="col-md-6">
+          {{ form_rest(form) }}
+        </div>
+        <div class="col-md-6">
+          {{ form_meta|raw }}
+        </div>
       </div>
-      <div class="col-md-6">
-        {{ form_meta|raw }}
-      </div>
+      {{ form_end(form) }}
     </div>
-    {{ form_end(form) }}
   </div>
-</div>
 {% endblock %}

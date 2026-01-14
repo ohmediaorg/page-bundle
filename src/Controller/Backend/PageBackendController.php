@@ -3,6 +3,7 @@
 namespace OHMedia\PageBundle\Controller\Backend;
 
 use Doctrine\ORM\QueryBuilder;
+use OHMedia\BackendBundle\Form\MultiSaveType;
 use OHMedia\BackendBundle\Routing\Attribute\Admin;
 use OHMedia\BootstrapBundle\Service\Paginator;
 use OHMedia\MetaBundle\Entity\Meta;
@@ -22,8 +23,8 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -73,8 +74,9 @@ class PageBackendController extends AbstractController
 
         $formBuilder->setMethod('GET');
 
-        $formBuilder->add('search', TextType::class, [
+        $formBuilder->add('search', SearchType::class, [
             'required' => false,
+            'label' => 'Name, path',
         ]);
 
         $formBuilder->add('status', ChoiceType::class, [
@@ -101,6 +103,7 @@ class PageBackendController extends AbstractController
             $searchFields = [
                 'p.name',
                 'p.slug',
+                'p.path',
             ];
 
             $searchLikes = [];
@@ -212,7 +215,9 @@ class PageBackendController extends AbstractController
 
         $form = $this->createForm(PageCreateType::class, $page);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', SubmitType::class, [
+            'label' => 'Save and Choose Template',
+        ]);
 
         $form->handleRequest($request);
 
@@ -289,7 +294,9 @@ class PageBackendController extends AbstractController
 
         $form = $this->createForm(PageEditType::class, $page);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class, [
+            'add_another' => false,
+        ]);
 
         $form->handleRequest($request);
 
@@ -301,9 +308,7 @@ class PageBackendController extends AbstractController
 
                 $this->addFlash('notice', 'Changes to the page were saved successfully.');
 
-                return $this->redirectToRoute('page_edit', [
-                    'id' => $page->getId(),
-                ]);
+                return $this->redirectForm($page, $form, 'page_edit');
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -330,7 +335,9 @@ class PageBackendController extends AbstractController
 
         $form = $this->createForm(PageNavigationType::class, $page);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class, [
+            'add_another' => false,
+        ]);
 
         $form->handleRequest($request);
 
@@ -340,9 +347,7 @@ class PageBackendController extends AbstractController
 
                 $this->addFlash('notice', 'The page navigation was updated successfully.');
 
-                return $this->redirectToRoute('page_navigation', [
-                    'id' => $page->getId(),
-                ]);
+                return $this->redirectForm($page, $form, 'page_navigation');
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -369,7 +374,9 @@ class PageBackendController extends AbstractController
 
         $form = $this->createForm(PageSEOType::class, $page);
 
-        $form->add('save', SubmitType::class);
+        $form->add('save', MultiSaveType::class, [
+            'add_another' => false,
+        ]);
 
         $form->handleRequest($request);
 
@@ -379,9 +386,7 @@ class PageBackendController extends AbstractController
 
                 $this->addFlash('notice', 'The page SEO was updated successfully.');
 
-                return $this->redirectToRoute('page_seo', [
-                    'id' => $page->getId(),
-                ]);
+                return $this->redirectForm($page, $form, 'page_seo');
             }
 
             $this->addFlash('error', 'There are some errors in the form below.');
@@ -393,6 +398,21 @@ class PageBackendController extends AbstractController
             'form_title' => 'Page SEO',
             'attributes' => $this->getAttributes(),
         ]);
+    }
+
+    private function redirectForm(Page $page, FormInterface $form, string $currentRoute): Response
+    {
+        $clickedButtonName = $form->getClickedButton()->getName() ?? null;
+
+        if ('keep_editing' === $clickedButtonName) {
+            return $this->redirectToRoute($currentRoute, [
+                'id' => $page->getId(),
+            ]);
+        } else {
+            return $this->redirectToRoute('page_view', [
+                'id' => $page->getId(),
+            ]);
+        }
     }
 
     private function setPageSlug(Page $page): void

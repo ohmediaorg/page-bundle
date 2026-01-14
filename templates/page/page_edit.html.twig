@@ -4,51 +4,53 @@
 
 {% block breadcrumbs %}
   {{ bootstrap_breadcrumbs(
-    bootstrap_breadcrumb(bootstrap_icon('files') ~ ' Pages', 'page_index'),
+    bootstrap_breadcrumb(bootstrap_icon('window-stack') ~ ' Pages', 'page_index'),
     bootstrap_breadcrumb(page.name, 'page_view', {id: page.id}),
     bootstrap_breadcrumb('Edit'),
   ) }}
 {% endblock %}
 
 {% block actions %}
-{% include '@OHMediaPage/page/_page_actions_shared.html.twig' %}
+  {% include '@OHMediaPage/page/_page_actions_shared.html.twig' with {
+    simple: true,
+  } %}
 {% endblock %}
 
 {% block main %}
-<div class="row">
-  <div class="col-xl-8">
-    <div class="card">
-      <div class="card-body">
-        <h1 class="card-title">{{ form_title }}</h1>
+  <div class="row">
+    <div class="col-xl-8">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="card-title">{{ form_title }}</h1>
 
-        {% set form_path %}
-          <div class="mb-3">
-            <label class="form-label">Path</label>
-            <div class="input-group">
-              <span class="input-group-text">
-                {{ page.parent ? page.parent.path : '' }}/
-              </span>
-              {{ form_widget(form.slug) }}
+          {% set form_path %}
+            <div class="mb-3">
+              <label class="form-label">Path</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  {{ page.parent ? page.parent.path : '' }}/
+                </span>
+                {{ form_widget(form.slug) }}
+              </div>
+              <p class="form-text mb-0 help-text">
+                Leave this blank to auto-generate a value.
+                {% if page.isHomepage %}
+                  <br /><i><b>Note:</b> changing the path of the homepage has no effect.</i>
+                {% endif %}
+              </p>
+              {{ form_errors(form.slug) }}
             </div>
-            <p class="form-text mb-0 help-text">
-              Leave this blank to auto-generate a value.
-              {% if page.isHomepage %}
-              <br /><i><b>Note:</b> changing the slug of the homepage has no effect.</i>
-              {% endif %}
-            </p>
-            {{ form_errors(form.slug) }}
-          </div>
-        {% endset %}
+          {% endset %}
 
-        {{ form_start(form) }}
-          {{ form_row(form.name) }}
-          {{ form_path|raw }}
-          {{ form_rest(form) }}
-        {{ form_end(form) }}
+          {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            {{ form_path|raw }}
+            {{ form_rest(form) }}
+          {{ form_end(form) }}
+        </div>
       </div>
     </div>
   </div>
-</div>
 {% endblock %}
 
 {% block javascripts %}

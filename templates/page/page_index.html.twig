@@ -3,9 +3,9 @@
 {% block meta_title %}Pages{% endblock %}
 
 {% block breadcrumbs %}
-{{ bootstrap_breadcrumbs(
-  bootstrap_breadcrumb(bootstrap_icon('files') ~ ' Pages', 'page_index'),
-) }}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('window-stack') ~ ' Pages', 'page_index'),
+  ) }}
 {% endblock %}
 
 {% set can_create_page = is_granted(attributes.page.create, new_page) %}
@@ -13,158 +13,164 @@
 {% set create_page_href = path('page_create') %}
 
 {% block actions %}
-<div class="btn-group btn-group-sm">
-{% if can_create_page %}
-  <a href="{{ create_page_href }}" class="btn btn-primary">
-    {{ bootstrap_icon('plus') }} Add Page
-  </a>
-{% endif %}
-{% if is_granted(attributes.page.reorder, new_page) %}
-  <a href="{{ path('page_reorder') }}" class="btn btn-primary">
-    {{ bootstrap_icon('arrows-move') }} Reorder
-  </a>
-{% endif %}
-</div>
+  {% if can_create_page %}
+    <a href="{{ create_page_href }}" class="btn btn-primary">
+      {{ bootstrap_icon('plus-lg') }} Add Page
+    </a>
+  {% endif %}
+
+  {% if is_granted(attributes.page.reorder, new_page) %}
+    <a href="{{ path('page_reorder') }}" class="btn btn-secondary">
+      {{ bootstrap_icon('arrows-move') }} Reorder Pages
+    </a>
+  {% endif %}
 {% endblock %}
 
 {% block main %}
-<div class="card">
-  <div class="card-body">
-    <div class="card-title card-title-with-count">
-      <h1 class="card-title-heading">Pages</h1>
-      <div class="card-title-count">
-        {{ bootstrap_badge_primary(pagination.count) }}
-      </div>
-    </div>
-
-    {{ form_start(search_form) }}
-      <div class="row align-items-end">
-        <div class="col-lg-4 col-sm-6">
-          {{ form_row(search_form.search) }}
-        </div>
-        <div class="col-lg-4 col-sm-6">
-          {{ form_row(search_form.status) }}
-        </div>
-        <div class="col-lg-12 col-sm-6">
-          <button class="btn btn-primary mb-3" type="submit">Search</button>
-          <a class="btn btn-dark mb-3" href="{{ path('page_index') }}">Reset</a>
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title card-title-with-count">
+        <h1 class="card-title-heading">Pages</h1>
+        <div class="card-title-count">
+          {{ bootstrap_badge_primary(pagination.count) }}
         </div>
       </div>
-    {{ form_end(search_form) }}
 
-    {% if pagination.count %}
-      {% set has_page_user_types = has_page_user_types() %}
+      {{ form_start(search_form) }}
+        <div class="row align-items-end">
+          <div class="col-lg-6 col-sm-6">
+            {{ form_row(search_form.search) }}
+          </div>
+          <div class="col-lg-6 col-sm-6">
+            {{ form_row(search_form.status) }}
+          </div>
+          <div class="col-lg-12 col-sm-6">
+            <button class="btn btn-outline-dark mb-3" type="submit">Search</button>
+            <a class="btn btn-secondary mb-3" href="{{ path('page_index') }}">Reset</a>
+          </div>
+        </div>
+      {{ form_end(search_form) }}
 
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Status</th>
-            <th>Template</th>
-            <th>Shortcode</th>
-            {% if has_page_user_types %}
-              <th>User Types</th>
-            {% endif %}
-            <th>Last Updated</th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for page in pagination.results %}
-            {% set path_parts = page.path|split('/') %}
+      {% if pagination.count %}
+        {% set has_page_user_types = has_page_user_types() %}
 
+        <table class="table table-striped">
+          <thead>
             <tr>
-              <td>
-                {{ page.name }}
-                <br />
-                <div class="badge text-bg-light text-start">
-                  {% for part in path_parts %}
-                    <div style="padding-left:{{ loop.index0 * 0.5 }}em">/{{ part }}</div>
-                  {% endfor %}
-                </div>
-              </td>
-              <td>
-                {% if page.isHomepage %}
-                <span class="badge text-bg-dark" title="Homepage">
-                  {{ bootstrap_icon('house-fill') }}
-                  <span class="visually-hidden">Homepage</span>
-                </span>
-                {% endif %}
-
-                {% if page.isPublished %}
-                {{ bootstrap_badge_success('Published') }}
-                {% else %}
-                {{ bootstrap_badge_warning('Draft') }}
-                {% endif %}
-
-                {% if page.isHidden %}
-                <span class="badge text-bg-dark" title="Hidden">
-                  {{ bootstrap_icon('eye-slash-fill') }}
-                  <span class="visually-hidden">Hidden</span>
-                </span>
-                {% endif %}
-
-                {% if page.isLocked %}
-                <span class="badge text-bg-dark" title="Login Required">
-                  {{ bootstrap_icon('lock-fill') }}
-                  <span class="visually-hidden">Login Required</span>
-                </span>
-                {% endif %}
-
-                {% if page.isNewWindow %}
-                <span class="badge text-bg-dark" title="New Window">
-                  {{ bootstrap_icon('box-arrow-up-right') }}
-                  <span class="visually-hidden">New Window</span>
-                </span>
-                {% endif %}
-              </td>
-              <td>{{ page.getTemplateName }}</td>
-              <td>{{ shortcode('page_href('~page.id~')') }}</td>
+              <th>Name</th>
+              <th>Status</th>
+              <th>Template</th>
+              <th>Shortcode</th>
               {% if has_page_user_types %}
-                <td>
-                  {% if page.locked %}
-                    {% if page.lockedUserTypes %}
-                      {% for user_type in page.lockedUserTypes %}
-                        {% set readable_user_type = page_user_type(user_type) %}
-                        {% if readable_user_type %}
-                          {{ bootstrap_badge_secondary(readable_user_type) }}
-                        {% endif %}
-                      {% endfor %}
-                    {% endif %}
-                  {% endif %}
-                </td>
+                <th>User Types</th>
               {% endif %}
-              <td>{{ page.updatedAt|datetime }}</td>
-              <td>
-                {% if is_granted(attributes.page.view, page) %}
-                <a href="{{ path('page_view', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="View">
-                  {{ bootstrap_icon('eye') }}
-                  <span class="visually-hidden">View</span>
-                </a>
-                {% endif %}
-                {% if is_granted(attributes.page.edit, page) %}
-                <a href="{{ path('page_edit', {id: page.id}) }}" class="btn btn-sm btn-primary btn-action" title="Edit">
-                  <i class="bi-pencil"></i>
-                  <span class="visually-hidden">Edit</span>
-                </a>
-                {% endif %}
-              </td>
+              <th>Last Updated</th>
+              <th>&nbsp;</th>
             </tr>
-          {% endfor %}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="100%">A page is considered {{ bootstrap_badge_success('Published') }} if both the page itself and at least one of its revisions are published.</td>
-          </tr>
-        </tfoot>
-      </table>
+          </thead>
+          <tbody>
+            {% for page in pagination.results %}
+              {{ _self.table_row(page, attributes, has_page_user_types) }}
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="100%">A page is considered {{ bootstrap_badge_success('Published') }} if both the page itself and at least one of its revisions are published.</td>
+            </tr>
+          </tfoot>
+        </table>
 
-      {{ bootstrap_pagination(pagination) }}
+        {{ bootstrap_pagination(pagination) }}
 
-      <small>{{ bootstrap_pagination_info(pagination) }}</small>
-    {% else %}
-      <p>No pages found.</p>
-    {% endif %}
+        <small>{{ bootstrap_pagination_info(pagination) }}</small>
+      {% else %}
+        <p>No pages found.</p>
+      {% endif %}
+    </div>
   </div>
-</div>
 {% endblock %}
+
+{% macro table_row(page, attributes, has_page_user_types) %}
+  {% set path_parts = page.path|split('/') %}
+
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.page.view, page) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'page_view',
+      route_params: {id: page.id},
+      icon: 'eye',
+      color: 'outline-dark',
+      text: 'View Page',
+    }]) %}
+  {% endif %}
+
+  <tr>
+    <td>
+      {{ page.name }}
+      <br />
+      <div class="badge text-bg-light text-start">
+        {% for part in path_parts %}
+          <div style="padding-left:{{ loop.index0 * 0.5 }}em">/{{ part }}</div>
+        {% endfor %}
+      </div>
+    </td>
+    <td>
+      {% if page.isHomepage %}
+        <span class="badge text-bg-dark" title="Homepage">
+          {{ bootstrap_icon('house') }}
+          <span class="visually-hidden">Homepage</span>
+        </span>
+      {% endif %}
+
+      {% if page.isPublished %}
+        {{ bootstrap_badge_success('Published') }}
+      {% else %}
+        {{ bootstrap_badge_warning('Draft') }}
+      {% endif %}
+
+      {% if page.isHidden %}
+        <span class="badge text-bg-dark" title="Hidden">
+          {{ bootstrap_icon('eye-slash') }}
+          <span class="visually-hidden">Hidden</span>
+        </span>
+      {% endif %}
+
+      {% if page.isLocked %}
+        <span class="badge text-bg-dark" title="Login Required">
+          {{ bootstrap_icon('lock') }}
+          <span class="visually-hidden">Login Required</span>
+        </span>
+      {% endif %}
+
+      {% if page.isNewWindow %}
+        <span class="badge text-bg-dark" title="New Window">
+          {{ bootstrap_icon('box-arrow-up-right') }}
+          <span class="visually-hidden">New Window</span>
+        </span>
+      {% endif %}
+    </td>
+    <td>{{ page.getTemplateName }}</td>
+    <td>{{ shortcode('page_href('~page.id~')') }}</td>
+    {% if has_page_user_types %}
+      <td>
+        {% if page.locked %}
+          {% if page.lockedUserTypes %}
+            {% for user_type in page.lockedUserTypes %}
+              {% set readable_user_type = page_user_type(user_type) %}
+              {% if readable_user_type %}
+                {{ bootstrap_badge_secondary(readable_user_type) }}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endif %}
+      </td>
+    {% endif %}
+    <td>{{ page.updatedAt|datetime }}</td>
+    <td>
+      {% include '@OHMediaBackend/widget/row_actions.html.twig' with {
+        row_actions: row_actions,
+      } only %}
+    </td>
+  </tr>
+{% endmacro %}
