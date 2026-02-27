@@ -99,7 +99,7 @@ class PageEditType extends AbstractType
             'multiple' => true,
             'expanded' => true,
             'row_attr' => [
-                'class' => 'fieldset-nostyle mb-3',
+                'class' => 'fieldset-nostyle',
                 'style' => $page->isLocked() ? '' : 'display:none',
             ],
             'help' => 'Super Admins and Admins will always be able to view a page that requires login.',

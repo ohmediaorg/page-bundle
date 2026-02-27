@@ -24,7 +24,7 @@ class PageContentChoiceType extends AbstractType
                 'choices' => $options['choice_choices'],
                 'expanded' => $options['choice_expanded'],
                 'row_attr' => [
-                    'class' => 'fieldset-nostyle mb-3',
+                    'class' => 'fieldset-nostyle',
                 ],
             ])
             ->add('name', HiddenType::class, [
