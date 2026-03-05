@@ -5,6 +5,7 @@ namespace OHMedia\PageBundle\Security\Voter;
 use OHMedia\PageBundle\Entity\Page;
 use OHMedia\SecurityBundle\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class PageLockedVoter extends Voter
@@ -30,7 +31,7 @@ class PageLockedVoter extends Voter
         return $subject instanceof Page;
     }
 
-    protected function voteOnAttribute(string $attribute, mixed $page, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $page, TokenInterface $token, ?Vote $vote = null): bool
     {
         if (!$page->isLocked()) {
             return true;

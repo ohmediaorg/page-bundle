@@ -48,7 +48,7 @@
 {% endblock %}
 
 {% set preview_page_revision = null %}
-{% set query_page_revision = app.request.get('revision') %}
+{% set query_page_revision = app.request.query.get('revision') %}
 
 {% if query_page_revision %}
   {% for page_revision in page.pageRevisions %}
