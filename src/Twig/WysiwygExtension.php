@@ -22,7 +22,7 @@ class WysiwygExtension extends AbstractWysiwygExtension
         ];
     }
 
-    public function href(int $id = null)
+    public function href(?int $id = null)
     {
         $page = $id ? $this->pageRepository->find($id) : null;
 
