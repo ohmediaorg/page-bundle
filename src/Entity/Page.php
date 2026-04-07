@@ -115,6 +115,10 @@ class Page
         expression: 'this.isRedirectTypeInternal()',
         constraints: [
             new Assert\NotBlank(),
+            new Assert\Expression(
+                '!this.isSelfRedirect()',
+                message: 'You cannot redirect a page to itself!',
+            ),
         ],
     )]
     private ?string $redirect_internal = null;
@@ -632,6 +636,11 @@ class Page
         $this->redirect_internal = $redirectInternal;
 
         return $this;
+    }
+
+    public function isSelfRedirect(): bool
+    {
+        return $this->redirect_internal === $this::class.':'.$this->id;
     }
 
     public function getRedirectExternal(): ?string

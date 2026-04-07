@@ -39,12 +39,10 @@
       let internalDisplay = 'none';
       let externalDisplay = 'none';
 
-      redirectInternal.required = false;
       redirectExternal.required = false;
 
       if ('{{ internal_constant }}' === redirectType.value) {
         internalDisplay = '';
-        redirectInternal.required = true;
       } else if ('{{ external_constant }}' === redirectType.value) {
         externalDisplay = '';
         redirectExternal.required = true;
