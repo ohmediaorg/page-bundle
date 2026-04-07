@@ -109,12 +109,25 @@ class Page
     #[ORM\Column(length: 10, nullable: true)]
     private ?string $redirect_type = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?self $redirect_internal = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
+    #[Assert\When(
+        expression: 'this.isRedirectTypeInternal()',
+        constraints: [
+            new Assert\NotBlank(),
+        ],
+    )]
+    private ?string $redirect_internal = null;
 
     #[ORM\Column(length: 180, nullable: true)]
     #[Assert\Length(max: 180)]
+    #[Assert\When(
+        expression: 'this.isRedirectTypeExternal()',
+        constraints: [
+            new Assert\NotBlank(),
+            new Assert\Url(requireTld: true),
+        ],
+    )]
     private ?string $redirect_external = null;
 
     #[ORM\Column(length: 50, nullable: true)]
@@ -609,12 +622,12 @@ class Page
         return self::REDIRECT_TYPE_EXTERNAL === $this->redirect_type;
     }
 
-    public function getRedirectInternal(): ?self
+    public function getRedirectInternal(): ?string
     {
         return $this->redirect_internal;
     }
 
-    public function setRedirectInternal(?self $redirectInternal): static
+    public function setRedirectInternal(?string $redirectInternal): static
     {
         $this->redirect_internal = $redirectInternal;
 
