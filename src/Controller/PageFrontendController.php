@@ -59,7 +59,7 @@ class PageFrontendController extends AbstractController
         }
 
         if ($page->isRedirectTypeInternal()) {
-            $path = $this->entityPathManager->getEntityPath(
+            $path = $entityPathManager->getEntityPath(
                 $page->getRedirectInternal(),
             );
 
