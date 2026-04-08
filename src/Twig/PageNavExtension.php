@@ -6,6 +6,7 @@ use OHMedia\PageBundle\Entity\Page;
 use OHMedia\PageBundle\Repository\PageRepository;
 use OHMedia\PageBundle\Security\Voter\PageLockedVoter;
 use OHMedia\TimezoneBundle\Util\DateTimeUtil;
+use OHMedia\UtilityBundle\Service\EntityPathManager;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -17,9 +18,10 @@ class PageNavExtension extends AbstractExtension
 {
     public function __construct(
         private AuthorizationCheckerInterface $authorizationChecker,
+        private EntityPathManager $entityPathManager,
         private PageRepository $pageRepository,
         private RequestStack $requestStack,
-        private UrlGeneratorInterface $urlGenerator
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -111,7 +113,11 @@ class PageNavExtension extends AbstractExtension
             if ($page->isHomepage()) {
                 $href = $this->path('');
             } elseif ($page->isRedirectTypeInternal()) {
-                $href = $this->path($page->getRedirectInternal()->getPath());
+                $path = $this->entityPathManager->getEntityPath(
+                    $page->getRedirectInternal(),
+                );
+
+                $href = $path ?? $this->path($page->getPath());
             } elseif ($page->isRedirectTypeExternal()) {
                 $href = $page->getRedirectExternal();
             } else {

@@ -3,8 +3,7 @@
 namespace OHMedia\PageBundle\Form;
 
 use OHMedia\PageBundle\Entity\Page;
-use OHMedia\PageBundle\Service\PageQueryBuilder;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use OHMedia\UtilityBundle\Service\EntityPathManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -15,13 +14,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PageNavigationType extends AbstractType
 {
-    public function __construct(private PageQueryBuilder $pageQueryBuilder)
-    {
+    public function __construct(
+        private EntityPathManager $entityPathManager,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $page = $options['data'];
+
+        $entityChoices = $this->entityPathManager->getChoices($page->getRedirectInternal());
 
         $builder
             ->add('nav_text', TextType::class, [
@@ -57,25 +59,35 @@ class PageNavigationType extends AbstractType
                     'External' => Page::REDIRECT_TYPE_EXTERNAL,
                 ],
                 'expanded' => true,
+                'row_attr' => [
+                    'class' => 'fieldset-nostyle',
+                ],
             ])
-            ->add('redirect_internal', EntityType::class, [
-                'label' => 'Internal Page',
+            ->add('redirect_internal', ChoiceType::class, [
+                'label' => 'Internal Resource',
                 'required' => false,
-                'placeholder' => 'None',
-                'class' => Page::class,
-                'choice_label' => function (Page $page) {
-                    return '/'.$page->getPath();
+                'choices' => $entityChoices,
+                'placeholder' => '- Select -',
+                'help' => 'The redirect will not work if the selected resource becomes unavailable to the public (eg. not published, requires login, deleted, etc.).',
+                'label_attr' => [
+                    'class' => 'required',
+                ],
+                'attr' => [
+                    'class' => 'nice-select2',
+                ],
+                'choice_attr' => function ($choice, string $key, mixed $value) use ($page) {
+                    if ($value === Page::class.':'.$page->getId()) {
+                        return [
+                            'disabled' => true,
+                        ];
+                    }
+
+                    return [];
                 },
-                'query_builder' => $this->pageQueryBuilder
-                    ->createQueryBuilder()
-                    ->locked(false)
-                    ->exclude($page)
-                    ->getQueryBuilder()
-                    ->orderBy('p.order_global', 'ASC'),
             ])
             ->add('redirect_external', UrlType::class, [
                 'required' => false,
-                'label' => 'External Page',
+                'label' => 'External URL',
                 'default_protocol' => null, // makes sure field is type="url"
             ])
         ;

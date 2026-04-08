@@ -5,6 +5,7 @@ namespace OHMedia\PageBundle\Controller;
 use OHMedia\PageBundle\Repository\Page301Repository;
 use OHMedia\PageBundle\Security\Voter\PageLockedVoter;
 use OHMedia\PageBundle\Service\PageRenderer;
+use OHMedia\UtilityBundle\Service\EntityPathManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -12,9 +13,10 @@ class PageFrontendController extends AbstractController
 {
     #[Route('/{path}', name: 'oh_media_page_frontend', requirements: ['path' => '.*'], priority: PHP_INT_MIN)]
     public function frontend(
+        EntityPathManager $entityPathManager,
         Page301Repository $page301Repository,
         PageRenderer $pageRenderer,
-        string $path
+        string $path,
     ) {
         $path = rtrim($path, '/');
 
@@ -57,9 +59,13 @@ class PageFrontendController extends AbstractController
         }
 
         if ($page->isRedirectTypeInternal()) {
-            return $this->redirectToRoute('oh_media_page_frontend', [
-                'path' => $page->getRedirectInternal()->getPath(),
-            ], 301);
+            $path = $entityPathManager->getEntityPath(
+                $page->getRedirectInternal(),
+            );
+
+            if ($path) {
+                return $this->redirect($path, 301);
+            }
         } elseif ($page->isRedirectTypeExternal()) {
             return $this->redirect($page->getRedirectExternal(), 301);
         }
@@ -69,7 +75,7 @@ class PageFrontendController extends AbstractController
 
     private function getPage301Path(
         Page301Repository $page301Repository,
-        string $path
+        string $path,
     ): ?string {
         $page301 = $page301Repository->findOneBy([
             'path' => $path,
