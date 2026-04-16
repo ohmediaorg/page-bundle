@@ -28,7 +28,7 @@ class PageRevisionBackendController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private PageRevisionRepository $pageRevisionRepository
+        private PageRevisionRepository $pageRevisionRepository,
     ) {
     }
 
@@ -173,15 +173,7 @@ class PageRevisionBackendController extends AbstractController
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                foreach ($form->all() as $name => $child) {
-                    $pageContent = $child->getData();
-
-                    if (!($pageContent instanceof AbstractPageContent)) {
-                        continue;
-                    }
-
-                    $pageRevision->addPageContent($pageContent);
-                }
+                $this->addPageContent($form, $pageRevision);
 
                 $pageRevision->setUpdatedAt(new \DateTime());
 
@@ -206,6 +198,21 @@ class PageRevisionBackendController extends AbstractController
         ]);
     }
 
+    private function addPageContent(FormInterface $form, PageRevision $pageRevision): void
+    {
+        foreach ($form->all() as $name => $child) {
+            $pageContent = $child->getData();
+
+            if (!$pageContent instanceof AbstractPageContent) {
+                $this->addPageContent($child, $pageRevision);
+
+                continue;
+            }
+
+            $pageRevision->addPageContent($pageContent);
+        }
+    }
+
     private function redirectContent(PageRevision $pageRevision, FormInterface $form): Response
     {
         $clickedButtonName = $form->getClickedButton()->getName() ?? null;
@@ -214,9 +221,9 @@ class PageRevisionBackendController extends AbstractController
             return $this->redirectToRoute('page_revision_content', [
                 'id' => $pageRevision->getId(),
             ]);
-        } else {
-            return $this->redirectToParentPage($pageRevision);
         }
+
+        return $this->redirectToParentPage($pageRevision);
     }
 
     #[Route('/page/revision/{id}/publish', name: 'page_revision_publish', methods: ['POST'])]
@@ -332,7 +339,7 @@ class PageRevisionBackendController extends AbstractController
 
     private function redirectToParentPage(
         PageRevision $pageRevision,
-        bool $includeRevision = true
+        bool $includeRevision = true,
     ): Response {
         $params = [
             'id' => $pageRevision->getPage()->getId(),
