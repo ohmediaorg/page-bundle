@@ -200,16 +200,14 @@ class PageRevisionBackendController extends AbstractController
 
     private function addPageContent(FormInterface $form, PageRevision $pageRevision): void
     {
-        foreach ($form->all() as $name => $child) {
+        foreach ($form->all() as $child) {
             $pageContent = $child->getData();
 
-            if (!$pageContent instanceof AbstractPageContent) {
+            if ($pageContent instanceof AbstractPageContent) {
+                $pageRevision->addPageContent($pageContent);
+            } else {
                 $this->addPageContent($child, $pageRevision);
-
-                continue;
             }
-
-            $pageRevision->addPageContent($pageContent);
         }
     }
 
