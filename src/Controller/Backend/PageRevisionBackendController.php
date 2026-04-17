@@ -265,25 +265,49 @@ class PageRevisionBackendController extends AbstractController
      */
     private function purgePageContent(PageRevision $pageRevision): void
     {
-        $contentForm = $this->createForm($pageRevision->getTemplate(), $pageRevision);
+        $contentForm = $this->createForm(
+            $pageRevision->getTemplate(),
+            $pageRevision
+        );
+
+        $dataClassesByName = $this->getDataClassesByName($contentForm);
 
         $pageContents = $pageRevision->getPageContents();
 
         foreach ($pageContents as $pageContent) {
             $name = $pageContent->getName();
 
-            if ($contentForm->has($name)) {
-                $dataClass = $contentForm->get($name)->getConfig()->getDataClass();
-
-                if ($dataClass === $pageContent::class) {
-                    continue;
-                }
+            if (
+                isset($dataClassesByName[$name])
+                && $dataClassesByName[$name] === $pageContent::class
+            ) {
+                continue;
             }
 
             $pageRevision->removePageContent($pageContent);
 
             $this->entityManager->remove($pageContent);
         }
+    }
+
+    private function getDataClassesByName(FormInterface $form): array
+    {
+        $dataClassesByName = [];
+
+        foreach ($form->all() as $name => $child) {
+            $pageContent = $child->getData();
+
+            if ($pageContent instanceof AbstractPageContent) {
+                $dataClassesByName[$name] = $child->getConfig()->getDataClass();
+            } else {
+                $dataClassesByName = array_merge(
+                    $dataClassesByName,
+                    $this->getDataClassesByName($child),
+                );
+            }
+        }
+
+        return $dataClassesByName;
     }
 
     private function isDynamic(PageRevision $pageRevision, ShortcodeManager $shortcodeManager)
