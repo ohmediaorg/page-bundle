@@ -28,7 +28,7 @@ class PageRevisionBackendController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private PageRevisionRepository $pageRevisionRepository
+        private PageRevisionRepository $pageRevisionRepository,
     ) {
     }
 
@@ -173,15 +173,7 @@ class PageRevisionBackendController extends AbstractController
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                foreach ($form->all() as $name => $child) {
-                    $pageContent = $child->getData();
-
-                    if (!($pageContent instanceof AbstractPageContent)) {
-                        continue;
-                    }
-
-                    $pageRevision->addPageContent($pageContent);
-                }
+                $this->addPageContent($form, $pageRevision);
 
                 $pageRevision->setUpdatedAt(new \DateTime());
 
@@ -206,6 +198,19 @@ class PageRevisionBackendController extends AbstractController
         ]);
     }
 
+    private function addPageContent(FormInterface $form, PageRevision $pageRevision): void
+    {
+        foreach ($form->all() as $child) {
+            $pageContent = $child->getData();
+
+            if ($pageContent instanceof AbstractPageContent) {
+                $pageRevision->addPageContent($pageContent);
+            } else {
+                $this->addPageContent($child, $pageRevision);
+            }
+        }
+    }
+
     private function redirectContent(PageRevision $pageRevision, FormInterface $form): Response
     {
         $clickedButtonName = $form->getClickedButton()->getName() ?? null;
@@ -214,9 +219,9 @@ class PageRevisionBackendController extends AbstractController
             return $this->redirectToRoute('page_revision_content', [
                 'id' => $pageRevision->getId(),
             ]);
-        } else {
-            return $this->redirectToParentPage($pageRevision);
         }
+
+        return $this->redirectToParentPage($pageRevision);
     }
 
     #[Route('/page/revision/{id}/publish', name: 'page_revision_publish', methods: ['POST'])]
@@ -260,25 +265,49 @@ class PageRevisionBackendController extends AbstractController
      */
     private function purgePageContent(PageRevision $pageRevision): void
     {
-        $contentForm = $this->createForm($pageRevision->getTemplate(), $pageRevision);
+        $contentForm = $this->createForm(
+            $pageRevision->getTemplate(),
+            $pageRevision
+        );
+
+        $dataClassesByName = $this->getDataClassesByName($contentForm);
 
         $pageContents = $pageRevision->getPageContents();
 
         foreach ($pageContents as $pageContent) {
             $name = $pageContent->getName();
 
-            if ($contentForm->has($name)) {
-                $dataClass = $contentForm->get($name)->getConfig()->getDataClass();
-
-                if ($dataClass === $pageContent::class) {
-                    continue;
-                }
+            if (
+                isset($dataClassesByName[$name])
+                && $dataClassesByName[$name] === $pageContent::class
+            ) {
+                continue;
             }
 
             $pageRevision->removePageContent($pageContent);
 
             $this->entityManager->remove($pageContent);
         }
+    }
+
+    private function getDataClassesByName(FormInterface $form): array
+    {
+        $dataClassesByName = [];
+
+        foreach ($form->all() as $name => $child) {
+            $pageContent = $child->getData();
+
+            if ($pageContent instanceof AbstractPageContent) {
+                $dataClassesByName[$name] = $child->getConfig()->getDataClass();
+            } else {
+                $dataClassesByName = array_merge(
+                    $dataClassesByName,
+                    $this->getDataClassesByName($child),
+                );
+            }
+        }
+
+        return $dataClassesByName;
     }
 
     private function isDynamic(PageRevision $pageRevision, ShortcodeManager $shortcodeManager)
@@ -332,7 +361,7 @@ class PageRevisionBackendController extends AbstractController
 
     private function redirectToParentPage(
         PageRevision $pageRevision,
-        bool $includeRevision = true
+        bool $includeRevision = true,
     ): Response {
         $params = [
             'id' => $pageRevision->getPage()->getId(),

@@ -7,6 +7,7 @@ use OHMedia\PageBundle\Entity\AbstractPageContent;
 use OHMedia\PageBundle\Entity\PageContentText;
 use OHMedia\PageBundle\Entity\PageRevision;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -41,8 +42,22 @@ abstract class AbstractPageTemplateType extends AbstractType
         ]);
     }
 
-    protected function addPageContentCheckbox(string $name, array $options = []): self
+    protected function createFieldset(string $name, array $options = []): FormBuilderInterface
     {
+        $options['inherit_data'] = true;
+
+        $fieldset = $this->builder->create($name, FormType::class, $options);
+
+        $this->builder->add($fieldset);
+
+        return $fieldset;
+    }
+
+    protected function addPageContentCheckbox(
+        string $name,
+        array $options = [],
+        ?FormBuilderInterface $builder = null,
+    ): self {
         $checkboxLabel = !empty($options['label']) ? $options['label'] : $name;
 
         $options['checkbox_label'] = $this->generateLabel($checkboxLabel);
@@ -57,12 +72,16 @@ abstract class AbstractPageTemplateType extends AbstractType
             $name,
             PageContentCheckboxType::class,
             $options,
-            $this->pageRevision->getPageContentCheckbox($name)
+            $this->pageRevision->getPageContentCheckbox($name),
+            $builder
         );
     }
 
-    protected function addPageContentChoice(string $name, array $options = []): self
-    {
+    protected function addPageContentChoice(
+        string $name,
+        array $options = [],
+        ?FormBuilderInterface $builder = null,
+    ): self {
         if (isset($options['choices'])) {
             $options['choice_choices'] = $options['choices'];
         }
@@ -89,12 +108,16 @@ abstract class AbstractPageTemplateType extends AbstractType
             $name,
             PageContentChoiceType::class,
             $options,
-            $this->pageRevision->getPageContentText($name, PageContentText::TYPE_CHOICE)
+            $this->pageRevision->getPageContentText($name, PageContentText::TYPE_CHOICE),
+            $builder
         );
     }
 
-    protected function addPageContentImage(string $name, array $options = []): self
-    {
+    protected function addPageContentImage(
+        string $name,
+        array $options = [],
+        ?FormBuilderInterface $builder = null,
+    ): self {
         $options['image_label'] = !empty($options['label'])
             ? $options['label']
             : $this->generateLabel($name);
@@ -109,22 +132,30 @@ abstract class AbstractPageTemplateType extends AbstractType
             $name,
             PageContentImageType::class,
             $options,
-            $this->pageRevision->getPageContentImage($name)
+            $this->pageRevision->getPageContentImage($name),
+            $builder
         );
     }
 
-    protected function addPageContentRow(string $name, array $options = []): self
-    {
+    protected function addPageContentRow(
+        string $name,
+        array $options = [],
+        ?FormBuilderInterface $builder = null,
+    ): self {
         return $this->addPageContent(
             $name,
             PageContentRowType::class,
             $options,
-            $this->pageRevision->getPageContentRow($name)
+            $this->pageRevision->getPageContentRow($name),
+            $builder
         );
     }
 
-    protected function addPageContentText(string $name, array $options = []): self
-    {
+    protected function addPageContentText(
+        string $name,
+        array $options = [],
+        ?FormBuilderInterface $builder = null,
+    ): self {
         $options['row_attr'] = [
             'class' => 'fieldset-nostyle',
         ];
@@ -139,12 +170,16 @@ abstract class AbstractPageTemplateType extends AbstractType
             $name,
             PageContentTextType::class,
             $options,
-            $this->pageRevision->getPageContentText($name, PageContentText::TYPE_TEXT)
+            $this->pageRevision->getPageContentText($name, PageContentText::TYPE_TEXT),
+            $builder
         );
     }
 
-    protected function addPageContentTextarea(string $name, array $options = []): self
-    {
+    protected function addPageContentTextarea(
+        string $name,
+        array $options = [],
+        ?FormBuilderInterface $builder = null,
+    ): self {
         $options['row_attr'] = [
             'class' => 'fieldset-nostyle',
         ];
@@ -159,12 +194,16 @@ abstract class AbstractPageTemplateType extends AbstractType
             $name,
             PageContentTextareaType::class,
             $options,
-            $this->pageRevision->getPageContentText($name, PageContentText::TYPE_TEXTAREA)
+            $this->pageRevision->getPageContentText($name, PageContentText::TYPE_TEXTAREA),
+            $builder
         );
     }
 
-    protected function addPageContentWysiwyg(string $name, array $options = []): self
-    {
+    protected function addPageContentWysiwyg(
+        string $name,
+        array $options = [],
+        ?FormBuilderInterface $builder = null,
+    ): self {
         $options['row_attr'] = [
             'class' => 'fieldset-nostyle',
         ];
@@ -179,7 +218,8 @@ abstract class AbstractPageTemplateType extends AbstractType
             $name,
             PageContentWysiwygType::class,
             $options,
-            $this->pageRevision->getPageContentText($name, PageContentText::TYPE_WYSIWYG)
+            $this->pageRevision->getPageContentText($name, PageContentText::TYPE_WYSIWYG),
+            $builder
         );
     }
 
@@ -187,13 +227,18 @@ abstract class AbstractPageTemplateType extends AbstractType
         string $name,
         string $type,
         array $options,
-        ?AbstractPageContent $data
+        ?AbstractPageContent $data,
+        ?FormBuilderInterface $builder = null,
     ): self {
         $options['mapped'] = false;
 
         $options['data'] = $data;
 
-        $this->builder->add($name, $type, $options);
+        if (!$builder) {
+            $builder = $this->builder;
+        }
+
+        $builder->add($name, $type, $options);
 
         return $this;
     }
