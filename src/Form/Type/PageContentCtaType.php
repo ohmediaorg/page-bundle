@@ -19,7 +19,6 @@ class PageContentCtaType extends AbstractType
                 'required' => $options['required'],
                 'attr' => $options['cta_attr'],
                 'providers' => $options['cta_providers'],
-                'cta' => true,
             ])
             ->add('name', HiddenType::class, [
                 'data' => $builder->getName(),

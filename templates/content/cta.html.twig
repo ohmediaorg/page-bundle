@@ -1,0 +1,20 @@
+{# similar to block attributes from the form templates #}
+{% macro attributes(attr) -%}
+    {%- for attrname, attrvalue in attr -%}
+        {{- ' ' -}}
+        {%- if attrvalue is same as(true) -%}
+            {{- attrname }}="{{ attrname }}"
+        {%- elseif attrvalue is not same as(false) -%}
+            {{- attrname }}="{{ attrvalue }}"
+        {%- endif -%}
+    {%- endfor -%}
+{%- endmacro attributes -%}
+
+<a
+  href="{{ path }}"
+  {{ _self.attributes(attributes) }}
+  {% if cta.newWindow %}
+    target="_blank"
+    rel="noopener"
+  {% endif %}
+>{{ cta.text }}</a>

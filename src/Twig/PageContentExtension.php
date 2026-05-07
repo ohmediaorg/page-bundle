@@ -8,10 +8,12 @@ use OHMedia\PageBundle\Entity\AbstractPageContent;
 use OHMedia\PageBundle\Entity\PageContentText;
 use OHMedia\PageBundle\Repository\AbstractPageContentRepository;
 use OHMedia\PageBundle\Repository\PageContentCheckboxRepository;
+use OHMedia\PageBundle\Repository\PageContentCtaRepository;
 use OHMedia\PageBundle\Repository\PageContentImageRepository;
 use OHMedia\PageBundle\Repository\PageContentRowRepository;
 use OHMedia\PageBundle\Repository\PageContentTextRepository;
 use OHMedia\PageBundle\Service\PageRenderer;
+use OHMedia\UtilityBundle\Service\CallToActionManager;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -19,8 +21,10 @@ use Twig\TwigFunction;
 class PageContentExtension extends AbstractExtension
 {
     public function __construct(
+        private CallToActionManager $callToActionManager,
         private ImageManager $imageManager,
         private PageContentCheckboxRepository $contentCheckboxRepo,
+        private PageContentCtaRepository $contentCtaRepo,
         private PageContentImageRepository $contentImageRepo,
         private PageContentRowRepository $contentRowRepo,
         private PageContentTextRepository $contentTextRepo,
@@ -170,26 +174,34 @@ class PageContentExtension extends AbstractExtension
 
         $cta = $content->getCta();
 
-        // TODO: verify the path exists
-        return $cta;
+        return (bool) $this->callToActionManager->getPath($cta);
     }
 
-    public function renderContentCta(Environment $twig, string $name, array $attributes = []): ?CallToAction
+    public function renderContentCta(Environment $twig, string $name, array $attributes = []): string
     {
         $queryBuilder = $this->getContentCtaQueryBuilder($name);
 
         $content = $this->getContent($queryBuilder);
 
         if (!$content) {
-            return null;
+            return '';
         }
 
         $cta = $content->getCta();
 
-        // TODO: unset certain attributes
+        $path = $this->callToActionManager->getPath($cta);
+
+        if (!$path) {
+            return '';
+        }
+
+        unset($attributes['href']);
+        unset($attributes['target']);
+        unset($attributes['rel']);
 
         return $twig->render('@OHMediaPage/content/cta.html.twig', [
             'cta' => $cta,
+            'path' => $path,
             'attributes' => $attributes,
         ]);
     }
@@ -272,6 +284,12 @@ class PageContentExtension extends AbstractExtension
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    private function getContentCtaQueryBuilder(string $name): QueryBuilder
+    {
+        return $this->getContentQueryBuilder($this->contentCtaRepo, 'c', $name)
+            ->join('c.cta', 'cta');
     }
 
     private function getContentImageQueryBuilder(string $name): QueryBuilder
