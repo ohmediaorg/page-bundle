@@ -113,6 +113,30 @@ abstract class AbstractPageTemplateType extends AbstractType
         );
     }
 
+    protected function addPageContentCta(
+        string $name,
+        array $options = [],
+        ?FormBuilderInterface $builder = null,
+    ): self {
+        $options['cta_label'] = !empty($options['label'])
+            ? $options['label']
+            : $this->generateLabel($name);
+
+        $options['label'] = false;
+
+        $options['row_attr'] = [
+            'class' => 'fieldset-nostyle',
+        ];
+
+        return $this->addPageContent(
+            $name,
+            PageContentCtaType::class,
+            $options,
+            $this->pageRevision->getPageContentCta($name),
+            $builder
+        );
+    }
+
     protected function addPageContentImage(
         string $name,
         array $options = [],

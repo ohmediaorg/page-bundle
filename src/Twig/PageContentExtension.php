@@ -24,7 +24,7 @@ class PageContentExtension extends AbstractExtension
         private PageContentImageRepository $contentImageRepo,
         private PageContentRowRepository $contentRowRepo,
         private PageContentTextRepository $contentTextRepo,
-        private PageRenderer $pageRenderer
+        private PageRenderer $pageRenderer,
     ) {
     }
 
@@ -34,6 +34,11 @@ class PageContentExtension extends AbstractExtension
             new TwigFunction('content_checkbox', [$this, 'contentCheckbox']),
             new TwigFunction('content_choice_exists', [$this, 'contentChoiceExists']),
             new TwigFunction('content_choice', [$this, 'renderContentChoice']),
+            new TwigFunction('content_cta_exists', [$this, 'contentCtaExists']),
+            new TwigFunction('content_cta', [$this, 'renderContentCta'], [
+                'is_safe' => ['html'],
+                'needs_environment' => true,
+            ]),
             new TwigFunction('content_image_exists', [$this, 'contentImageExists']),
             new TwigFunction('content_image_path', [$this, 'renderContentImagePath']),
             new TwigFunction('content_image_tag', [$this, 'renderContentImageTag'], [
@@ -153,6 +158,42 @@ class PageContentExtension extends AbstractExtension
         return $content ? $content->getText() : '';
     }
 
+    public function contentCtaExists(string $name): bool
+    {
+        $queryBuilder = $this->getContentCtaQueryBuilder($name);
+
+        $content = $this->getContent($queryBuilder);
+
+        if (!$content) {
+            return false;
+        }
+
+        $cta = $content->getCta();
+
+        // TODO: verify the path exists
+        return $cta;
+    }
+
+    public function renderContentCta(Environment $twig, string $name, array $attributes = []): ?CallToAction
+    {
+        $queryBuilder = $this->getContentCtaQueryBuilder($name);
+
+        $content = $this->getContent($queryBuilder);
+
+        if (!$content) {
+            return null;
+        }
+
+        $cta = $content->getCta();
+
+        // TODO: unset certain attributes
+
+        return $twig->render('@OHMediaPage/content/cta.html.twig', [
+            'cta' => $cta,
+            'attributes' => $attributes,
+        ]);
+    }
+
     public function contentTextExists(string $name): bool
     {
         $queryBuilder = $this->getContentTextQueryBuilder($name, PageContentText::TYPE_TEXT);
@@ -260,7 +301,7 @@ class PageContentExtension extends AbstractExtension
     private function getContentQueryBuilder(
         AbstractPageContentRepository $repository,
         string $alias,
-        string $name
+        string $name,
     ): QueryBuilder {
         $pageRevision = $this->pageRenderer->getCurrentPageRevision();
 
