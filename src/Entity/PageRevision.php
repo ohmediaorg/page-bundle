@@ -36,6 +36,10 @@ class PageRevision
     #[Assert\Valid]
     private Collection $pageContentCheckboxes;
 
+    #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentCta::class, cascade: ['persist', 'remove'])]
+    #[Assert\Valid]
+    private Collection $pageContentCtas;
+
     #[ORM\OneToMany(mappedBy: 'pageRevision', targetEntity: PageContentImage::class, cascade: ['persist', 'remove'])]
     #[Assert\Valid]
     private Collection $pageContentImages;
@@ -51,6 +55,7 @@ class PageRevision
     public function __construct()
     {
         $this->pageContentCheckboxes = new ArrayCollection();
+        $this->pageContentCtas = new ArrayCollection();
         $this->pageContentImages = new ArrayCollection();
         $this->pageContentRows = new ArrayCollection();
         $this->pageContentTexts = new ArrayCollection();
@@ -80,6 +85,7 @@ class PageRevision
             $pageContents = $this->getPageContents();
 
             $this->pageContentCheckboxes = new ArrayCollection();
+            $this->pageContentCtas = new ArrayCollection();
             $this->pageContentImages = new ArrayCollection();
             $this->pageContentRows = new ArrayCollection();
             $this->pageContentTexts = new ArrayCollection();
@@ -157,6 +163,7 @@ class PageRevision
         return new ArrayCollection(
             array_merge(
                 $this->pageContentCheckboxes->toArray(),
+                $this->pageContentCtas->toArray(),
                 $this->pageContentImages->toArray(),
                 $this->pageContentRows->toArray(),
                 $this->pageContentTexts->toArray(),
@@ -168,6 +175,8 @@ class PageRevision
     {
         if ($pageContent instanceof PageContentCheckbox) {
             return $this->addPageContentCheckbox($pageContent);
+        } elseif ($pageContent instanceof PageContentCta) {
+            return $this->addPageContentCta($pageContent);
         } elseif ($pageContent instanceof PageContentImage) {
             return $this->addPageContentImage($pageContent);
         } elseif ($pageContent instanceof PageContentRow) {
@@ -183,6 +192,8 @@ class PageRevision
     {
         if ($pageContent instanceof PageContentCheckbox) {
             return $this->removePageContentCheckbox($pageContent);
+        } elseif ($pageContent instanceof PageContentCta) {
+            return $this->removePageContentCta($pageContent);
         } elseif ($pageContent instanceof PageContentImage) {
             return $this->removePageContentImage($pageContent);
         } elseif ($pageContent instanceof PageContentRow) {
@@ -229,6 +240,47 @@ class PageRevision
         foreach ($this->pageContentCheckboxes as $pageContentCheckbox) {
             if ($pageContentCheckbox->getName() === $name) {
                 return $pageContentCheckbox;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection<int, PageContentCta>
+     */
+    public function getPageContentCtas(): Collection
+    {
+        return $this->pageContentCtas;
+    }
+
+    public function addPageContentCta(PageContentCta $pageContentCta): static
+    {
+        if (!$this->pageContentCtas->contains($pageContentCta)) {
+            $this->pageContentCtas->add($pageContentCta);
+            $pageContentCta->setPageRevision($this);
+        }
+
+        return $this;
+    }
+
+    public function removePageContentCta(PageContentCta $pageContentCta): static
+    {
+        if ($this->pageContentCtas->removeElement($pageContentCta)) {
+            // set the owning side to null (unless already changed)
+            if ($pageContentCta->getPageRevision() === $this) {
+                $pageContentCta->setPageRevision(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPageContentCta(string $name): ?PageContentCta
+    {
+        foreach ($this->pageContentCtas as $pageContentCta) {
+            if ($pageContentCta->getName() === $name) {
+                return $pageContentCta;
             }
         }
 

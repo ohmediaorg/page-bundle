@@ -8,10 +8,12 @@ use OHMedia\PageBundle\Entity\AbstractPageContent;
 use OHMedia\PageBundle\Entity\PageContentText;
 use OHMedia\PageBundle\Repository\AbstractPageContentRepository;
 use OHMedia\PageBundle\Repository\PageContentCheckboxRepository;
+use OHMedia\PageBundle\Repository\PageContentCtaRepository;
 use OHMedia\PageBundle\Repository\PageContentImageRepository;
 use OHMedia\PageBundle\Repository\PageContentRowRepository;
 use OHMedia\PageBundle\Repository\PageContentTextRepository;
 use OHMedia\PageBundle\Service\PageRenderer;
+use OHMedia\UtilityBundle\Service\CallToActionManager;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -19,12 +21,14 @@ use Twig\TwigFunction;
 class PageContentExtension extends AbstractExtension
 {
     public function __construct(
+        private CallToActionManager $callToActionManager,
         private ImageManager $imageManager,
         private PageContentCheckboxRepository $contentCheckboxRepo,
+        private PageContentCtaRepository $contentCtaRepo,
         private PageContentImageRepository $contentImageRepo,
         private PageContentRowRepository $contentRowRepo,
         private PageContentTextRepository $contentTextRepo,
-        private PageRenderer $pageRenderer
+        private PageRenderer $pageRenderer,
     ) {
     }
 
@@ -34,6 +38,11 @@ class PageContentExtension extends AbstractExtension
             new TwigFunction('content_checkbox', [$this, 'contentCheckbox']),
             new TwigFunction('content_choice_exists', [$this, 'contentChoiceExists']),
             new TwigFunction('content_choice', [$this, 'renderContentChoice']),
+            new TwigFunction('content_cta_exists', [$this, 'contentCtaExists']),
+            new TwigFunction('content_cta', [$this, 'renderContentCta'], [
+                'is_safe' => ['html'],
+                'needs_environment' => true,
+            ]),
             new TwigFunction('content_image_exists', [$this, 'contentImageExists']),
             new TwigFunction('content_image_path', [$this, 'renderContentImagePath']),
             new TwigFunction('content_image_tag', [$this, 'renderContentImageTag'], [
@@ -153,6 +162,50 @@ class PageContentExtension extends AbstractExtension
         return $content ? $content->getText() : '';
     }
 
+    public function contentCtaExists(string $name): bool
+    {
+        $queryBuilder = $this->getContentCtaQueryBuilder($name);
+
+        $content = $this->getContent($queryBuilder);
+
+        if (!$content) {
+            return false;
+        }
+
+        $cta = $content->getCta();
+
+        return (bool) $this->callToActionManager->getPath($cta);
+    }
+
+    public function renderContentCta(Environment $twig, string $name, array $attributes = []): string
+    {
+        $queryBuilder = $this->getContentCtaQueryBuilder($name);
+
+        $content = $this->getContent($queryBuilder);
+
+        if (!$content) {
+            return '';
+        }
+
+        $cta = $content->getCta();
+
+        $path = $this->callToActionManager->getPath($cta);
+
+        if (!$path) {
+            return '';
+        }
+
+        unset($attributes['href']);
+        unset($attributes['target']);
+        unset($attributes['rel']);
+
+        return $twig->render('@OHMediaPage/content/cta.html.twig', [
+            'cta' => $cta,
+            'path' => $path,
+            'attributes' => $attributes,
+        ]);
+    }
+
     public function contentTextExists(string $name): bool
     {
         $queryBuilder = $this->getContentTextQueryBuilder($name, PageContentText::TYPE_TEXT);
@@ -233,6 +286,12 @@ class PageContentExtension extends AbstractExtension
             ->getOneOrNullResult();
     }
 
+    private function getContentCtaQueryBuilder(string $name): QueryBuilder
+    {
+        return $this->getContentQueryBuilder($this->contentCtaRepo, 'c', $name)
+            ->join('c.cta', 'cta');
+    }
+
     private function getContentImageQueryBuilder(string $name): QueryBuilder
     {
         return $this->getContentQueryBuilder($this->contentImageRepo, 'c', $name)
@@ -260,7 +319,7 @@ class PageContentExtension extends AbstractExtension
     private function getContentQueryBuilder(
         AbstractPageContentRepository $repository,
         string $alias,
-        string $name
+        string $name,
     ): QueryBuilder {
         $pageRevision = $this->pageRenderer->getCurrentPageRevision();
 

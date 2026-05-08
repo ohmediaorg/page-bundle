@@ -85,6 +85,7 @@ class HomepageTemplateType extends AbstractPageTemplateType
                 ],
             ])
             ->addPageContentImage('image')
+            ->addPageContentCta('cta')
             ->addPageContentRow('row')
             ->addPageContentText('title')
             ->addPageContentTextarea('paragraph')
@@ -143,6 +144,33 @@ You can also check that the content exists before outputting it:
 
 ```twig
 {% if content_choice_exists(name) %}
+  {# ... #}
+{% endif %}
+```
+
+### CTA
+
+The function `addPageContentCta($name, $options)` is basically the same as
+`$builder->add($name, CallToActionType::class, $options)`. You can pass in the
+custom options `cta_providers` and `cta_attr` which is the same as `providers`
+and `attr` on `CallToActionType`.
+
+Inside your template, you can use this content area like so:
+
+```twig
+{{ content_cta(name, {
+  class: 'my-class',
+  'data-test': 'my data attribute',
+}) }}
+```
+
+This will output a link if the CTA path exists, with the attributes as a second
+argument.
+
+You can also check that the CTA and path exists before outputting it:
+
+```twig
+{% if content_cta_exists(name) %}
   {# ... #}
 {% endif %}
 ```
