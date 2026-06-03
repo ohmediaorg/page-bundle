@@ -15,12 +15,16 @@
           </span>
         {% endif %}
 
-        {% if page.isPublished %}
+        {% if page.isScheduled %}
+          <span class="badge text-bg-warning" title="Scheduled">
+            {{ page.name }}
+          </span>
+        {% elseif page.isPublished %}
           <span class="badge text-bg-success" title="Published">
             {{ page.name }}
           </span>
         {% else %}
-          <span class="badge text-bg-warning" title="Draft">
+          <span class="badge text-bg-secondary" title="Draft">
             {{ page.name }}
           </span>
         {% endif %}

@@ -59,7 +59,7 @@
             {% block form_action %}{{ path('page_unpublish', {id: page.id}) }}{% endblock %}
             {% block confirm_message %}Are you sure you want to unpublish this page?{% endblock %}
             {% block csrf_name %}unpublish_page_{{ page.id }}{% endblock %}
-            {% block button_class %}dropdown-item text-bg-warning{% endblock %}
+            {% block button_class %}dropdown-item text-bg-secondary{% endblock %}
             {% block button_html %}
               {{ bootstrap_icon('arrow-counterclockwise') }}
               Unpublish
