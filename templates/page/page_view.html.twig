@@ -15,19 +15,7 @@
           </span>
         {% endif %}
 
-        {% if page.isScheduled %}
-          <span class="badge text-bg-warning" title="Scheduled">
-            {{ page.name }}
-          </span>
-        {% elseif page.isPublished %}
-          <span class="badge text-bg-success" title="Published">
-            {{ page.name }}
-          </span>
-        {% else %}
-          <span class="badge text-bg-secondary" title="Draft">
-            {{ page.name }}
-          </span>
-        {% endif %}
+        {{ page.name }}
 
         {% if page.isHidden %}
           <span class="badge text-bg-dark" title="Hidden" aria-label="This page is hidden from navigation.">
@@ -94,6 +82,17 @@
 
 {% block main %}
   <h1 class="visually-hidden">{{ page.name }} {{ preview_page_revision }}</h1>
+
+  {% if page.isScheduled %}
+    <div class="alert alert-warning">
+      This page is scheduled to be published on {{ page.published|date('M j, Y') }} at {{ page.published|date('g:ia') }}.
+      {% if is_granted(attributes.page.edit, page) %}
+        You can edit that date
+        <a href="{{ path('page_edit', {id: page.id}) }}">here</a>.
+      </li>
+    {% endif %}
+    </div>
+  {% endif %}
 
   {% include '@OHMediaPage/page/_page_revision_actions.html.twig' %}
 
