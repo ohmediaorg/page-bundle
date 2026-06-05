@@ -129,9 +129,11 @@
       {% endif %}
 
       {% if page.isScheduled %}
-        <span class="badge text-bg-warning" data-bs-toggle="tooltip" title="{{ page.published|date('M j, Y g:ia') }}">
-          Scheduled
-        </span>
+        <span
+          class="badge text-bg-warning"
+          data-bs-toggle="tooltip"
+          title="{{ page.published|date('M j, Y g:ia') }}"
+        >Scheduled</span>
       {% elseif page.isPublished %}
         {{ bootstrap_badge_success('Published') }}
       {% else %}
