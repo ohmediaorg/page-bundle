@@ -361,6 +361,19 @@ class Page
         return $this;
     }
 
+    public function isScheduled(): bool
+    {
+        if (!$this->getPublished()) {
+            return false;
+        }
+
+        if (DateTimeUtil::isPast($this->getPublished())) {
+            return false;
+        }
+
+        return $this->isCurrentPageRevisionPublished();
+    }
+
     public function isPublished(): bool
     {
         if (!$this->getPublished()) {

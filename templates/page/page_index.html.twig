@@ -75,7 +75,13 @@
           </tbody>
           <tfoot>
             <tr>
-              <td colspan="100%">A page is considered {{ bootstrap_badge_success('Published') }} if both the page itself and at least one of its revisions are published.</td>
+              <td colspan="100%">
+                {{ bootstrap_badge_success('Published') }} - both the page and one of its revisions are published.
+                <br>
+                {{ bootstrap_badge_warning('Scheduled') }} - same as {{ bootstrap_badge_success('Published') }} but the page publish date is in the future.
+                <br>
+                {{ bootstrap_badge_secondary('Draft') }} - the page itself is not published or no revisions are published.
+              </td>
             </tr>
           </tfoot>
         </table>
@@ -122,10 +128,28 @@
         </span>
       {% endif %}
 
-      {% if page.isPublished %}
+      {% if page.isScheduled %}
+        <span
+          class="badge text-bg-warning"
+          data-bs-toggle="tooltip"
+          title="{{ page.published|date('M j, Y g:ia') }}"
+        >Scheduled</span>
+      {% elseif page.isPublished %}
         {{ bootstrap_badge_success('Published') }}
       {% else %}
-        {{ bootstrap_badge_warning('Draft') }}
+        {% set is_revision_published = page.isCurrentPageRevisionPublished %}
+
+        {% if not page.published and not is_revision_published %}
+          {% set tooltip = 'Page and revision not published.' %}
+        {% elseif not page.published %}
+          {% set tooltip = 'Page not published.' %}
+        {% else %}
+          {% set tooltip = 'Revision not published.' %}
+        {% endif %}
+
+        <span class="badge text-bg-secondary" data-bs-toggle="tooltip" title="{{ tooltip }}">
+          Draft
+        </span>
       {% endif %}
 
       {% if page.isHidden %}
