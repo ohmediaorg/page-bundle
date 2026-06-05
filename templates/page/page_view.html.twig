@@ -89,8 +89,7 @@
       {% if is_granted(attributes.page.edit, page) %}
         You can edit that date
         <a href="{{ path('page_edit', {id: page.id}) }}">here</a>.
-      </li>
-    {% endif %}
+      {% endif %}
     </div>
   {% endif %}
 
