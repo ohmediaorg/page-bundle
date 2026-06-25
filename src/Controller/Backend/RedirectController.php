@@ -42,7 +42,7 @@ class RedirectController extends AbstractController
         );
 
         $qb = $this->redirectRepository->createQueryBuilder('r');
-        $qb->orderBy('r.id', 'desc');
+        $qb->orderBy('r.updated_at', 'desc');
 
         $searchForm = $this->getSearchForm($request);
 

@@ -19,7 +19,7 @@ class RedirectCleaner implements CleanerInterface
         $this->redirectRepository
             ->createQueryBuilder('r')
             ->delete()
-            ->where('r.created_at < :lastYear')
+            ->where('r.updated_at < :lastYear')
             ->setParameter('lastYear', $lastYear)
             ->getQuery()
             ->execute();

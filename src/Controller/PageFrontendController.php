@@ -85,7 +85,7 @@ class PageFrontendController extends AbstractController
         $redirect = $redirectRepository->findOneBy([
             'path' => $path,
         ], [
-            'id' => 'DESC',
+            'updated_at' => 'DESC',
         ]);
 
         if ($redirect) {
@@ -111,7 +111,7 @@ class PageFrontendController extends AbstractController
             $dynamicRedirect = $redirectRepository->findOneBy([
                 'path' => $dynamicPath,
             ], [
-                'id' => 'DESC',
+                'updated_at' => 'DESC',
             ]);
         }
 
