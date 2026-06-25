@@ -1,6 +1,6 @@
 <?php
 
-namespace OHMedia\PageBundle\Service\EntityChoice;
+namespace OHMedia\PageBundle\Service;
 
 use OHMedia\PageBundle\Entity\Redirect;
 use OHMedia\SecurityBundle\Service\EntityChoiceInterface;
