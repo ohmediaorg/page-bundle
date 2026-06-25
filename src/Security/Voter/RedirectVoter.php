@@ -30,21 +30,21 @@ class RedirectVoter extends AbstractEntityVoter
 
     protected function canIndex(Redirect $redirect, User $loggedIn): bool
     {
-        return true;
+        return $loggedIn->isTypeDeveloper();
     }
 
     protected function canCreate(Redirect $redirect, User $loggedIn): bool
     {
-        return true;
+        return $loggedIn->isTypeDeveloper();
     }
 
     protected function canEdit(Redirect $redirect, User $loggedIn): bool
     {
-        return true;
+        return $loggedIn->isTypeDeveloper() && $redirect->isManual();
     }
 
     protected function canDelete(Redirect $redirect, User $loggedIn): bool
     {
-        return true;
+        return $loggedIn->isTypeDeveloper() && $redirect->isManual();
     }
 }
