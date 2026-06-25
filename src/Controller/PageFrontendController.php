@@ -29,7 +29,7 @@ class PageFrontendController extends AbstractController
             // may as well redirect to the actual homepage
             return $this->redirectToRoute('oh_media_page_frontend', [
                 'path' => '',
-            ], 301);
+            ], 302);
         }
 
         if (!$page) {
@@ -40,7 +40,7 @@ class PageFrontendController extends AbstractController
             );
 
             if ($redirectPath) {
-                return $this->redirect($redirectPath, 301);
+                return $this->redirect($redirectPath, 302);
             }
         }
 
@@ -57,7 +57,7 @@ class PageFrontendController extends AbstractController
         if ($redirectPage = $page->getDropdownOnlyRedirect()) {
             return $this->redirectToRoute('oh_media_page_frontend', [
                 'path' => $redirectPage->getPath(),
-            ], 301);
+            ], 302);
         }
 
         if ($page->isRedirectTypeInternal()) {
@@ -66,10 +66,10 @@ class PageFrontendController extends AbstractController
             );
 
             if ($path) {
-                return $this->redirect($path, 301);
+                return $this->redirect($path, 302);
             }
         } elseif ($page->isRedirectTypeExternal()) {
-            return $this->redirect($page->getRedirectExternal(), 301);
+            return $this->redirect($page->getRedirectExternal(), 302);
         }
 
         return $pageRenderer->renderPage();
