@@ -48,7 +48,7 @@ class RedirectController extends AbstractController
 
         $this->applySearch($searchForm, $qb);
 
-        return $this->render('@backend/redirect/redirect_index.html.twig', [
+        return $this->render('@OHMediaPage/redirect/redirect_index.html.twig', [
             'pagination' => $paginator->paginate($qb, 20),
             'new_redirect' => $newRedirect,
             'attributes' => $this->getAttributes(),
@@ -127,7 +127,7 @@ class RedirectController extends AbstractController
             $this->addFlash('error', 'There are some errors in the form below.');
         }
 
-        return $this->render('@backend/redirect/redirect_create.html.twig', [
+        return $this->render('@OHMediaPage/redirect/redirect_create.html.twig', [
             'form' => $form->createView(),
             'redirect' => $redirect,
         ]);
@@ -162,7 +162,7 @@ class RedirectController extends AbstractController
             $this->addFlash('error', 'There are some errors in the form below.');
         }
 
-        return $this->render('@backend/redirect/redirect_edit.html.twig', [
+        return $this->render('@OHMediaPage/redirect/redirect_edit.html.twig', [
             'form' => $form->createView(),
             'redirect' => $redirect,
         ]);
@@ -212,7 +212,7 @@ class RedirectController extends AbstractController
             $this->addFlash('error', 'There are some errors in the form below.');
         }
 
-        return $this->render('@backend/redirect/redirect_delete.html.twig', [
+        return $this->render('@OHMediaPage/redirect/redirect_delete.html.twig', [
             'form' => $form->createView(),
             'redirect' => $redirect,
         ]);
