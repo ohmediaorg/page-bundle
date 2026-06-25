@@ -60,6 +60,13 @@
               {{ _self.table_row(redirect, attributes) }}
             {% endfor %}
           </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="100%">
+                Redirects at the top are higher priority.
+              </td>
+            </tr>
+          </tfoot>
         </table>
 
         {{ bootstrap_pagination(pagination) }}
