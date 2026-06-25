@@ -1,0 +1,10 @@
+{% extends '@OHMediaBackend/form.html.twig' %}
+
+{% set form_title = 'Delete ' ~ redirect %}
+
+{% block breadcrumbs %}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('arrow-up-right-square') ~ ' Redirects', 'redirect_index'),
+    bootstrap_breadcrumb('Delete'),
+  ) }}
+{% endblock %}

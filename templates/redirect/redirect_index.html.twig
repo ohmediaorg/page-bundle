@@ -1,0 +1,114 @@
+{% extends '@OHMediaBackend/base.html.twig' %}
+
+{% block meta_title %}Redirects{% endblock %}
+
+{% block breadcrumbs %}
+  {{ bootstrap_breadcrumbs(
+    bootstrap_breadcrumb(bootstrap_icon('arrow-up-right-square') ~ ' Redirects', 'redirect_index'),
+  ) }}
+{% endblock %}
+
+{% set can_create_redirect = is_granted(attributes.create, new_redirect) %}
+
+{% set create_redirect_href = path('redirect_create') %}
+
+{% block actions %}
+  {% if can_create_redirect %}
+    <a href="{{ create_redirect_href }}" class="btn btn-primary">
+      {{ bootstrap_icon('plus-lg') }}
+      Add Redirect
+    </a>
+  {% endif %}
+{% endblock %}
+
+{% block main %}
+  {% set redirect_count = pagination.count %}
+
+  <div class="card">
+    <div class="card-body">
+      <div class="card-title card-title-with-count">
+        <h1 class="card-title-heading">Redirects</h1>
+        <div class="card-title-count">
+          {{ bootstrap_badge_primary(redirect_count) }}
+        </div>
+      </div>
+
+      {{ form_start(search_form) }}
+        <div class="row align-items-end">
+          <div class="col-lg-6 col-sm-6">
+            {{ form_row(search_form.search) }}
+          </div>
+          <div class="col-lg-12 col-sm-6 form-group">
+            <button class="btn btn-outline-dark" type="submit">Search</button>
+            <a class="btn btn-secondary" href="{{ path('redirect_index') }}">Reset</a>
+          </div>
+        </div>
+      {{ form_end(search_form) }}
+
+      {% if redirect_count %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Redirect</th>
+              <th>Last Updated</th>
+              <th aria-label="Row Actions"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for redirect in pagination.results %}
+              {{ _self.table_row(redirect, attributes) }}
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {{ bootstrap_pagination(pagination) }}
+
+        <small>{{ bootstrap_pagination_info(pagination) }}</small>
+      {% else %}
+        <p>
+          No redirects found.
+          {% if can_create_redirect %}
+            <a href="{{ create_redirect_href }}">
+              Click here to add a redirect.
+            </a>
+          {% endif %}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% macro table_row(redirect, attributes) %}
+  {% set row_actions = [] %}
+
+  {% if is_granted(attributes.edit, redirect) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'redirect_edit',
+      route_params: {id: redirect.id},
+      color: 'secondary',
+      icon: 'pencil',
+      text: 'Edit Redirect',
+    }]) %}
+  {% endif %}
+
+  {% if is_granted(attributes.delete, redirect) %}
+    {% set row_actions = row_actions|merge([{
+      route: 'redirect_delete',
+      route_params: {id: redirect.id},
+      color: 'danger',
+      icon: 'trash',
+      text: 'Delete Redirect',
+      confirm: 'Are you sure you want to delete this redirect? Clicking OK will take you to a verification step to delete this entry.',
+    }]) %}
+  {% endif %}
+
+  <tr>
+    <td>{{ redirect }}</td>
+    <td>{{ redirect.updatedAt|datetime }}</td>
+    <td>
+      {% include '@OHMediaBackend/widget/row_actions.html.twig' with {
+        row_actions: row_actions,
+      } only %}
+    </td>
+  </tr>
+{% endmacro %}
