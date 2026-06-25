@@ -49,7 +49,8 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th>Redirect</th>
+              <th>Path</th>
+              <th>Entity</th>
               <th>Last Updated</th>
               <th aria-label="Row Actions"></th>
             </tr>
@@ -103,7 +104,18 @@
   {% endif %}
 
   <tr>
-    <td>{{ redirect }}</td>
+    <td>{{ redirect.path }}</td>
+    <td>
+      {% set entity_path = entity_path(redirect.entity) %}
+
+      {% if entity_path %}
+        <a href="{{ entity_path }}" target="_blank">
+          {{ entity_path }}
+        </a>
+      {% else %}
+        {{ redirect.entity }}
+      {% endif %}
+    </td>
     <td>{{ redirect.updatedAt|datetime }}</td>
     <td>
       {% include '@OHMediaBackend/widget/row_actions.html.twig' with {
