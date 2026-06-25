@@ -63,7 +63,12 @@
           <tfoot>
             <tr>
               <td colspan="100%">
-                Redirects at the top are higher priority. A {{ bootstrap_badge_info('System') }} redirect is the result of a page path being changed.
+                <ul>
+                  <li>Redirects at the top are higher priority.</li>
+                  <li>A {{ bootstrap_badge_info('System') }} redirect is the result of a page path being changed.</li>
+                  <li>If there is no link in the <b>Entity</b> column, it means the entity path could not be resolved. In the case of a dynamic entity (eg. Article, Event, etc.) the corresponding page may not be published.</li>
+                  <li>A redirect is automatically deleted after not being updated for a year.</li>
+                </ul>
               </td>
             </tr>
           </tfoot>
