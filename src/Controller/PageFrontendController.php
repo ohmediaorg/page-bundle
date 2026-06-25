@@ -40,9 +40,7 @@ class PageFrontendController extends AbstractController
             );
 
             if ($redirectPath) {
-                return $this->redirectToRoute('oh_media_page_frontend', [
-                    'path' => $redirectPath,
-                ], 301);
+                return $this->redirect($redirectPath, 301);
             }
         }
 
