@@ -24,11 +24,10 @@ class RedirectType extends AbstractType
         $entityChoices = $this->entityPathManager->getChoices($redirect->getEntity());
 
         $builder->add('path', TextType::class, [
-            'help' => 'Enter a path to redirect to the selected Internal Resource.',
+            'help' => 'The path to redirect without the leading slash.',
         ]);
 
         $builder->add('entity', ChoiceType::class, [
-            'label' => 'Internal Resource',
             'required' => false,
             'choices' => $entityChoices,
             'placeholder' => '- Select -',
