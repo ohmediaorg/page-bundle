@@ -5,8 +5,7 @@ namespace OHMedia\PageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use OHMedia\PageBundle\Repository\RedirectRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
-
-// use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RedirectRepository::class)]
 class Redirect
@@ -19,9 +18,13 @@ class Redirect
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
+    #[Assert\Regex('/^[^\/]/', message: 'Please remove the leading slash.')]
     private ?string $path = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $entity = null;
 
     #[ORM\Column]
