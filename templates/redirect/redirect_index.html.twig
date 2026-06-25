@@ -104,7 +104,16 @@
   {% endif %}
 
   <tr>
-    <td>{{ redirect.path }}</td>
+    <td>
+      <a href="{{ page_path(redirect.path) }}" target="_blank">
+        /{{ redirect.path }}
+      </a>
+
+      {% if not redirect.manual %}
+        <br>
+        {{ bootstrap_badge_info('System') }}
+      {% endif %}
+    </td>
     <td>
       {% set entity_path = entity_path(redirect.entity) %}
 

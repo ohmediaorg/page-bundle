@@ -67,8 +67,7 @@ class RedirectController extends AbstractController
 
         $formBuilder->add('search', SearchType::class, [
             'required' => false,
-            // TODO: label describing which fields are searched
-            // 'label' => 'Name, email, phone',
+            'label' => 'Path',
         ]);
 
         $form = $formBuilder->getForm();
@@ -84,8 +83,7 @@ class RedirectController extends AbstractController
 
         if ($search) {
             $searchFields = [
-                // TODO: put your search fields here
-                'r.created_by',
+                'r.path',
             ];
 
             $searchLikes = [];
