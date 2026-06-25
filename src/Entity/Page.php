@@ -96,9 +96,6 @@ class Page
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?self $canonical = null;
 
-    #[ORM\OneToMany(mappedBy: 'page', targetEntity: Page301::class, cascade: ['remove'])]
-    private Collection $page301s;
-
     #[ORM\OneToMany(mappedBy: 'page', targetEntity: PageRevision::class, cascade: ['persist', 'remove'])]
     #[ORM\OrderBy(['updated_at' => 'DESC'])]
     private Collection $pageRevisions;
@@ -157,7 +154,6 @@ class Page
     public function __construct()
     {
         $this->pages = new ArrayCollection();
-        $this->page301s = new ArrayCollection();
         $this->pageRevisions = new ArrayCollection();
     }
 
@@ -181,7 +177,6 @@ class Page
             $this->path = null;
             $this->parent_slug = null;
             $this->homepage = false;
-            $this->page301s = new ArrayCollection();
             $this->redirect_type = null;
             $this->redirect_internal = null;
             $this->redirect_external = null;
@@ -503,36 +498,6 @@ class Page
     public function setCanonical(?self $canonical): static
     {
         $this->canonical = $canonical;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Page301>
-     */
-    public function getPage301s(): Collection
-    {
-        return $this->page301s;
-    }
-
-    public function addPage301(Page301 $page301): static
-    {
-        if (!$this->page301s->contains($page301)) {
-            $this->page301s->add($page301);
-            $page301->setPage($this);
-        }
-
-        return $this;
-    }
-
-    public function removePage301(Page301 $page301): static
-    {
-        if ($this->page301s->removeElement($page301)) {
-            // set the owning side to null (unless already changed)
-            if ($page301->getPage() === $this) {
-                $page301->setPage(null);
-            }
-        }
 
         return $this;
     }

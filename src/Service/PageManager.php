@@ -3,10 +3,10 @@
 namespace OHMedia\PageBundle\Service;
 
 use OHMedia\PageBundle\Entity\Page;
-use OHMedia\PageBundle\Entity\Page301;
+use OHMedia\PageBundle\Entity\Redirect;
 use OHMedia\PageBundle\Form\Type\AbstractPageTemplateType;
-use OHMedia\PageBundle\Repository\Page301Repository;
 use OHMedia\PageBundle\Repository\PageRepository;
+use OHMedia\PageBundle\Repository\RedirectRepository;
 
 class PageManager
 {
@@ -15,7 +15,7 @@ class PageManager
     public function __construct(
         private PageRawQuery $pageRawQuery,
         private PageRepository $pageRepository,
-        private Page301Repository $page301Repository
+        private RedirectRepository $redirectRepository,
     ) {
     }
 
@@ -85,7 +85,7 @@ class PageManager
         int &$orderGlobal,
         int $nestingLevel,
         string $path,
-        Page ...$pages
+        Page ...$pages,
     ) {
         foreach ($pages as $i => $page) {
             $oldPath = $page->getPath();
@@ -93,12 +93,12 @@ class PageManager
             $newPath = $path.$page->getSlug();
 
             if ($oldPath && ($oldPath !== $newPath)) {
-                $page301 = new Page301();
-                $page301->setPath($oldPath);
+                $redirect = new Redirect();
+                $redirect->setManual(false);
+                $redirect->setPath($oldPath);
+                $redirect->setEntity($page::class.':'.$page->getId());
 
-                $page->addPage301($page301);
-
-                $this->page301Repository->save($page301, true);
+                $this->redirectRepository->save($redirect, true);
             }
 
             $orderLocal = $i;
