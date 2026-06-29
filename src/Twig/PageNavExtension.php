@@ -62,15 +62,19 @@ class PageNavExtension extends AbstractExtension
         ]);
     }
 
-    public function getPageNav(int $maxNestingLevel = 1): array
+    public function getPageNav(int $maxNestingLevel = 1, ?Page $parent = null): array
     {
         if ($maxNestingLevel < 0) {
             $maxNestingLevel = 0;
         }
 
+        if ($parent) {
+            $maxNestingLevel += $parent->getNestingLevel();
+        }
+
         $navPages = $this->getNavPages($maxNestingLevel);
 
-        return $this->getNav($navPages);
+        return $this->getNav($navPages, $parent);
     }
 
     private function getNavPages(int $maxNestingLevel): array
