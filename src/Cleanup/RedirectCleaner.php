@@ -3,12 +3,12 @@
 namespace OHMedia\PageBundle\Cleanup;
 
 use OHMedia\CleanupBundle\Interfaces\CleanerInterface;
-use OHMedia\PageBundle\Repository\Page301Repository;
+use OHMedia\PageBundle\Repository\RedirectRepository;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Page301Cleaner implements CleanerInterface
+class RedirectCleaner implements CleanerInterface
 {
-    public function __construct(private Page301Repository $page301Repository)
+    public function __construct(private RedirectRepository $redirectRepository)
     {
     }
 
@@ -16,10 +16,10 @@ class Page301Cleaner implements CleanerInterface
     {
         $lastYear = new \DateTime('-1 year');
 
-        $this->page301Repository
-            ->createQueryBuilder('p')
+        $this->redirectRepository
+            ->createQueryBuilder('r')
             ->delete()
-            ->where('p.created_at < :lastYear')
+            ->where('r.updated_at < :lastYear')
             ->setParameter('lastYear', $lastYear)
             ->getQuery()
             ->execute();

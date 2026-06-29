@@ -2,7 +2,7 @@
 
 namespace OHMedia\PageBundle\Controller;
 
-use OHMedia\PageBundle\Repository\Page301Repository;
+use OHMedia\PageBundle\Repository\RedirectRepository;
 use OHMedia\PageBundle\Security\Voter\PageLockedVoter;
 use OHMedia\PageBundle\Service\PageRenderer;
 use OHMedia\UtilityBundle\Service\EntityPathManager;
@@ -14,7 +14,7 @@ class PageFrontendController extends AbstractController
     #[Route('/{path}', name: 'oh_media_page_frontend', requirements: ['path' => '.*'], priority: PHP_INT_MIN)]
     public function frontend(
         EntityPathManager $entityPathManager,
-        Page301Repository $page301Repository,
+        RedirectRepository $redirectRepository,
         PageRenderer $pageRenderer,
         string $path,
     ) {
@@ -29,16 +29,18 @@ class PageFrontendController extends AbstractController
             // may as well redirect to the actual homepage
             return $this->redirectToRoute('oh_media_page_frontend', [
                 'path' => '',
-            ], 301);
+            ], 302);
         }
 
         if (!$page) {
-            $page301Path = $this->getPage301Path($page301Repository, $path);
+            $redirectPath = $this->getRedirectPath(
+                $entityPathManager,
+                $redirectRepository,
+                $path,
+            );
 
-            if ($page301Path) {
-                return $this->redirectToRoute('oh_media_page_frontend', [
-                    'path' => $page301Path,
-                ], 301);
+            if ($redirectPath) {
+                return $this->redirect($redirectPath, 302);
             }
         }
 
@@ -55,7 +57,7 @@ class PageFrontendController extends AbstractController
         if ($redirectPage = $page->getDropdownOnlyRedirect()) {
             return $this->redirectToRoute('oh_media_page_frontend', [
                 'path' => $redirectPage->getPath(),
-            ], 301);
+            ], 302);
         }
 
         if ($page->isRedirectTypeInternal()) {
@@ -64,54 +66,63 @@ class PageFrontendController extends AbstractController
             );
 
             if ($path) {
-                return $this->redirect($path, 301);
+                return $this->redirect($path, 302);
             }
         } elseif ($page->isRedirectTypeExternal()) {
-            return $this->redirect($page->getRedirectExternal(), 301);
+            return $this->redirect($page->getRedirectExternal(), 302);
         }
 
         return $pageRenderer->renderPage();
     }
 
-    private function getPage301Path(
-        Page301Repository $page301Repository,
+    private function getRedirectPath(
+        EntityPathManager $entityPathManager,
+        RedirectRepository $redirectRepository,
         string $path,
     ): ?string {
-        $page301 = $page301Repository->findOneBy([
+        $redirect = $redirectRepository->findOneBy([
             'path' => $path,
         ], [
-            'id' => 'DESC',
+            'updated_at' => 'DESC',
         ]);
 
-        if ($page301) {
-            return $page301->getPage()->getPath();
+        if ($redirect) {
+            $redirectPath = $entityPathManager->getEntityPath(
+                $redirect->getEntity(),
+            );
+
+            if ($redirectPath) {
+                return $redirectPath;
+            }
         }
 
         // try finding a dynamic page
         $parts = explode('/', $path);
         $dynamicParts = [];
-        $dynamicPage301 = null;
+        $dynamicRedirect = null;
 
-        while ($parts && !$dynamicPage301) {
+        while ($parts && !$dynamicRedirect) {
             $dynamicPart = array_pop($parts);
             $dynamicPath = implode('/', $parts);
             array_unshift($dynamicParts, $dynamicPart);
 
-            $dynamicPage301 = $page301Repository->findOneBy([
+            $dynamicRedirect = $redirectRepository->findOneBy([
                 'path' => $dynamicPath,
             ], [
-                'id' => 'DESC',
+                'updated_at' => 'DESC',
             ]);
         }
 
-        if (!$dynamicPage301) {
+        if (!$dynamicRedirect) {
             return null;
         }
 
-        $dynamicPage = $dynamicPage301->getPage();
+        $redirectPath = $entityPathManager->getEntityPath(
+            $dynamicRedirect->getEntity(),
+        );
 
-        if ($dynamicPage && $dynamicPage->isDynamic()) {
-            return $dynamicPage->getPath().'/'.implode('/', $dynamicParts);
+        if ($redirectPath) {
+            return $redirectPath;
         }
 
         return null;
