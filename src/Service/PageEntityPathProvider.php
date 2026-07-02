@@ -30,7 +30,6 @@ class PageEntityPathProvider extends AbstractEntityPathProvider
     public function getEntityQueryBuilder(?int $selectedEntityId): QueryBuilder
     {
         $where = [
-            'p.homepage = 0',
             'p.locked = 0',
             'p.published IS NOT NULL',
             'p.published <= :now',
