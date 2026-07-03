@@ -20,6 +20,18 @@ class PageFrontendController extends AbstractController
     ) {
         $path = rtrim($path, '/');
 
+        // manual redirects supercede page paths
+        $redirectPath = $this->getRedirectPath(
+            $entityPathManager,
+            $redirectRepository,
+            $path,
+            true,
+        );
+
+        if ($redirectPath) {
+            return $this->redirect($redirectPath, 302);
+        }
+
         $pageRenderer->setCurrentPageFromPath($path);
 
         $page = $pageRenderer->getCurrentPage();
@@ -33,10 +45,12 @@ class PageFrontendController extends AbstractController
         }
 
         if (!$page) {
+            // no page found, check for a system redirect
             $redirectPath = $this->getRedirectPath(
                 $entityPathManager,
                 $redirectRepository,
                 $path,
+                false,
             );
 
             if ($redirectPath) {
@@ -79,9 +93,11 @@ class PageFrontendController extends AbstractController
         EntityPathManager $entityPathManager,
         RedirectRepository $redirectRepository,
         string $path,
+        bool $manual,
     ): ?string {
         $redirect = $redirectRepository->findOneBy([
             'path' => $path,
+            'manual' => $manual,
         ], [
             'updated_at' => 'DESC',
         ]);
@@ -108,6 +124,7 @@ class PageFrontendController extends AbstractController
 
             $dynamicRedirect = $redirectRepository->findOneBy([
                 'path' => $dynamicPath,
+                'manual' => $manual,
             ], [
                 'updated_at' => 'DESC',
             ]);
