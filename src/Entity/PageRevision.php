@@ -9,7 +9,6 @@ use Doctrine\Persistence\Proxy;
 use OHMedia\PageBundle\Form\Type\AbstractDynamicPageTemplateType;
 use OHMedia\PageBundle\Repository\PageRevisionRepository;
 use OHMedia\UtilityBundle\Entity\BlameableEntityTrait;
-use OHMedia\WysiwygBundle\Shortcodes\Shortcode;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PageRevisionRepository::class)]
@@ -408,52 +407,5 @@ class PageRevision
         }
 
         return null;
-    }
-
-    public function containsShortcode(string $shortcode): bool
-    {
-        $shortcode = Shortcode::format($shortcode);
-
-        $pageContentTexts = $this->getPageContentTexts();
-
-        foreach ($pageContentTexts as $pageContentText) {
-            if (PageContentText::TYPE_WYSIWYG !== $pageContentText->getType()) {
-                continue;
-            }
-
-            if (str_contains($pageContentText->getText(), $shortcode)) {
-                return true;
-            }
-        }
-
-        $pageContentRows = $this->getPageContentRows();
-
-        foreach ($pageContentRows as $pageContentRow) {
-            if (!$pageContentRow->layoutHasOneColumn()) {
-                continue;
-            }
-
-            if (str_contains($pageContentRow->getColumn1(), $shortcode)) {
-                return true;
-            }
-
-            if (!$pageContentRow->layoutHasTwoColumns()) {
-                continue;
-            }
-
-            if (str_contains($pageContentRow->getColumn2(), $shortcode)) {
-                return true;
-            }
-
-            if (!$pageContentRow->layoutHasThreeColumns()) {
-                continue;
-            }
-
-            if (str_contains($pageContentRow->getColumn3(), $shortcode)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
