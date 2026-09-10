@@ -28,7 +28,7 @@ class SitemapController extends AbstractController
             ->andWhere('(p.redirect_type = :redirect_type_none OR p.redirect_type IS NULL)')
             ->setParameter('redirect_type_none', Page::REDIRECT_TYPE_NONE)
             ->andWhere('p.noindex = 0')
-            ->orderBy('p.order_global', 'asc')
+            ->orderBy('p.order_global', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
 

@@ -66,7 +66,7 @@ class PageSEOType extends AbstractType
                     ->locked(false)
                     ->exclude($page)
                     ->getQueryBuilder()
-                    ->orderBy('p.order_global', 'ASC'),
+                    ->orderBy('p.order_global', \SortDirection::Ascending),
                 'disabled' => $page->isHomepage(),
             ])
         ;

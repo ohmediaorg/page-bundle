@@ -40,7 +40,7 @@ class PageCreateType extends AbstractType
                     ->createQueryBuilder()
                     ->homepage(false)
                     ->getQueryBuilder()
-                    ->orderBy('p.order_global', 'ASC'),
+                    ->orderBy('p.order_global', \SortDirection::Ascending),
                 'attr' => [
                     'style' => 'direction:rtl',
                     'aria-label' => 'Parent Page',

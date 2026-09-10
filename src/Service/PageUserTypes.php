@@ -23,7 +23,7 @@ class PageUserTypes
                 User::TYPE_SUPER,
                 User::TYPE_ADMIN,
             ])
-            ->orderBy('u.type', 'ASC')
+            ->orderBy('u.type', \SortDirection::Ascending)
             ->groupBy('u.type')
             ->getQuery()
             ->getResult();

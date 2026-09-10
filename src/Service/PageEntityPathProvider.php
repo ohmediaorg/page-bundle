@@ -39,7 +39,7 @@ class PageEntityPathProvider extends AbstractEntityPathProvider
             ->createQueryBuilder('p')
             ->where('('.implode(' AND ', $where).')')
             ->setParameter('now', DateTimeUtil::getDateTimeUtc())
-            ->orderBy('p.order_global', 'ASC');
+            ->orderBy('p.order_global', \SortDirection::Ascending);
 
         if ($selectedEntityId) {
             $qb->orWhere('p.id = :id')

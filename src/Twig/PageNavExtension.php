@@ -92,7 +92,7 @@ class PageNavExtension extends AbstractExtension
                 WHERE IDENTITY(pr.page) = p.id
                 AND pr.published = 1
             ) > 0')
-            ->orderBy('p.order_global', 'ASC')
+            ->orderBy('p.order_global', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }

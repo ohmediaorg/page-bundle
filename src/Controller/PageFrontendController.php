@@ -99,7 +99,7 @@ class PageFrontendController extends AbstractController
             'path' => $path,
             'manual' => $manual,
         ], [
-            'updated_at' => 'DESC',
+            'updated_at' => \SortDirection::Descending,
         ]);
 
         if ($redirect) {
@@ -126,7 +126,7 @@ class PageFrontendController extends AbstractController
                 'path' => $dynamicPath,
                 'manual' => $manual,
             ], [
-                'updated_at' => 'DESC',
+                'updated_at' => \SortDirection::Descending,
             ]);
         }
 

@@ -62,7 +62,7 @@ class Page
     private ?self $parent = null;
 
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['remove'])]
-    #[ORM\OrderBy(['order_local' => 'ASC'])]
+    #[ORM\OrderBy(['order_local' => \SortDirection::Ascending])]
     private Collection $pages;
 
     #[ORM\Column(options: ['default' => false])]
@@ -97,7 +97,7 @@ class Page
     private ?self $canonical = null;
 
     #[ORM\OneToMany(mappedBy: 'page', targetEntity: PageRevision::class, cascade: ['persist', 'remove'])]
-    #[ORM\OrderBy(['updated_at' => 'DESC'])]
+    #[ORM\OrderBy(['updated_at' => \SortDirection::Descending])]
     private Collection $pageRevisions;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]

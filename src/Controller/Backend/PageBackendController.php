@@ -51,7 +51,7 @@ class PageBackendController extends AbstractController
         );
 
         $queryBuilder = $this->pageRepository->createQueryBuilder('p')
-            ->orderBy('p.order_global', 'asc');
+            ->orderBy('p.order_global', \SortDirection::Ascending);
 
         $searchForm = $this->getSearchForm($request);
 

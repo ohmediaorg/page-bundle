@@ -56,7 +56,7 @@ class PageRevisionCleaner implements CleanerInterface
                 ->where('IDENTITY(pr.page) = :page_id')
                 ->setParameter('page_id', $count['page_id'])
                 ->andWhere('pr.published = 1')
-                ->orderBy('pr.updated_at', 'ASC')
+                ->orderBy('pr.updated_at', \SortDirection::Ascending)
                 ->setMaxResults($delete)
                 ->getQuery()
                 ->getResult();
