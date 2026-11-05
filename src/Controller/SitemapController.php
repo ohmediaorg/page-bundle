@@ -58,7 +58,7 @@ class SitemapController extends AbstractController
             'sitemap_urls' => $sitemapUrls,
         ]);
 
-        $response->headers->set('Content-Type', 'xml');
+        $response->headers->set('Content-Type', 'application/xml');
 
         return $response;
     }
