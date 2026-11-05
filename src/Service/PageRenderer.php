@@ -183,7 +183,8 @@ class PageRenderer
             $rendered = str_replace('</body>', $script.'</body>', $rendered);
         }
 
-        return new Response($rendered);
+        return new Response($rendered)
+            ->setLastModified($this->currentPageRevision->getUpdatedAt());
     }
 
     private function getPagePreviewScript()
