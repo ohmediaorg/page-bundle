@@ -11,6 +11,7 @@ use OHMedia\PageBundle\Repository\PageRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 
 class PageRenderer
@@ -20,11 +21,13 @@ class PageRenderer
     private array $dynamicBreadcrumbs = [];
     private ?Meta $dynamicMeta = null;
     private ?string $dynamicPart = null;
+    private ?\DateTimeInterface $dateModified = null;
 
     public function __construct(
         private Environment $twig,
         private EventDispatcherInterface $eventDispatcher,
         private PageRepository $pageRepository,
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -169,6 +172,8 @@ class PageRenderer
             throw new NotFoundHttpException('Page not found.');
         }
 
+        $this->setDateModified($this->currentPageRevision->getUpdatedAt());
+
         $template = $this->currentPageRevision->getTemplate();
 
         $twigTemplate = call_user_func($template.'::getTemplate');
@@ -177,14 +182,44 @@ class PageRenderer
             'page' => $this->currentPage,
         ]);
 
+        $schema = $this->getSchema();
+
+        $rendered = str_replace('</body>', $schema.'</body>', $rendered);
+
         if ($preview) {
             $script = $this->getPagePreviewScript();
 
             $rendered = str_replace('</body>', $script.'</body>', $rendered);
         }
 
-        return new Response($rendered)
-            ->setLastModified($this->currentPageRevision->getUpdatedAt());
+        return new Response($rendered);
+    }
+
+    public function setDateModified(\DateTimeInterface $dateModified, bool $force = false): self
+    {
+        if ($force || !$this->dateModified || $dateModified > $this->dateModified) {
+            $this->dateModified = clone $dateModified;
+        }
+
+        return $this;
+    }
+
+    private function getSchema(): string
+    {
+        $meta = $this->getMetaEntity();
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebPage',
+            'dateModified' => $this->dateModified->format('c'),
+            'name' => $meta->getTitle(),
+            'description' => $meta->getDescription(),
+            'url' => $this->urlGenerator->generate('oh_media_page_frontend', [
+                'path' => $this->getCanonicalPath(),
+            ], UrlGeneratorInterface::ABSOLUTE_URL),
+        ];
+
+        return '<script type="application/ld+json">'.json_encode($schema).'</script>';
     }
 
     private function getPagePreviewScript()
