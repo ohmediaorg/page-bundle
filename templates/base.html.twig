@@ -5,6 +5,8 @@
 
     {% block meta %}{{ page_meta() }}{% endblock %}
 
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="{{ path('oh_media_page_sitemap') }}">
+
     {{ encore_entry_link_tags('frontend', null, 'frontend') }}
 
     {% block head_scripts %}{% endblock %}
