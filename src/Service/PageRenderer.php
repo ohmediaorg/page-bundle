@@ -11,7 +11,6 @@ use OHMedia\PageBundle\Repository\PageRepository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 
 class PageRenderer
@@ -27,7 +26,6 @@ class PageRenderer
         private Environment $twig,
         private EventDispatcherInterface $eventDispatcher,
         private PageRepository $pageRepository,
-        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
