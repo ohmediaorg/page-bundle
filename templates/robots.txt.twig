@@ -1,6 +1,8 @@
+Sitemap: {{ absolute_url(path('oh_media_page_sitemap')) }}
+{% if noindex|length > 0 %}
+
 User-agent: *
 {% for page in noindex %}
 Disallow: {{ page_path(page.path) }}
 {% endfor %}
-
-Sitemap: {{ absolute_url(path('oh_media_page_sitemap')) }}
+{% endif %}
