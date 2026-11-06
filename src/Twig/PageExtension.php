@@ -31,15 +31,19 @@ class PageExtension extends AbstractExtension
                 'needs_environment' => true,
                 'is_safe' => ['html'],
             ]),
+            new TwigFunction('page_last_updated', [$this, 'lastUpdated'], [
+                'needs_environment' => true,
+                'is_safe' => ['html'],
+            ]),
         ];
     }
 
-    public function breadcrumbs(Environment $twig)
+    public function breadcrumbs(Environment $twig): string
     {
         $page = $this->pageRenderer->getCurrentPage();
 
         if (!$page) {
-            return;
+            return '';
         }
 
         return $twig->render('@OHMediaPage/breadcrumbs.html.twig', [
@@ -47,12 +51,12 @@ class PageExtension extends AbstractExtension
         ]);
     }
 
-    public function meta(Environment $twig)
+    public function meta(Environment $twig): string
     {
         $page = $this->pageRenderer->getCurrentPage();
 
         if (!$page) {
-            return;
+            return '';
         }
 
         $meta = $this->pageRenderer->getMetaEntity();
@@ -85,6 +89,19 @@ class PageExtension extends AbstractExtension
             'meta' => $meta,
             'canonical_path' => $canonicalPath,
             'breadcrumb_schema' => $breadcrumbSchema,
+        ]);
+    }
+
+    public function lastUpdated(Environment $twig): string
+    {
+        $lastUpdated = $this->pageRenderer->getLastUpdated();
+
+        if (!$lastUpdated) {
+            return '';
+        }
+
+        return $twig->render('@OHMediaPage/last_updated.html.twig', [
+            'last_updated' => $lastUpdated,
         ]);
     }
 

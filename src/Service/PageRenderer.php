@@ -21,7 +21,7 @@ class PageRenderer
     private array $dynamicBreadcrumbs = [];
     private ?Meta $dynamicMeta = null;
     private ?string $dynamicPart = null;
-    private ?\DateTimeInterface $dateModified = null;
+    private ?\DateTimeInterface $lastUpdated = null;
 
     public function __construct(
         private Environment $twig,
@@ -172,7 +172,7 @@ class PageRenderer
             throw new NotFoundHttpException('Page not found.');
         }
 
-        $this->setDateModified($this->currentPageRevision->getUpdatedAt());
+        $this->setLastUpdated($this->currentPageRevision->getUpdatedAt());
 
         $template = $this->currentPageRevision->getTemplate();
 
@@ -182,44 +182,32 @@ class PageRenderer
             'page' => $this->currentPage,
         ]);
 
-        $schema = $this->getSchema();
-
-        $rendered = str_replace('</body>', $schema.'</body>', $rendered);
-
         if ($preview) {
             $script = $this->getPagePreviewScript();
 
-            $rendered = str_replace('</body>', $script.'</body>', $rendered);
+            $rendered = $this->appendHTML($rendered, $script);
         }
 
         return new Response($rendered);
     }
 
-    public function setDateModified(\DateTimeInterface $dateModified, bool $force = false): self
+    public function setLastUpdated(\DateTimeInterface $lastUpdated, bool $force = false): self
     {
-        if ($force || !$this->dateModified || $dateModified > $this->dateModified) {
-            $this->dateModified = clone $dateModified;
+        if ($force || !$this->lastUpdated || $lastUpdated > $this->lastUpdated) {
+            $this->lastUpdated = clone $lastUpdated;
         }
 
         return $this;
     }
 
-    private function getSchema(): string
+    public function getLastUpdated(): ?\DateTimeInterface
     {
-        $meta = $this->getMetaEntity();
+        return $this->lastUpdated;
+    }
 
-        $schema = [
-            '@context' => 'https://schema.org',
-            '@type' => 'WebPage',
-            'dateModified' => $this->dateModified->format('c'),
-            'name' => $meta->getTitle(),
-            'description' => $meta->getDescription(),
-            'url' => $this->urlGenerator->generate('oh_media_page_frontend', [
-                'path' => $this->getCanonicalPath(),
-            ], UrlGeneratorInterface::ABSOLUTE_URL),
-        ];
-
-        return '<script type="application/ld+json">'.json_encode($schema).'</script>';
+    private function appendHTML(string $html, string $append): string
+    {
+        return str_replace('</body>', $append.'</body>', $html);
     }
 
     private function getPagePreviewScript()
